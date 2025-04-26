@@ -1,6 +1,7 @@
 services:
   watchtower:
     image: containrrr/watchtower
+    container_name: uptime_kuma
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
