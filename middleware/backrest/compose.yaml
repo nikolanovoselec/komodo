@@ -1,1 +1,23 @@
-
+services:
+  backrest:
+    image: garethgeorge/backrest:latest
+    container_name: backrest
+    hostname: ${HOSTNAME}
+    volumes:
+      - /mnt/configs/backrest/data:/data
+      - /mnt/configs/backrest/config:/config
+      - /mnt/configs/backrest/cache:/cache
+      - /mnt/configs/backrest/tmp:/tmp
+      - /mnt/configs/:/userdata  #Local path to be backed up
+      - /mnt/docker/_restic_backup_repository/:/repos #NFS mount of remote repository storage for backup
+    environment:
+      - BACKREST_DATA=/data
+      - BACKREST_CONFIG=/config/config.json
+      - XDG_CACHE_HOME=/cache
+      - TMPDIR=/tmp
+      - TZ=Europe/Zurich
+    ports:
+      - "9898:9898"
+    restart: unless-stopped
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
