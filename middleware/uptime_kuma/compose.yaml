@@ -1,0 +1,11 @@
+services:
+  uptime-kuma:
+    restart: unless-stopped
+    ports:
+      - 3001:3001
+    volumes:
+      - /mnt/configs/uptime-kuma:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    image: louislam/uptime-kuma:latest
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
