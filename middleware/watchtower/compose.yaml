@@ -12,6 +12,6 @@ services:
       - WATCHTOWER_LABEL_ENABLE=true
       - WATCHTOWER_SCHEDULE=0 0 2 * * *
       - WATCHTOWER_TIMEOUT=30s
-      - WATCHTOWER_ROLLING_RESTART=true
+#      - WATCHTOWER_ROLLING_RESTART=true #disable for stacks which depend on other services
       - WATCHTOWER_REMOVE_VOLUMES=true
     restart: unless-stopped
