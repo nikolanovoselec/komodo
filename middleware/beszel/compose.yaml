@@ -1,0 +1,29 @@
+services:
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel
+    restart: unless-stopped
+#    network_mode: host
+    ports:
+      - 8090:8090
+    volumes:
+      - /mnt/configs/beszel/beszel_data:/beszel_data
+      - /mnt/configs/beszel/beszel_socket:/beszel_socket
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+  beszel-agent:
+    image: henrygd/beszel-agent:latest
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /mnt/configs/beszel/beszel_socket:/beszel_socket
+      # monitor other disks / partitions by mounting a folder in /extra-filesystems
+      # - /mnt/disk/.beszel:/extra-filesystems/sda1:ro
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    environment:
+      LISTEN: 45876
+      #LISTEN: /beszel_socket/beszel.sock
+      KEY: ${KEY}
