@@ -1,10 +1,10 @@
 services:
   cloudflared:
     image: cloudflare/cloudflared:latest
-    restart: unless-stopped
     container_name: cloudflared
+    restart: unless-stopped
     network_mode: "host"
     labels:
       com.centurylinklabs.watchtower.enable: "true"
     command: tunnel --no-autoupdate run --token
-      eyJhIjoiYWI3NWY3NTk0MWEyMWE4MWRiMjdiZjEyZTk5YzYyMGIiLCJ0IjoiMWYwOTVhZTctZTFkNS00ZTEzLTgxNzAtMDU3ODBkZTMwZGIxIiwicyI6Ik16ZGlaR05rWW1NdE1qSm1NeTAwWmpVMExXSTJNelV0WVRZeFpUVmtaVEZoTmpRdyJ9
+      ${TOKEN}
