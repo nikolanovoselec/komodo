@@ -1,1 +1,82 @@
+services:
+  postgresql:
+    image: docker.io/library/postgres:16-alpine
+    restart: unless-stopped
+    container_name: authentik-postgres
+    volumes:
+      - /mnt/configs/authentik/database/authentik_database/_data:/var/lib/postgresql/data
+    networks:
+      - authentik
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+    environment:
+      POSTGRES_PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
+      POSTGRES_USER: ${AUTHENTIK_POSTGRESQL__USER}
+      POSTGRES_DB: ${AUTHENTIK_POSTGRESQL__NAME}
+      
+  redis:
+    image: docker.io/library/redis:alpine
+    restart: unless-stopped
+    container_name: authentik-redis
+    networks:
+      - authentik
+    volumes:
+      - /mnt/configs/authentik/redis:/data
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+      
+  server:
+    image: ghcr.io/goauthentik/server:2025.2.4
+    restart: unless-stopped
+    container_name: authentik-server
+    networks:
+      - authentik
+    command: server
+    environment:
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_POSTGRESQL__USER}
+      AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_POSTGRESQL__NAME}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+    volumes:
+      - /mnt/configs/authentik/media:/media
+      - /mnt/configs/authentik/custom-templates:/templates
+    ports:
+      - 7080:9000
+      - 7443:9443
+    depends_on:
+      - postgresql
+      - redis
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+      
+  worker:
+    image: ghcr.io/goauthentik/server:2025.2.4
+    restart: unless-stopped
+    container_name: authentik-worker
+    networks:
+      - authentik
+    command: worker
+    environment:
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__USER: ${AUTHENTIK_POSTGRESQL__USER}
+      AUTHENTIK_POSTGRESQL__NAME: ${AUTHENTIK_POSTGRESQL__NAME}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+    user: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /mnt/configs/authentik/media:/media
+      - /mnt/configs/authentik/certs:/certs
+      - /mnt/configs/authentik/custom-templates:/templates
+    depends_on:
+      - postgresql
+      - redis
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
 
+networks:
+  authentik:
+    external: true
