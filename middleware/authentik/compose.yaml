@@ -10,7 +10,7 @@ services:
     labels:
       com.centurylinklabs.watchtower.enable: "false"
     environment:
-      POSTGRES_PASSWORD: [[AUTHENTIK_POSTGRESQL__PASSWORD]]
+      POSTGRES_PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
       POSTGRES_USER: authentik
       POSTGRES_DB: authentik
       
@@ -26,7 +26,7 @@ services:
       com.centurylinklabs.watchtower.enable: "false"
       
   server:
-    image: ghcr.io/goauthentik/server:2025.2.4
+    image: ghcr.io/goauthentik/server:${VERSION}
     restart: unless-stopped
     container_name: authentik-server
     networks:
@@ -37,8 +37,8 @@ services:
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: authentik
       AUTHENTIK_POSTGRESQL__NAME: authentik
-      AUTHENTIK_POSTGRESQL__PASSWORD: [[AUTHENTIK_POSTGRESQL__PASSWORD]]
-      AUTHENTIK_SECRET_KEY: [[AUTHENTIK_SECRET_KEY]]
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
     volumes:
       - /mnt/configs/authentik/media:/media
       - /mnt/configs/authentik/custom-templates:/templates
@@ -52,7 +52,7 @@ services:
       com.centurylinklabs.watchtower.enable: "false"
       
   worker:
-    image: ghcr.io/goauthentik/server:2025.2.4
+    image: ghcr.io/goauthentik/server:${VERSION}
     restart: unless-stopped
     container_name: authentik-worker
     networks:
@@ -63,8 +63,8 @@ services:
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: authentik
       AUTHENTIK_POSTGRESQL__NAME: authentik
-      AUTHENTIK_POSTGRESQL__PASSWORD: [[AUTHENTIK_POSTGRESQL__PASSWORD]]
-      AUTHENTIK_SECRET_KEY: [[AUTHENTIK_SECRET_KEY]]
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
     user: root
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
