@@ -100,12 +100,13 @@ server = "middleware"
 run_build = true
 poll_for_updates = true
 auto_update = true
+auto_update_all_services = true
 destroy_before_deploy = true
 run_directory = "middleware/beszel"
 git_account = "nikolanovoslec"
 repo = "nikolanovoselec/komodo"
 environment = """
-KEY = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN6T0aeMB5TjzN04FBBceM9DNnWgntgjMFf9wOgcSrU0"
+KEY = [[BESZEL_KEY]]
 """
 
 ##
