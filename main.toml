@@ -1,1 +1,218 @@
-## Add resources to get started
+[[server]]
+name = "komodo_core"
+tags = ["sync"]
+[server.config]
+address = "https://periphery:8120"
+enabled = true
+
+##
+
+[[server]]
+name = "media_servers"
+tags = ["sync"]
+[server.config]
+address = "https://mediaservers.local:8120"
+enabled = true
+
+##
+
+[[server]]
+name = "middleware"
+tags = ["sync"]
+[server.config]
+address = "https://middleware.local:8120"
+enabled = true
+
+##
+
+[[server]]
+name = "servarr"
+tags = ["sync"]
+[server.config]
+address = "https://servarr.local:8120"
+enabled = true
+
+##
+
+[[stack]]
+name = "komodo_core_cloudflared"
+tags = ["sync"]
+[stack.config]
+server = "komodo_core"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+run_directory = "komodo_core/cloudflared"
+git_account = "nikolanovoslec"
+repo = "nikolanovoselec/komodo"
+environment = """
+ TOKEN = [[CFD_TOKEN_INGRESS]]
+"""
+
+##
+
+[[stack]]
+name = "middleware_authentik"
+tags = ["sync"]
+[stack.config]
+server = "middleware"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+run_directory = "middleware/authentik"
+git_account = "nikolanovoslec"
+repo = "nikolanovoselec/komodo"
+environment = """
+AUTHENTIK_POSTGRESQL__PASSWORD = [[AUTHENTIK_POSTGRESQL__PASSWORD]]
+AUTHENTIK_SECRET_KEY = [[AUTHENTIK_SECRET_KEY]]
+VERSION = 2025.2.4
+"""
+
+##
+
+[[stack]]
+name = "middleware_backrest"
+tags = ["sync"]
+[stack.config]
+server = "middleware"
+run_build = true
+poll_for_updates = true
+auto_update = true
+destroy_before_deploy = true
+run_directory = "middleware/backrest"
+git_account = "nikolanovoslec"
+repo = "nikolanovoselec/komodo"
+environment = """
+  HOSTNAME = backrest-middleware.local.graymatter.ch
+"""
+
+##
+
+[[stack]]
+name = "middleware_beszel"
+tags = ["sync"]
+[stack.config]
+server = "middleware"
+run_build = true
+poll_for_updates = true
+auto_update = true
+destroy_before_deploy = true
+run_directory = "middleware/beszel"
+git_account = "nikolanovoslec"
+repo = "nikolanovoselec/komodo"
+environment = """
+KEY = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN6T0aeMB5TjzN04FBBceM9DNnWgntgjMFf9wOgcSrU0"
+"""
+
+##
+
+[[stack]]
+name = "middleware_cloudflared"
+tags = ["sync"]
+[stack.config]
+server = "middleware"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+run_directory = "middleware/cloudflared"
+git_account = "nikolanovoslec"
+repo = "nikolanovoselec/komodo"
+environment = """
+ TOKEN = [[CFD_TOKEN_INGRESS]]
+"""
+
+##
+
+[[stack]]
+name = "middleware_dozzle"
+tags = ["sync"]
+[stack.config]
+server = "middleware"
+run_build = true
+poll_for_updates = true
+auto_update = true
+destroy_before_deploy = true
+run_directory = "middleware/dozzle"
+git_account = "nikolanovoslec"
+repo = "nikolanovoselec/komodo"
+
+##
+
+[[stack]]
+name = "middleware_heimdall"
+tags = ["sync"]
+[stack.config]
+server = "middleware"
+run_build = true
+poll_for_updates = true
+auto_update = true
+destroy_before_deploy = true
+run_directory = "middleware/heimdall"
+git_account = "nikolanovoslec"
+repo = "nikolanovoselec/komodo"
+
+##
+
+[[stack]]
+name = "middleware_npm"
+tags = ["sync"]
+[stack.config]
+server = "middleware"
+run_build = true
+poll_for_updates = true
+auto_update = true
+destroy_before_deploy = true
+run_directory = "middleware/npm"
+git_account = "nikolanovoslec"
+repo = "nikolanovoselec/komodo"
+
+##
+
+[[stack]]
+name = "middleware_shlink"
+tags = ["sync"]
+[stack.config]
+server = "middleware"
+run_build = true
+poll_for_updates = true
+auto_update = true
+destroy_before_deploy = true
+run_directory = "middleware/shlink"
+git_account = "nikolanovoslec"
+repo = "nikolanovoselec/komodo"
+environment = """
+DEFAULT_DOMAIN = novoselec.ch
+INITIAL_API_KEY = [[SHLINK_INITIAL_API_KEY]]
+DB_USER = shlink
+DB_PASSWORD = [[SHLINK_MARIADB_ROOT_PASSWORD]]
+DEFAULT_INVALID_SHORT_URL_REDIRECT = https://plex.graymatter.ch
+DEFAULT_REGULAR_404_REDIRECT = https://plex.graymatter.ch
+DEFAULT_BASE_URL_REDIRECT = https://plex.graymatter.ch
+SHLINK_SERVER_URL = https://shlink.novoselec.ch
+SHLINK_SERVER_API_KEY = [[SHLINK_SERVER_API_KEY]]
+MARIADB_ROOT_PASSWORD = [[SHLINK_MARIADB_ROOT_PASSWORD]]
+MARIADB_USER = shlink
+MARIADB_PASSWORD = [[SHLINK_MARIADB_ROOT_PASSWORD]]
+MARIADB_DATABASE = shlink
+"""
+
+##
+
+[[stack]]
+name = "middleware_uptime_kuma"
+tags = ["sync"]
+[stack.config]
+server = "middleware"
+run_build = true
+poll_for_updates = true
+auto_update = true
+destroy_before_deploy = true
+run_directory = "middleware/uptime_kuma/"
+git_account = "nikolanovoslec"
+repo = "nikolanovoselec/komodo"
