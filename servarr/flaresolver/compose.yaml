@@ -1,16 +1,15 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  flaresolverr:
+    # DockerHub mirror flaresolverr/flaresolverr:latest
+    image: pantlesscoding/flaresolverr:latest
+    container_name: servarr_flaresolverr
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=Europe/Zurich
+      - DRIVER=nodriver
+      - no_sandbox=true
+    ports:
+      - "${PORT:-8191}:8191"
+    restart: unless-stopped 
