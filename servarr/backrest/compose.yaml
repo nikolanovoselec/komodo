@@ -1,16 +1,22 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  backrest:
+    image: garethgeorge/backrest:latest
+    container_name: servarr_backrest
+    hostname: backrest-servarr.local.graymatter.ch
+    volumes:
+      - /docker/configs/backrest/data:/data
+      - /docker/configs/backrest/config:/config
+      - /docker/configs/backrest/cache:/cache
+      - /docker/configs/backrest/tmp:/tmp
+      - /docker/configs/:/userdata  # Mount local paths to backup
+      - /mnt/docker/_restic_backup_repository/:/repos     # Mount local repos (optional for remote storage)
+    environment:
+      - BACKREST_DATA=/data
+      - BACKREST_CONFIG=/config/config.json
+      - XDG_CACHE_HOME=/cache
+      - TMPDIR=/tmp
+      - TZ=Europe/Zurich
+    ports:
+      - "9898:9898"
+    restart: unless-stopped
+    network_mode: bridge
