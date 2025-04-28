@@ -1,16 +1,22 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  backrest:
+    image: garethgeorge/backrest:latest
+    container_name: storage_backrest
+    hostname: backrest-nas.local.graymatter.ch
+    volumes:
+      - /volume1/docker/_synology_configs/backrest/data:/data
+      - /volume1/docker/_synology_configs/backrest/config:/config
+      - /volume1/docker/_synology_configs/backrest/cache:/cache
+      - /volume1/docker/_synology_configs/backrest/tmp:/tmp
+      - /volume1/docker/_synology_configs/:/userdata  # Mount local paths to backup
+      - /volume1/docker/_restic_backup_repository/:/repos     # Mount local repos (optional for remote storage)
+    environment:
+      - BACKREST_DATA=/data
+      - BACKREST_CONFIG=/config/config.json
+      - XDG_CACHE_HOME=/cache
+      - TMPDIR=/tmp
+      - TZ=Europe/Zurich
+    ports:
+      - "9898:9898"
+    restart: unless-stopped
+    network_mode: bridge
