@@ -44,9 +44,9 @@ poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
 destroy_before_deploy = true
-run_directory = "komodo_core/cloudflared"
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
+run_directory = "komodo_core/cloudflared"
 environment = """
  TOKEN = [[CFD_TOKEN_INGRESS]]
 """
@@ -63,9 +63,9 @@ poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
 destroy_before_deploy = true
-run_directory = "middleware/authentik"
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
+run_directory = "middleware/authentik"
 environment = """
 AUTHENTIK_POSTGRESQL__PASSWORD = [[AUTHENTIK_POSTGRESQL__PASSWORD]]
 AUTHENTIK_SECRET_KEY = [[AUTHENTIK_SECRET_KEY]]
@@ -83,9 +83,9 @@ run_build = true
 poll_for_updates = true
 auto_update = true
 destroy_before_deploy = true
-run_directory = "middleware/backrest"
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
+run_directory = "middleware/backrest"
 environment = """
   HOSTNAME = backrest-middleware.local.graymatter.ch
 """
@@ -102,9 +102,9 @@ poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
 destroy_before_deploy = true
-run_directory = "middleware/beszel"
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
+run_directory = "middleware/beszel"
 environment = """
 KEY = [[BESZEL_KEY]]
 """
@@ -121,9 +121,9 @@ poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
 destroy_before_deploy = true
-run_directory = "middleware/cloudflared"
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
+run_directory = "middleware/cloudflared"
 environment = """
  TOKEN = [[CFD_TOKEN_INGRESS]]
 """
@@ -139,9 +139,9 @@ run_build = true
 poll_for_updates = true
 auto_update = true
 destroy_before_deploy = true
-run_directory = "middleware/dozzle"
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
+run_directory = "middleware/dozzle"
 
 ##
 
@@ -154,9 +154,9 @@ run_build = true
 poll_for_updates = true
 auto_update = true
 destroy_before_deploy = true
-run_directory = "middleware/heimdall"
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
+run_directory = "middleware/heimdall"
 
 ##
 
@@ -169,9 +169,9 @@ run_build = true
 poll_for_updates = true
 auto_update = true
 destroy_before_deploy = true
-run_directory = "middleware/npm"
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
+run_directory = "middleware/npm"
 
 ##
 
@@ -184,9 +184,9 @@ run_build = true
 poll_for_updates = true
 auto_update = true
 destroy_before_deploy = true
-run_directory = "middleware/shlink"
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
+run_directory = "middleware/shlink"
 environment = """
 DEFAULT_DOMAIN = [[SHLINK_DEFAULT_DOMAIN]]
 INITIAL_API_KEY = [[SHLINK_INITIAL_API_KEY]]
@@ -214,6 +214,17 @@ run_build = true
 poll_for_updates = true
 auto_update = true
 destroy_before_deploy = true
-run_directory = "middleware/uptime_kuma/"
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
+run_directory = "middleware/uptime_kuma/"
+
+##
+
+[[resource_sync]]
+name = "servers_and_stacks"
+[resource_sync.config]
+repo = "nikolanovoselec/komodo"
+git_account = "nikolanovoslec"
+resource_path = ["main.toml"]
+managed = true
+include_user_groups = true
