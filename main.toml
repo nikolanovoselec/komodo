@@ -1,5 +1,6 @@
 [[server]]
 name = "komodo_core"
+tags = ["sync"]
 [server.config]
 address = "https://komodo-periphery:8120"
 enabled = true
@@ -219,16 +220,9 @@ run_directory = "middleware/uptime_kuma/"
 
 ##
 
-[[builder]]
-name = "local"
-[builder.config]
-type = "Server"
-params.server_id = "komodo_core"
-
-##
-
 [[resource_sync]]
 name = "secrets"
+tags = ["sync"]
 [resource_sync.config]
 repo = "nikolanovoselec/secrets"
 git_account = "nikolanovoselec"
@@ -241,8 +235,11 @@ include_variables = true
 
 [[resource_sync]]
 name = "servers_and_stacks"
+tags = ["sync"]
 [resource_sync.config]
 repo = "nikolanovoselec/komodo"
 git_account = "nikolanovoselec"
 resource_path = ["main.toml"]
 managed = true
+match_tags = ["sync"]
+include_user_groups = true
