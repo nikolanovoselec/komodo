@@ -1,7 +1,7 @@
 services:
   heimdall:
     image: lscr.io/linuxserver/heimdall:latest
-    container_name: heimdall
+    container_name: middleware_heimdall
     environment:
       - PUID=1000
       - PGID=1000
