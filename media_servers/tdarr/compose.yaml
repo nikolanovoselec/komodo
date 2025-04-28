@@ -1,16 +1,52 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  tdarr:
+    container_name: media_servers_tdarr_server
+    image: ghcr.io/haveagitgat/tdarr:latest
+    restart: unless-stopped
+    network_mode: bridge
+    ports:
+      - 8265:8265 # webUI port
+      - 8266:8266 # server port
+    environment:
+      - TZ=Europe/Zurich
+      - PUID=0
+      - PGID=0
+      - UMASK_SET=002
+      - serverIP=0.0.0.0
+      - serverPort=8266
+      - webUIPort=8265
+      - internalNode=true
+      - inContainer=true
+      - ffmpegVersion=7
+      - nodeName=MyInternalNode
+    volumes:
+      - /mnt/configs/tdarr/server:/app/server
+      - /mnt/configs/tdarr/configs:/app/configs
+      - /mnt/configs/tdarr/logs:/app/logs
+      - /mnt/synology-photos:/media
+      - /mnt/configs/tdarr/temp:/temp
+    devices:
+      - /dev/dri:/dev/dri
 
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  tdarr-node:
+    container_name: media_servers_tdarr_node
+    image: ghcr.io/haveagitgat/tdarr_node:latest
+    restart: unless-stopped
+    network_mode: service:tdarr
+    environment:
+      - TZ=Europe/Zurich
+      - PUID=0
+      - PGID=0
+      - UMASK_SET=002
+      - nodeName=MyExternalNode
+      - serverIP=0.0.0.0
+      - serverPort=8266
+      - inContainer=true
+      - ffmpegVersion=7
+    volumes:
+      - /mnt/configs/tdarr/configs:/app/configs
+      - /mnt/configs/tdarr/logs:/app/logs
+      - /mnt/synology-photos:/media
+      - /mnt/configs/tdarr/temp:/temp
+    devices:
+      - /dev/dri:/dev/dri
