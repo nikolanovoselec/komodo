@@ -1,16 +1,21 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  autobrr:
+    container_name: autobrr
+    image: ghcr.io/autobrr/autobrr:latest
+    restart: unless-stopped
+    logging:
+      driver: local
+    user: 0:0
+    environment:
+      - TZ=Europe/Zurich
+      - AUTOBRR__OIDC_ENABLED=true
+      - AUTOBRR__OIDC_ISSUER=${AUTOBRR__OIDC_ISSUER}
+      - AUTOBRR__OIDC_CLIENT_ID=${AUTOBRR__OIDC_CLIENT_ID}
+      - AUTOBRR__OIDC_CLIENT_SECRET=${AUTOBRR__OIDC_CLIENT_SECRET}
+      - AUTOBRR__OIDC_REDIRECT_URL=${AUTOBRR__OIDC_REDIRECT_URL}
+      - AUTOBRR__OIDC_DISABLE_BUILT_IN_LOGIN=false
+      - AUTOBRR__CHECK_FOR_UPDATES=true
+    volumes:
+      - /docker/configs/autobrr:/config
+    ports:
+      - 7474:7474
