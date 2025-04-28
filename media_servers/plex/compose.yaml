@@ -1,16 +1,23 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: media_servers_plex
+    network_mode: host
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=Europe/Zurich
+      - VERSION=docker
+      #- PLEX_CLAIM=
+    volumes:
+      - /mnt/configs/plex/:/config
+      - /mnt/synology/tv shows/:/mnt/synology/tv shows/
+      - /mnt/synology/movies/:/mnt/synology/movies/
+      - /mnt/synology-music/:/mnt/synology-music/
+      - /mnt/synology-photos/:/mnt/synology-photos/
+      - /mnt/synology/backup/:/mnt/synology/backup/
+#    ports:
+#      - 32397:32400
+    devices:
+      - /dev/dri:/dev/dri
+    restart: unless-stopped
