@@ -1,16 +1,14 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: servarr_bazarr
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=Europe/zurich
+    volumes:
+      - /docker/configs/bazarr:/config
+      - /mnt/synology:/data
+    ports:
+      - 6767:6767
+    restart: unless-stopped
