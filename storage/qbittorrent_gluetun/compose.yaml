@@ -1,16 +1,87 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: storage_gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+    - /dev/net/tun:/dev/net/tun
+    environment:
+      - PUID=1026
+      - PGID=100
+      - TZ=Europe/Zurich
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=wireguard
+      - FIREWALL_VPN_INPUT_PORTS=32323
+    ports:
+      - "8080:8080/tcp" # Qbittorrent Web UI
+      - "32323:32323/tcp"
+      - "32323:32323/udp"
+    volumes:
+#      - /etc/localtime:/etc/localtime:ro
+      - /volume1/docker/_synology_configs/gluetun/wg0.conf:/gluetun/wireguard/wg0.conf:ro
+    labels:
+#      com.centurylinklabs.watchtower.enable: "true"
+      deunhealth.restart.on.unhealthy: "true"
+    restart: unless-stopped
+#    privileged: true
 
-# networks:
-#   default: {}
+###########
 
-# volumes:
-#   data:
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: storage_qbittorrent
+    environment:
+      - PUID=1026
+      - PGID=100
+      - TZ=Europe/Zurich
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=32323
+    volumes:
+      - /volume1/docker/_synology_configs/qbittorrent:/config
+      - /volume1/video:/data
+      - /volume1/homes/nikola.novoselec/Drive/_OneDrive/Drive/Temp/qBittorrent:/watch
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    labels:
+#      com.centurylinklabs.watchtower.enable: "true"
+      deunhealth.restart.on.unhealthy: "true"
+    restart: unless-stopped
+    healthcheck: # https://github.com/qdm12/gluetun/issues/641#issuecomment-933856220
+      test: "curl -sf https://example.com  || exit 1"
+      interval: 1m
+      timeout: 10s
+      retries: 1
+#    privileged: true
+
+###########
+
+#  cloudflared:
+#    image: cloudflare/cloudflared:latest
+#    restart: unless-stopped
+#    container_name: gluetun-cloudflared
+#    network_mode: "service:gluetun"
+#    depends_on:
+#      - gluetun
+#    labels:
+#      com.centurylinklabs.watchtower.enable: "true"
+#      deunhealth.restart.on.unhealthy: "true"
+#    command: tunnel --no-autoupdate run --token
+#      ${CFD_TOKEN_INGRESS}
+
+###########
+
+  deunhealth:
+#    build: .
+    image: qmcgaw/deunhealth
+    container_name: storage_deunhealth
+    network_mode: "none"
+    environment:
+      - LOG_LEVEL=info
+      - HEALTH_SERVER_ADDRESS=127.0.0.1:9999
+      - TZ=Europe/Zurich
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
