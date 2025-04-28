@@ -65,6 +65,7 @@ auto_update_all_services = true
 destroy_before_deploy = true
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
 run_directory = "middleware/authentik"
 environment = """
 AUTHENTIK_POSTGRESQL__PASSWORD = [[AUTHENTIK_POSTGRESQL__PASSWORD]]
