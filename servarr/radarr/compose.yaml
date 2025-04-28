@@ -1,16 +1,15 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: servarr_radarr
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=Europe/Zurich
+    volumes:
+      - /docker/configs/radarr:/config
+      - /mnt/synology:/data
+    ports:
+      - 8309:7878
+    restart: unless-stopped
+    network_mode: bridge
