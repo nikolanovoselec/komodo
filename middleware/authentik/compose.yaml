@@ -2,7 +2,7 @@ services:
   postgresql:
     image: docker.io/library/postgres:16-alpine
     restart: unless-stopped
-    container_name: authentik-postgres
+    container_name: middleware_authentik_postgres
     volumes:
       - /mnt/configs/authentik/database/authentik_database/_data:/var/lib/postgresql/data
     networks:
@@ -17,7 +17,7 @@ services:
   redis:
     image: docker.io/library/redis:alpine
     restart: unless-stopped
-    container_name: authentik-redis
+    container_name: middleware_authentik_redis
     networks:
       - authentik
     volumes:
@@ -28,7 +28,7 @@ services:
   server:
     image: ghcr.io/goauthentik/server:${VERSION}
     restart: unless-stopped
-    container_name: authentik-server
+    container_name: middleware_authentik_server
     networks:
       - authentik
     command: server
@@ -54,7 +54,7 @@ services:
   worker:
     image: ghcr.io/goauthentik/server:${VERSION}
     restart: unless-stopped
-    container_name: authentik-worker
+    container_name: middleware_authentik_worker
     networks:
       - authentik
     command: worker
