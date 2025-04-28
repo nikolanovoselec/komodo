@@ -11,3 +11,4 @@ services:
     ports:
       - 8181:8181
     restart: unless-stopped
+    network_mode: bridge
