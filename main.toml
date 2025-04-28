@@ -221,6 +221,18 @@ run_directory = "middleware/uptime_kuma/"
 ##
 
 [[resource_sync]]
+name = "secrets"
+[resource_sync.config]
+repo = "nikolanovoselec/secrets"
+git_account = "nikolanovoselec"
+resource_path = ["main.toml"]
+managed = true
+include_resources = false
+include_variables = true
+
+##
+
+[[resource_sync]]
 name = "servers_and_stacks"
 [resource_sync.config]
 repo = "nikolanovoselec/komodo"
