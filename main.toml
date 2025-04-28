@@ -35,6 +35,43 @@ enabled = true
 ##
 
 [[stack]]
+name = "komodo_core_backrest"
+tags = ["sync"]
+[stack.config]
+server = "komodo_core"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "komodo_core/backrest"
+
+##
+
+[[stack]]
+name = "komodo_core_beszel_agent"
+tags = ["sync"]
+[stack.config]
+server = "komodo_core"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "komodo_core/beszel_agent"
+environment = """
+BESZEL_KEY = [[BESZEL_KEY]]
+"""
+
+##
+
+[[stack]]
 name = "komodo_core_cloudflared"
 tags = ["sync"]
 [stack.config]
@@ -50,6 +87,165 @@ run_directory = "komodo_core/cloudflared"
 environment = """
  TOKEN = [[CFD_TOKEN_INGRESS]]
 """
+
+##
+
+[[stack]]
+name = "komodo_core_dozzle_agent"
+tags = ["sync"]
+[stack.config]
+server = "komodo_core"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "komodo_core/dozzle_agent"
+
+##
+
+[[stack]]
+name = "media_servers_backrest"
+tags = ["sync"]
+[stack.config]
+server = "media_servers"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "media_servers/backrest"
+
+##
+
+[[stack]]
+name = "media_servers_beszel_agent"
+tags = ["sync"]
+[stack.config]
+server = "media_servers"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "media_servers/beszel_agent"
+environment = """
+BESZEL_KEY = [[BESZEL_KEY]]
+"""
+
+##
+
+[[stack]]
+name = "media_servers_cloudflared"
+tags = ["sync"]
+[stack.config]
+server = "media_servers"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "media_servers/cloudflared"
+environment = """
+CFD_TOKEN_MEDIASERVERS = [[CFD_TOKEN_MEDIASERVERS]]
+"""
+
+##
+
+[[stack]]
+name = "media_servers_dozzle"
+tags = ["sync"]
+[stack.config]
+server = "media_servers"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "media_servers/dozzle_agent"
+
+##
+
+[[stack]]
+name = "media_servers_emby"
+tags = ["sync"]
+[stack.config]
+server = "media_servers"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "media_servers/emby"
+
+##
+
+[[stack]]
+name = "media_servers_plex"
+tags = ["sync"]
+[stack.config]
+server = "media_servers"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "media_servers/plex"
+
+##
+
+[[stack]]
+name = "media_servers_tautulli"
+tags = ["sync"]
+[stack.config]
+server = "media_servers"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "media_servers/tautulli"
+
+##
+
+[[stack]]
+name = "media_servers_tdarr"
+tags = ["sync"]
+[stack.config]
+server = "media_servers"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "media_servers/tdarr"
 
 ##
 
@@ -107,7 +303,7 @@ git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 run_directory = "middleware/beszel"
 environment = """
-KEY = [[BESZEL_KEY]]
+BESZEL_KEY = [[BESZEL_KEY]]
 """
 
 ##
@@ -241,6 +437,195 @@ AUTOBRR__OIDC_CLIENT_SECRET = [[AUTOBRR__OIDC_CLIENT_SECRET]]
 AUTOBRR__OIDC_ISSUER = [[AUTOBRR__OIDC_ISSUER]]
 AUTOBRR__OIDC_REDIRECT_URL = [[AUTOBRR__OIDC_REDIRECT_URL]]
 """
+
+##
+
+[[stack]]
+name = "servarr_backrest"
+tags = ["sync"]
+[stack.config]
+server = "servarr"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "servarr/backrest"
+
+##
+
+[[stack]]
+name = "servarr_bazarr"
+tags = ["sync"]
+[stack.config]
+server = "servarr"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "servarr/bazarr"
+
+##
+
+[[stack]]
+name = "servarr_beszel_agent"
+tags = ["sync"]
+[stack.config]
+server = "servarr"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "servarr/beszel_agent"
+environment = """
+BESZEL_KEY = [[BESZEL_KEY]]
+"""
+
+##
+
+[[stack]]
+name = "servarr_dozzle_agent"
+tags = ["sync"]
+[stack.config]
+server = "servarr"
+run_build = true
+poll_for_updates = true
+auto_update = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "servarr/dozzle_agent"
+
+##
+
+[[stack]]
+name = "servarr_flaresolver"
+tags = ["sync"]
+[stack.config]
+server = "servarr"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "servarr/flaresolver"
+
+##
+
+[[stack]]
+name = "servarr_maintainerr"
+tags = ["sync"]
+[stack.config]
+server = "servarr"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "servarr/maintainerr"
+
+##
+
+[[stack]]
+name = "servarr_ombi"
+tags = ["sync"]
+[stack.config]
+server = "servarr"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "servarr/ombi"
+
+##
+
+[[stack]]
+name = "servarr_overseerr"
+tags = ["sync"]
+[stack.config]
+server = "servarr"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "servarr/overseerr"
+
+##
+
+[[stack]]
+name = "servarr_prowlarr"
+tags = ["sync"]
+[stack.config]
+server = "servarr"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "servarr/prowlarr"
+
+##
+
+[[stack]]
+name = "servarr_radarr"
+tags = ["sync"]
+[stack.config]
+server = "servarr"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "servarr/radarr"
+
+##
+
+[[stack]]
+name = "servarr_sonarr"
+tags = ["sync"]
+[stack.config]
+server = "servarr"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "servarr/sonarr"
 
 ##
 
