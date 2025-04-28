@@ -26,4 +26,4 @@ services:
     environment:
       LISTEN: 45876
       #LISTEN: /beszel_socket/beszel.sock
-      KEY: ${KEY}
+      KEY: ${BESZEL_KEY}
