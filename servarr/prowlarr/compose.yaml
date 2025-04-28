@@ -1,16 +1,14 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: servarr_prowlarr
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=Europe/Zurich
+    volumes:
+      - /docker/configs/prowlarr:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+    network_mode: bridge
