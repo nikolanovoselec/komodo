@@ -2,7 +2,7 @@ services:
   npm:
     image: 'jc21/nginx-proxy-manager:2.12.3'
     restart: unless-stopped
-    container_name: npm
+    container_name: middleware_npm
     ports:
       - '80:80' # Public HTTP Port
       - '443:443' # Public HTTPS Port
