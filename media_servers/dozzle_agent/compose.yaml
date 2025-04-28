@@ -1,16 +1,13 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  dozzle-agent:
+    image: amir20/dozzle:latest
+    command: agent
+    container_name: media_servers_dozzle_agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 7007:7007
+    #labels:
+    #  com.centurylinklabs.watchtower.enable: "true"
+    restart: unless-stopped
+    network_mode: bridge
