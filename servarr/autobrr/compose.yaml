@@ -1,6 +1,6 @@
 services:
   autobrr:
-    container_name: autobrr
+    container_name: servarr_autobrr
     image: ghcr.io/autobrr/autobrr:latest
     restart: unless-stopped
     logging:
