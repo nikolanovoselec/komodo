@@ -1,16 +1,19 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  emby:
+    image: lscr.io/linuxserver/emby:latest
+    container_name: media_servers_emby
+    network_mode: host
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=Europe/Zurich
+    volumes:
+      - /mnt/configs/emby:/config
+      - /mnt/synology/tv shows/:/mnt/synology/tv shows/
+      - /mnt/synology/movies/:/mnt/synology/movies/
+      - /mnt/synology/backup/:/mnt/synology/backup/
+#    ports:
+#      - 8093:8096
+    devices:
+      - /dev/dri:/dev/dri
+    restart: unless-stopped
