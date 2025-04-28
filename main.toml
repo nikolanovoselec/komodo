@@ -1,8 +1,7 @@
 [[server]]
 name = "komodo_core"
-tags = ["sync"]
 [server.config]
-address = "https://periphery:8120"
+address = "https://komodo-periphery:8120"
 enabled = true
 
 ##
@@ -244,7 +243,6 @@ include_variables = true
 name = "servers_and_stacks"
 [resource_sync.config]
 repo = "nikolanovoselec/komodo"
-git_account = "nikolanovoslec"
+git_account = "nikolanovoselec"
 resource_path = ["main.toml"]
 managed = true
-include_user_groups = true
