@@ -220,6 +220,14 @@ run_directory = "middleware/uptime_kuma/"
 
 ##
 
+[[builder]]
+name = "local"
+[builder.config]
+type = "Server"
+params.server_id = "komodo_core"
+
+##
+
 [[resource_sync]]
 name = "secrets"
 [resource_sync.config]
