@@ -1,16 +1,14 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: servarr_overseerr
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=Europe/Zurich
+    volumes:
+      - /docker/configs/overseerr:/config
+    ports:
+      - 5055:5055
+    restart: unless-stopped
+    network_mode: bridge
