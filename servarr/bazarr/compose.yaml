@@ -5,7 +5,7 @@ services:
     environment:
       - PUID=0
       - PGID=0
-      - TZ=Europe/zurich
+      - TZ=Europe/Zurich
     volumes:
       - /docker/configs/bazarr:/config
       - /mnt/synology:/data
