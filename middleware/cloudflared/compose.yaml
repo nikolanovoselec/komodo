@@ -1,7 +1,7 @@
 services:
   cloudflared:
     image: cloudflare/cloudflared:latest
-    container_name: cloudflared
+    container_name: middleware_cloudflared
     restart: unless-stopped
     network_mode: host
     labels:
