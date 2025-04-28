@@ -1,7 +1,7 @@
 services:
   uptime-kuma:
     restart: unless-stopped
-    container_name: uptime_kuma
+    container_name: middleware_uptime_kuma
     ports:
       - 3001:3001
     volumes:
