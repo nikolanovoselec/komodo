@@ -1,16 +1,10 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    container_name: media_servers_cloudflared
+    network_mode: host
+    # labels:
+    #  com.centurylinklabs.watchtower.enable: "true"
+    command: tunnel --no-autoupdate run --token
+      ${CFD_TOKEN_MEDIASERVERS}
