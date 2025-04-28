@@ -1,7 +1,7 @@
 services:
   backrest:
     image: garethgeorge/backrest:latest
-    container_name: backrest
+    container_name: middleware_backrest
     hostname: ${HOSTNAME}
     volumes:
       - /mnt/configs/backrest/data:/data
