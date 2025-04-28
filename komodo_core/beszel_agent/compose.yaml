@@ -1,7 +1,7 @@
 services:
   beszel-agent:
-    image: "henrygd/beszel-agent"
-    container_name: "beszel-agent"
+    image: "henrygd/beszel-agent:latest"
+    container_name: komodo_core_beszel_agent
     restart: unless-stopped
     network_mode: host
     volumes:
@@ -11,4 +11,3 @@ services:
     environment:
       LISTEN: 45876
       KEY: ${BESZEL_KEY}
-      SYS_SENSORS: /mnt/sys
