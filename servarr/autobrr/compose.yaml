@@ -19,3 +19,4 @@ services:
       - /docker/configs/autobrr:/config
     ports:
       - 7474:7474
+    network_mode: bridge
