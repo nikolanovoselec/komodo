@@ -762,7 +762,7 @@ tags = ["sync"]
 [resource_sync.config]
 repo = "nikolanovoselec/secrets"
 git_account = "nikolanovoselec"
-resource_path = ["main.toml"]
+resource_path = ["komodo/main.toml"]
 managed = true
 include_resources = false
 include_variables = true
