@@ -1,7 +1,7 @@
 services:
   beszel-agent:
-    image: "henrygd/beszel-agent"
-    container_name: "beszel-agent"
+    image: "henrygd/beszel-agent:latest"
+    container_name: "beszel_agent"
     restart: unless-stopped
     network_mode: host
     volumes:
