@@ -1,7 +1,7 @@
 services:
   beszel:
     image: henrygd/beszel:latest
-    container_name: beszel
+    container_name: middleware_beszel
     restart: unless-stopped
 #    network_mode: host
     ports:
@@ -13,7 +13,7 @@ services:
       com.centurylinklabs.watchtower.enable: "true"
   beszel-agent:
     image: henrygd/beszel-agent:latest
-    container_name: beszel-agent
+    container_name: middleware_beszel_agent
     restart: unless-stopped
     network_mode: host
     volumes:
