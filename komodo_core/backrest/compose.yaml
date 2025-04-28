@@ -1,16 +1,21 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  backrest:
+    image: garethgeorge/backrest:latest
+    container_name: komodo_core_backrest
+    hostname: backrest-komodo.local.graymatter.ch
+    volumes:
+      - /mnt/configs/backrest/data:/data
+      - /mnt/configs/backrest/config:/config
+      - /mnt/configs/backrest/cache:/cache
+      - /mnt/configs/backrest/tmp:/tmp
+      - /mnt/configs/:/userdata  # Mount local paths to backup
+      - /mnt/docker/_restic_backup_repository/:/repos     # Mount local repos (optional for remote storage)
+    environment:
+      - BACKREST_DATA=/data
+      - BACKREST_CONFIG=/config/config.json
+      - XDG_CACHE_HOME=/cache
+      - TMPDIR=/tmp
+      - TZ=Europe/Zurich
+    ports:
+      - "9898:9898"
+    restart: unless-stopped
