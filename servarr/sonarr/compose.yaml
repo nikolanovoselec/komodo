@@ -1,16 +1,15 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: servarr_sonarr
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=Europe/Zurich
+    volumes:
+      - /docker/configs/sonarr:/config
+      - /mnt/synology:/data
+    ports:
+      - 8988:8989
+    restart: unless-stopped
+    network_mode: bridge
