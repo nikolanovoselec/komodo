@@ -34,6 +34,15 @@ enabled = true
 
 ##
 
+[[server]]
+name = "storage"
+tags = ["sync"]
+[server.config]
+address = "https://nas.local:8120"
+enabled = true
+
+##
+
 [[stack]]
 name = "komodo_core_backrest"
 tags = ["sync"]
@@ -165,7 +174,7 @@ CFD_TOKEN_MEDIASERVERS = [[CFD_TOKEN_MEDIASERVERS]]
 ##
 
 [[stack]]
-name = "media_servers_dozzle"
+name = "media_servers_dozzle_agent"
 tags = ["sync"]
 [stack.config]
 server = "media_servers"
@@ -626,6 +635,124 @@ git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "servarr/sonarr"
+
+##
+
+[[stack]]
+name = "storage_backrest"
+tags = ["sync"]
+[stack.config]
+server = "storage"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "storage/backrest"
+
+##
+
+[[stack]]
+name = "storage_beszel_agent"
+tags = ["sync"]
+[stack.config]
+server = "storage"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "storage/beszel_agent"
+environment = """
+BESZEL_KEY = [[BESZEL_KEY]]
+"""
+
+##
+
+[[stack]]
+name = "storage_dozzle_agent"
+tags = ["sync"]
+[stack.config]
+server = "storage"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "storage/dozzle_agent"
+
+##
+
+[[stack]]
+name = "storage_qbittorrent_gluetun"
+tags = ["sync"]
+[stack.config]
+server = "storage"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "storage/qbittorrent_gluetun"
+environment = """
+CFD_TOKEN_INGRESS = [[CFD_TOKEN_INGRESS]]
+"""
+
+##
+
+[[stack]]
+name = "storage_transmission_openvpn"
+tags = ["sync"]
+[stack.config]
+server = "storage"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "storage/transmission_openvpn"
+environment = """
+OPENVPN_USERNAME = [[OPENVPN_USERNAME]]
+OPENVPN_PASSWORD = [[OPENVPN_PASSWORD]]
+TRANSMISSION_RPC_USERNAME = [[TRANSMISSION_RPC_USERNAME]]
+TRANSMISSION_RPC_PASSWORD = [[TRANSMISSION_RPC_PASSWORD]]
+"""
+
+##
+
+[[stack]]
+name = "storage_unpackerr"
+tags = ["sync"]
+[stack.config]
+server = "storage"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "storage/unpackerr"
+environment = """
+SONARR_API_KEY = [[SONARR_API_KEY]]
+RADARR_API_KEY = [[RADARR_API_KEY]]
+"""
 
 ##
 
