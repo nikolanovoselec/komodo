@@ -1,6 +1,6 @@
 services:
     shlink_app:
-        container_name: shlink_app
+        container_name: middleware_shlink_server
         image: shlinkio/shlink:stable
         restart: unless-stopped
         ports:
@@ -22,7 +22,7 @@ services:
           com.centurylinklabs.watchtower.enable: "true"
 
     shlink_web_client:
-        container_name: shlink_web_client
+        container_name: middleware_shlink_web_client
         image: shlinkio/shlink-web-client:stable
         restart: unless-stopped
         ports:
@@ -36,7 +36,7 @@ services:
           com.centurylinklabs.watchtower.enable: "true"
 
     shlink_db:
-        container_name: shlink_db
+        container_name: middleware_shlink_database
         image: mariadb:lts
         restart: unless-stopped
         volumes:
