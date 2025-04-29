@@ -4,9 +4,9 @@ services:
     restart: unless-stopped
     container_name: middleware_npm
     ports:
-      - '80:80' # Public HTTP Port
-      - '443:443' # Public HTTPS Port
-      - '82:81' # Admin Web Port
+      - '80:80' #Public HTTP Port
+      - '443:443' #Public HTTPS Port
+      - '82:81' #Admin Web Port
     environment:
       DISABLE_IPV6: 'true'
     volumes:
