@@ -5,7 +5,7 @@ services:
     volumes:
       - /volume1/video/:/data
     restart: unless-stopped
-    user: 1026:100
+    user: 1026:100 #syno user
     environment:
       - TZ=Europe/Zurich
       - UN_LOG_FILE=/data/unpackerr.log
