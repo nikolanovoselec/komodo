@@ -9,5 +9,6 @@ services:
       - 7007:7007
     #labels:
     #  com.centurylinklabs.watchtower.enable: "true"
+    #  watchtower
     restart: unless-stopped
     network_mode: bridge
