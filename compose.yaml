@@ -1,6 +1,7 @@
 services:
   yourls:
-    image: yourls
+    image: yourls:latest
+    container_name: middleware_yourls_server
     restart: unless-stopped
     ports:
       - 8083:80
@@ -12,6 +13,7 @@ services:
 
   mysql:
     image: mysql
+    container_name: middleware_yourls_database
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${YOURLS_MYSQL_ROOT_PASSWORD}
