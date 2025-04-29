@@ -3,7 +3,7 @@ services:
     image: lscr.io/linuxserver/ombi:latest
     container_name: servarr_ombi
     environment:
-      - PUID=0
+      - PUID=0 #root
       - PGID=0
       - TZ=Europe/Zurich
     volumes:
