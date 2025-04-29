@@ -8,3 +8,4 @@ services:
       - /mnt/configs/uptime-kuma:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
     image: louislam/uptime-kuma:latest
+    network_mode: bridge
