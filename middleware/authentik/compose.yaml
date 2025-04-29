@@ -26,7 +26,7 @@ services:
       com.centurylinklabs.watchtower.enable: "false"
       
   server:
-    image: ghcr.io/goauthentik/server:${VERSION}
+    image: ghcr.io/goauthentik/server:${VERSION} #manual upgrade
     restart: unless-stopped
     container_name: middleware_authentik_server
     networks:
@@ -52,7 +52,7 @@ services:
       com.centurylinklabs.watchtower.enable: "false"
       
   worker:
-    image: ghcr.io/goauthentik/server:${VERSION}
+    image: ghcr.io/goauthentik/server:${VERSION} #manual upgrade
     restart: unless-stopped
     container_name: middleware_authentik_worker
     networks:
