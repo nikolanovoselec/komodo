@@ -17,6 +17,8 @@ services:
       - ADMIN_USER=admin
       - ADMIN_PASS=${ADMIN_PASS}
       - DEBUG=false
+    ports:
+      - 8123:80
     restart: unless-stopped
 
   yourls-db:
