@@ -18,7 +18,6 @@ services:
           - DEFAULT_BASE_URL_REDIRECT=${SHLINK_DEFAULT_BASE_URL_REDIRECT}
         depends_on:
           - shlink_db
-        network_mode: bridge
 
     shlink_web_client:
         container_name: middleware_shlink_web_client
@@ -31,7 +30,6 @@ services:
           - SHLINK_SERVER_API_KEY=${SHLINK_SERVER_API_KEY}
         depends_on:
           - shlink_app
-        network_mode: bridge
 
     shlink_db:
         container_name: middleware_shlink_database
@@ -46,4 +44,3 @@ services:
           - MARIADB_DATABASE=${MARIADB_DATABASE}
           - MYSQL_INITDB_SKIP_TZINFO=1
           - MARIADB_AUTO_UPGRADE=1
-        network_mode: bridge
