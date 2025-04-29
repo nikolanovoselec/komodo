@@ -14,7 +14,7 @@ services:
       - VPN_TYPE=wireguard
       - FIREWALL_VPN_INPUT_PORTS=32323
     ports:
-      - "8080:8080/tcp" # Qbittorrent Web UI
+      - "8080:8080/tcp" # Qbittorrent WebUI
       - "32323:32323/tcp"
       - "32323:32323/udp"
     volumes:
