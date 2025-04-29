@@ -1,20 +1,32 @@
 services:
-   yourls:
-     image: yourls:latest
-     container_name: middleware_yourls_server
-     restart: unless-stopped
-     ports:
-       - 8083:80
-     environment:
-       YOURLS_DB_PASS: ${YOURLS_MYSQL_ROOT_PASSWORD}
-       YOURLS_SITE: ${YOURLS_SITE}
-       YOURLS_USER: ${YOURLS_USER}
-       YOURLS_PASS: ${YOURLS_PASS}
- 
-   mysql:
-     image: mysql
-     container_name: middleware_yourls_database
-     restart: unless-stopped
-     environment:
-       MYSQL_ROOT_PASSWORD: ${YOURLS_MYSQL_ROOT_PASSWORD}
-       MYSQL_DATABASE: yourls
+  yourls-app:
+    image: tiredofit/yourls:latest
+    container_name: middleware_yourls_app
+    links:
+      - yourls-db
+    volumes:
+      - /mnt/config/yourls/logs/:/www/logs
+    environment:
+      - VIRTUAL_HOST=yourls.local.graymatter.ch
+      - VIRTUAL_PORT=80
+      - DB_HOST=yourls-db
+      - DB_NAME=yourls
+      - DB_USER=yourls
+      - DB_PASS=${YOURLS_DB_PASS}
+      - SITE_NAME=${YOURLS_SITE}
+      - ADMIN_USER=admin
+      - ADMIN_PASS=${ADMIN_PASS}
+      - DEBUG=false
+    restart: unless-stopped
+
+  yourls-db:
+    image: tiredofit/mariadb:latest
+    container_name: middleware_yourls_database
+    volumes:
+      - /mnt/config/yourls/db:/var/lib/mysql
+    environment:
+      - ROOT_PASS=${ADMIN_PASS}
+      - DB_NAME=yourls
+      - DB_USER=yourls
+      - DB_PASS=${YOURLS_DB_PASS}
+    restart: unless-stopped
