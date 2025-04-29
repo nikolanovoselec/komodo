@@ -2,7 +2,7 @@ services:
   emby:
     image: lscr.io/linuxserver/emby:latest
     container_name: media_servers_emby
-    network_mode: host
+    network_mode: host #for local/remote stream discovery
     environment:
       - PUID=0
       - PGID=0
