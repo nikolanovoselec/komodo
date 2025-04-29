@@ -12,3 +12,4 @@ services:
       - 7140:80
 #      - 7141:443 #https
     restart: unless-stopped
+    network_mode: bridge
