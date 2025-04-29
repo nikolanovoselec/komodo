@@ -2,7 +2,7 @@ services:
   backrest:
     image: garethgeorge/backrest:latest
     container_name: middleware_backrest
-    hostname: ${HOSTNAME}
+    hostname: backrest-middleware.local.graymatter.ch
     volumes:
       - /mnt/configs/backrest/data:/data
       - /mnt/configs/backrest/config:/config
