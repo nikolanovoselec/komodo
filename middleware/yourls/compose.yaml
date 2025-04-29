@@ -20,6 +20,10 @@ services:
     ports:
       - 8123:80
     restart: unless-stopped
+    network_mode: "service:yourls-db"
+    depends_on:
+      yourls-db:
+        condition: service_healthy
 
   yourls-db:
     image: tiredofit/mariadb:latest
