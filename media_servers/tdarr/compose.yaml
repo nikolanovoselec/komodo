@@ -5,8 +5,8 @@ services:
     restart: unless-stopped
     network_mode: bridge
     ports:
-      - 8265:8265 # webUI port
-      - 8266:8266 # server port
+      - 8265:8265 #webUI port
+      - 8266:8266 #server port
     environment:
       - TZ=Europe/Zurich
       - PUID=0
