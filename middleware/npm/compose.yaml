@@ -12,8 +12,7 @@ services:
     volumes:
       - /mnt/configs/npm/data:/data
       - /mnt/configs/npm/letsencrypt:/etc/letsencrypt
-    labels:
-      com.centurylinklabs.watchtower.enable: "false"
+
 networks:
   authentik:
     external: true
