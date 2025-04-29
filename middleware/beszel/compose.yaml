@@ -9,8 +9,8 @@ services:
     volumes:
       - /mnt/configs/beszel/beszel_data:/beszel_data
       - /mnt/configs/beszel/beszel_socket:/beszel_socket
-    labels:
-      com.centurylinklabs.watchtower.enable: "true"
+    network_mode: bridge
+    
   beszel-agent:
     image: henrygd/beszel-agent:latest
     container_name: middleware_beszel_agent
