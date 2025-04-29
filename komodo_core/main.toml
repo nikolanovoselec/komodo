@@ -2,7 +2,7 @@
 name = "komodo_core"
 tags = ["sync"]
 [server.config]
-address = "https://komodo-periphery:8120"
+address = "https://periphery:8120"
 enabled = true
 
 ##
