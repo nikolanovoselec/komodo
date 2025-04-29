@@ -292,9 +292,6 @@ destroy_before_deploy = true
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 run_directory = "middleware/backrest"
-environment = """
-  HOSTNAME = backrest-middleware.local.graymatter.ch
-"""
 
 ##
 
