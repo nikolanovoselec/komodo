@@ -9,3 +9,4 @@ services:
     environment:
       - DOZZLE_REMOTE_AGENT=servarr.local:7007,nas.local:7007,mediaservers.local:7007,komodo-core.local:7007 #,immich.local:7007,pihole-slave-i.local:7007,pihole-slave-ii.local:7007,pihole-master.local:7007,pihole-slave-iii.local:7007
     restart: unless-stopped
+    network_mode: bridge
