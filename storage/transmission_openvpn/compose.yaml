@@ -33,4 +33,4 @@ services:
         ports:
             - '9091:9091'
         restart: unless-stopped 
-        image: haugene/transmission-openvpn
+        image: haugene/transmission-openvpn:latest
