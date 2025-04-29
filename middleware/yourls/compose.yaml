@@ -1,16 +1,20 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+   yourls:
+     image: yourls:latest
+     container_name: middleware_yourls_server
+     restart: unless-stopped
+     ports:
+       - 8083:80
+     environment:
+       YOURLS_DB_PASS: ${YOURLS_DB_PASS}
+       YOURLS_SITE: ${YOURLS_SITE}
+       YOURLS_USER: ${YOURLS_USER}
+       YOURLS_PASS: ${YOURLS_PASS}
+ 
+   mysql:
+     image: mysql
+     container_name: middleware_yourls_database
+     restart: unless-stopped
+     environment:
+       MYSQL_ROOT_PASSWORD: ${YOURLS_MYSQL_ROOT_PASSWORD}
+       MYSQL_DATABASE: yourls
