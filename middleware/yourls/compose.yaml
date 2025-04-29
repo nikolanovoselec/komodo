@@ -6,7 +6,7 @@ services:
      ports:
        - 8083:80
      environment:
-       YOURLS_DB_PASS: ${YOURLS_DB_PASS}
+       YOURLS_DB_PASS: ${YOURLS_MYSQL_ROOT_PASSWORD}
        YOURLS_SITE: ${YOURLS_SITE}
        YOURLS_USER: ${YOURLS_USER}
        YOURLS_PASS: ${YOURLS_PASS}
