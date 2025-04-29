@@ -1,6 +1,6 @@
 services:
     shlink_app:
-        container_name: middleware_shlink_server
+        container_name: shlink_app
         image: shlinkio/shlink:stable
         restart: unless-stopped
         ports:
@@ -13,14 +13,14 @@ services:
           - DB_USER=${DB_USER}
           - DB_PASSWORD=${DB_PASSWORD}
           - DB_HOST=shlink_db
-          - DEFAULT_INVALID_SHORT_URL_REDIRECT=${DEFAULT_INVALID_SHORT_URL_REDIRECT}
-          - DEFAULT_REGULAR_404_REDIRECT=${DEFAULT_REGULAR_404_REDIRECT}
-          - DEFAULT_BASE_URL_REDIRECT=${DEFAULT_BASE_URL_REDIRECT}
+          - DEFAULT_INVALID_SHORT_URL_REDIRECT=${SHLINK_DEFAULT_INVALID_SHORT_URL_REDIRECT}
+          - DEFAULT_REGULAR_404_REDIRECT=${SHLINK_DEFAULT_REGULAR_404_REDIRECT}
+          - DEFAULT_BASE_URL_REDIRECT=${SHLINK_DEFAULT_BASE_URL_REDIRECT}
         depends_on:
           - shlink_db
 
     shlink_web_client:
-        container_name: middleware_shlink_web_client
+        container_name: shlink_web_client
         image: shlinkio/shlink-web-client:stable
         restart: unless-stopped
         ports:
@@ -32,11 +32,11 @@ services:
           - shlink_app
 
     shlink_db:
-        container_name: middleware_shlink_database
+        container_name: shlink_db
         image: mariadb:lts
         restart: unless-stopped
         volumes:
-            - /mnt/configs/shlink:/var/lib/mysql
+            - /mnt/configs/shlink/db_data:/var/lib/mysql
         environment:
           - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
           - MARIADB_USER=${MARIADB_USER}
