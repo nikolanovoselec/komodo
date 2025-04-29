@@ -10,5 +10,5 @@ services:
       - /mnt/configs/heimdall/:/config
     ports:
       - 7140:80
-#      - 7141:443
+#      - 7141:443 #https
     restart: unless-stopped
