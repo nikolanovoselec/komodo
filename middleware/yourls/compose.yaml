@@ -39,4 +39,4 @@ services:
       
 networks:
   yourls:
-    external: true
+    #external: true
