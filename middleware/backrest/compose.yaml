@@ -9,7 +9,7 @@ services:
       - /mnt/configs/backrest/cache:/cache
       - /mnt/configs/backrest/tmp:/tmp
       - /mnt/configs/:/userdata  #Local path to be backed up
-      - /mnt/docker/_restic_backup_repository/:/repos #NFS mount of remote repository storage for backup
+      - /mnt/docker/_restic_backup_repository/:/repos #NFS mount of remote repository
     environment:
       - BACKREST_DATA=/data
       - BACKREST_CONFIG=/config/config.json
