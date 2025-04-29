@@ -8,8 +8,8 @@ services:
       - /volume1/docker/_synology_configs/backrest/config:/config
       - /volume1/docker/_synology_configs/backrest/cache:/cache
       - /volume1/docker/_synology_configs/backrest/tmp:/tmp
-      - /volume1/docker/_synology_configs/:/userdata  # Mount local paths to backup
-      - /volume1/docker/_restic_backup_repository/:/repos     # Mount local repos (optional for remote storage)
+      - /volume1/docker/_synology_configs/:/userdata #Mount local paths to be backed up
+      - /volume1/docker/_restic_backup_repository/:/repos #NFS mount of remote repository
     environment:
       - BACKREST_DATA=/data
       - BACKREST_CONFIG=/config/config.json
