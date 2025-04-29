@@ -19,7 +19,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /mnt/configs/beszel/beszel_socket:/beszel_socket
-      # monitor other disks / partitions by mounting a folder in /extra-filesystems
+      # monitor other disks or partitions by mounting a folder in /extra-filesystems
       # - /mnt/disk/.beszel:/extra-filesystems/sda1:ro
     labels:
       com.centurylinklabs.watchtower.enable: "true"
