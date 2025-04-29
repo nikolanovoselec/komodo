@@ -2,7 +2,7 @@ services:
   backrest:
     image: garethgeorge/backrest:latest
     container_name: komodo_core_backrest
-    hostname: backrest-komodo.local.graymatter.ch
+    hostname: backrest-komodo.graymatter.ch
     volumes:
       - /mnt/configs/backrest/data:/data
       - /mnt/configs/backrest/config:/config
