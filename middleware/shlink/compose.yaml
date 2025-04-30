@@ -1,51 +1,52 @@
 services:
     shlink_app:
-        container_name: middleware_shlink_app
+        container_name: shlink_app
         image: shlinkio/shlink:stable
         restart: unless-stopped
         ports:
             - 8080:8080
         environment:
           - DEFAULT_DOMAIN=${DEFAULT_DOMAIN}
-#          - INITIAL_API_KEY=${INITIAL_API_KEY}
+          - INITIAL_API_KEY=${INITIAL_API_KEY}
           - DB_DRIVER=maria
           - DB_NAME=shlink
-          - DB_USER=shlink
+          - DB_USER=${DB_USER}
           - DB_PASSWORD=${DB_PASSWORD}
           - DB_HOST=shlink_db
-          - GEOLITE_LICENSE_KEY=${GEOLITE_LICENSE_KEY}
-          - SHELL_VERBOSITY=3
 #          - DEFAULT_INVALID_SHORT_URL_REDIRECT=${DEFAULT_INVALID_SHORT_URL_REDIRECT}
 #          - DEFAULT_REGULAR_404_REDIRECT=${DEFAULT_REGULAR_404_REDIRECT}
 #          - DEFAULT_BASE_URL_REDIRECT=${DEFAULT_BASE_URL_REDIRECT}
         depends_on:
           - shlink_db
-        network_mode: bridge
+        labels:
+          com.centurylinklabs.watchtower.enable: "true"
 
     shlink_web_client:
-        container_name: middleware_shlink_web_client
+        container_name: shlink_web_client
         image: shlinkio/shlink-web-client:stable
         restart: unless-stopped
         ports:
             - 8081:8080
-#        environment:
-#          - SHLINK_SERVER_URL=shlink.graymatter.ch
-#          - SHLINK_SERVER_API_KEY=${SHLINK_SERVER_API_KEY}
+        environment:
+          - SHLINK_SERVER_URL=${SHLINK_SERVER_URL}
+          - SHLINK_SERVER_API_KEY=${SHLINK_SERVER_API_KEY}
         depends_on:
           - shlink_app
-        network_mode: bridge
+        labels:
+          com.centurylinklabs.watchtower.enable: "true"
 
     shlink_db:
-        container_name: middleware_shlink_database
+        container_name: shlink_db
         image: mariadb:lts
         restart: unless-stopped
         volumes:
-            - /mnt/configs/shlink:/var/lib/mysql
+            - /mnt/configs/shlink/db_data:/var/lib/mysql
         environment:
           - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-          - MARIADB_USER=shlink
+          - MARIADB_USER=${MARIADB_USER}
           - MARIADB_PASSWORD=${MARIADB_PASSWORD}
-          - MARIADB_DATABASE=shlink
+          - MARIADB_DATABASE=${MARIADB_DATABASE}
           - MYSQL_INITDB_SKIP_TZINFO=1
           - MARIADB_AUTO_UPGRADE=1
-        network_mode: bridge
+        labels:
+          com.centurylinklabs.watchtower.enable: "true"
