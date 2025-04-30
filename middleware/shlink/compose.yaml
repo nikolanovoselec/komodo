@@ -11,17 +11,17 @@ services:
         environment:
           - DEFAULT_DOMAIN=${DEFAULT_DOMAIN}
           - INITIAL_API_KEY=${INITIAL_API_KEY}
-          - DB_DRIVER=maria
-          - DB_NAME=shlink
-          - DB_USER=shlink
-          - DB_PASSWORD=${MARIADB_USER_PASSWORD}
-          - DB_HOST=shlink_db
+          - DB_DRIVER=sqlite
+#          - DB_NAME=shlink
+#          - DB_USER=shlink
+#          - DB_PASSWORD=${MARIADB_USER_PASSWORD}
+#          - DB_HOST=shlink_db
           - DEFAULT_INVALID_SHORT_URL_REDIRECT=https://github.com/nikolanovoselec
           - DEFAULT_REGULAR_404_REDIRECT=https://github.com/nikolanovoselec
           - DEFAULT_BASE_URL_REDIRECT=https://github.com/nikolanovoselec
           - SHELL_VERBOSITY=3
-        depends_on:
-          - shlink_db
+#        depends_on:
+#          - shlink_db
 
     shlink_web_client:
         container_name: middleware_shlink_admin
@@ -36,19 +36,19 @@ services:
         depends_on:
           - shlink_app
 
-    shlink_db:
-        container_name: middleware_shlink_database
-        image: mariadb:10.7
-        restart: unless-stopped
-        user: 0:0
-        ports:
-            - "3308:3306"
-        volumes:
-            - /mnt/configs/shlink:/var/lib/mysql
-        environment:
-          - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-          - MARIADB_USER=shlink
-          - MARIADB_PASSWORD=${MARIADB_USER_PASSWORD}
-          - MARIADB_DATABASE=shlink
-          - MYSQL_INITDB_SKIP_TZINFO=1
-          - MARIADB_AUTO_UPGRADE=1
+#    shlink_db:
+#        container_name: middleware_shlink_database
+#        image: mariadb:10.7
+#        restart: unless-stopped
+#        user: 0:0
+#        ports:
+#            - "3308:3306"
+#        volumes:
+#            - /mnt/configs/shlink:/var/lib/mysql
+#        environment:
+#          - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+#          - MARIADB_USER=shlink
+#          - MARIADB_PASSWORD=${MARIADB_USER_PASSWORD}
+#          - MARIADB_DATABASE=shlink
+#          - MYSQL_INITDB_SKIP_TZINFO=1
+#          - MARIADB_AUTO_UPGRADE=1
