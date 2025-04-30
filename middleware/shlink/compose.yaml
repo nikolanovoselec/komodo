@@ -35,7 +35,7 @@ services:
     restart: unless-stopped
     container_name: middleware_shlink_gui
     volumes:
-      - /mnt/configs/shlink:/usr/share/nginx/html
+      - /mnt/configs/shlink/servers.json:/usr/share/nginx/html/servers.json
     depends_on:
       - shlink
     ports:
