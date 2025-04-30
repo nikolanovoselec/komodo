@@ -1,7 +1,6 @@
 services:
   server:
-#    build:
-#      context: .
+    image: kutt/kutt:latest
     container_name: middleware_kutt
     volumes:
        - /mnt/configs/kutt/db:/var/lib/kutt
