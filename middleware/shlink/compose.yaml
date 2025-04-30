@@ -18,28 +18,27 @@ services:
           - DEFAULT_INVALID_SHORT_URL_REDIRECT=https://github.com/nikolanovoselec
           - DEFAULT_REGULAR_404_REDIRECT=https://github.com/nikolanovoselec
           - DEFAULT_BASE_URL_REDIRECT=https://github.com/nikolanovoselec
-          - GEOLITE_LICENSE_KEY=${GEOLITE_LICENSE_KEY}
         depends_on:
           - shlink_db
 
-#    shlink_web_client:
-#        container_name: middleware_shlink_admin
-#        image: shlinkio/shlink-web-client:stable
-#        restart: unless-stopped
-#        ports:
-#            - 8081:8080
-#        environment:
-#          - SHLINK_SERVER_URL=${SHLINK_SERVER_URL}
-#          - SHLINK_SERVER_API_KEY=${SHLINK_SERVER_API_KEY}
-#        depends_on:
-#          - shlink_app
+    shlink_web_client:
+        container_name: middleware_shlink_admin
+        image: shlinkio/shlink-web-client:stable
+        restart: unless-stopped
+        ports:
+            - 8081:8080
+        environment:
+          - SHLINK_SERVER_URL=https://${DEFAULT_DOMAIN}
+          - SHLINK_SERVER_API_KEY=${INITIAL_API_KEY}
+        depends_on:
+          - shlink_app
 
     shlink_db:
         container_name: middleware_shlink_database
         image: mariadb:lts
         restart: unless-stopped
         volumes:
-            - /mnt/configs/shlink/db:/var/lib/mysql
+            - /mnt/configs/shlink:/var/lib/mysql
         environment:
           - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
           - MARIADB_USER=shlink
