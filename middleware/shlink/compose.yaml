@@ -1,6 +1,6 @@
 services:
     shlink_app:
-        container_name: shlink_app
+        container_name: middleware_shlink_server
         image: shlinkio/shlink:stable
         restart: unless-stopped
         ports:
@@ -11,7 +11,7 @@ services:
           - DB_DRIVER=maria
           - DB_NAME=shlink
           - DB_USER=shlink
-          - DB_PASSWORD=shlink
+          - DB_PASSWORD=${MARIADB_USER_PASSWORD}
           - DB_HOST=shlink_db
           - DEFAULT_INVALID_SHORT_URL_REDIRECT=https://github.com/nikolanovoselec
           - DEFAULT_REGULAR_404_REDIRECT=https://github.com/nikolanovoselec
@@ -21,7 +21,7 @@ services:
           - shlink_db
 
     shlink_web_client:
-        container_name: shlink_web_client
+        container_name: middleware_shlink_admin
         image: shlinkio/shlink-web-client:stable
         restart: unless-stopped
         ports:
@@ -33,15 +33,15 @@ services:
           - shlink_app
 
     shlink_db:
-        container_name: shlink_db
+        container_name: middleware_shlink_database
         image: mariadb:lts
         restart: unless-stopped
         volumes:
-            - /mnt/configs/shlink/db_data:/var/lib/mysql
+            - /mnt/configs/shlink/db:/var/lib/mysql
         environment:
-          - MARIADB_ROOT_PASSWORD=shlink
+          - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
           - MARIADB_USER=shlink
-          - MARIADB_PASSWORD=shlink
+          - MARIADB_PASSWORD=${MARIADB_USER_PASSWORD}
           - MARIADB_DATABASE=shlink
           - MYSQL_INITDB_SKIP_TZINFO=1
           - MARIADB_AUTO_UPGRADE=1
