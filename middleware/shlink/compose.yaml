@@ -18,6 +18,7 @@ services:
           - DEFAULT_INVALID_SHORT_URL_REDIRECT=https://github.com/nikolanovoselec
           - DEFAULT_REGULAR_404_REDIRECT=https://github.com/nikolanovoselec
           - DEFAULT_BASE_URL_REDIRECT=https://github.com/nikolanovoselec
+          - SHELL_VERBOSITY=3
         depends_on:
           - shlink_db
 
