@@ -1,46 +1,42 @@
 services:
-    shlink_app:
-        container_name: shlink_app
-        image: shlinkio/shlink:stable
-        restart: unless-stopped
-        ports:
-            - 8080:8080
-        environment:
-          - DEFAULT_DOMAIN=${DEFAULT_DOMAIN}
-          - INITIAL_API_KEY=${INITIAL_API_KEY}
-          - DB_DRIVER=maria
-          - DB_NAME=shlink
-          - DB_USER=${DB_USER}
-          - DB_PASSWORD=${DB_PASSWORD}
-          - DB_HOST=shlink_db
-          - DEFAULT_INVALID_SHORT_URL_REDIRECT=${SHLINK_DEFAULT_INVALID_SHORT_URL_REDIRECT}
-          - DEFAULT_REGULAR_404_REDIRECT=${SHLINK_DEFAULT_REGULAR_404_REDIRECT}
-          - DEFAULT_BASE_URL_REDIRECT=${SHLINK_DEFAULT_BASE_URL_REDIRECT}
-        depends_on:
-          - shlink_db
+  shlink:
+    image: shlinkio/shlink:stable
+    restart: unless-stopped
+    container_name: middleware_shlink_server
+    environment:
+      - TZ="Europe/Zurich"
+      - DEFAULT_DOMAIN=${SHLINK_DEFAULT_DOMAIN}
+      - IS_HTTPS_ENABLED=true
+      - GEOLITE_LICENSE_KEY=${SHLINK_GEOLIGHT_LICENSE}
+      - DB_DRIVER=maria
+      - DB_USER=shlink
+      - DB_NAME=shlink
+      - DB_PASSWORD=${SHLINK_MARIADB_ROOT_PASSWORD}
+      - DB_HOST=database
+    depends_on:
+      - database
+    ports:
+      - 8080:8080
 
-    shlink_web_client:
-        container_name: shlink_web_client
-        image: shlinkio/shlink-web-client:stable
-        restart: unless-stopped
-        ports:
-            - 8081:8080
-        environment:
-          - SHLINK_SERVER_URL=${SHLINK_SERVER_URL}
-          - SHLINK_SERVER_API_KEY=${SHLINK_SERVER_API_KEY}
-        depends_on:
-          - shlink_app
+  database:
+    image: mariadb:10.11
+    restart: unless-stopped
+    container_name: middleware_shlink_database
+    environment:
+      - MARIADB_ROOT_PASSWORD=${SHLINK_MARIADB_ROOT_PASSWORD}
+      - MARIADB_DATABASE=shlink
+      - MARIADB_USER=shlink
+      - MARIADB_PASSWORD=${SHLINK_MARIADB_ROOT_PASSWORD}
+    volumes:
+      - /mnt/configs/shlink:/var/lib/mysql
 
-    shlink_db:
-        container_name: shlink_db
-        image: mariadb:lts
-        restart: unless-stopped
-        volumes:
-            - /mnt/configs/shlink/db_data:/var/lib/mysql
-        environment:
-          - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-          - MARIADB_USER=${MARIADB_USER}
-          - MARIADB_PASSWORD=${MARIADB_PASSWORD}
-          - MARIADB_DATABASE=${MARIADB_DATABASE}
-          - MYSQL_INITDB_SKIP_TZINFO=1
-          - MARIADB_AUTO_UPGRADE=1
+  shlink-web-client:
+    image: shlinkio/shlink-web-client:stable
+    restart: unless-stopped
+    container_name: middleware_shlink_gui
+    volumes:
+      - /mnt/configs/shlink/servers.json:/usr/share/nginx/html/servers.json
+    depends_on:
+      - shlink
+    ports:
+      - 8081:8080
