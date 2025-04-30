@@ -3,7 +3,7 @@
 services:
     shlink_app:
         container_name: middleware_shlink_server
-        image: shlinkio/shlink:4.4.5
+        image: shlinkio/shlink:4.4.2
         restart: unless-stopped
         ports:
             - 8788:8080
@@ -35,7 +35,7 @@ services:
 
     shlink_db:
         container_name: middleware_shlink_database
-        image: mariadb:lts
+        image: mariadb:10.7
         restart: unless-stopped
         volumes:
             - /mnt/configs/shlink:/var/lib/mysql
