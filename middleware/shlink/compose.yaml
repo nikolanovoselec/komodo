@@ -5,6 +5,7 @@ services:
         container_name: middleware_shlink_server
         image: shlinkio/shlink:4.4.2
         restart: unless-stopped
+        user: 1000:1000
         ports:
             - 8788:8080
         environment:
@@ -26,6 +27,7 @@ services:
         container_name: middleware_shlink_admin
         image: shlinkio/shlink-web-client:4.3
         restart: unless-stopped
+        user: 1000:1000
         ports:
             - 8787:8080
         environment:
@@ -38,6 +40,9 @@ services:
         container_name: middleware_shlink_database
         image: mariadb:10.7
         restart: unless-stopped
+        user: 1000:1000
+        ports:
+            - "3308:3306"
         volumes:
             - /mnt/configs/shlink:/var/lib/mysql
         environment:
