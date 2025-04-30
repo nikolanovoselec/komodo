@@ -12,5 +12,5 @@ services:
       CUSTOM_DOMAIN_USE_HTTPS: true
       MAIL_ENABLED: true
     ports:
-      - 3743:3000
+      - 3000:3000
     network_mode: bridge
