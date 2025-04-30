@@ -8,9 +8,9 @@ services:
     environment:
       DB_FILENAME: "/var/lib/kutt/data.sqlite"
       DEFAULT_DOMAIN: ${DEFAULT_DOMAIN}
-      TRUST_PROXY: true
-      CUSTOM_DOMAIN_USE_HTTPS: true
-      MAIL_ENABLED: true
+      TRUST_PROXY: "true"
+      CUSTOM_DOMAIN_USE_HTTPS: "true"
+      MAIL_ENABLED: "true"
       JWT_SECRET: ${JWT_SECRET}
     ports:
       - 3743:3000
