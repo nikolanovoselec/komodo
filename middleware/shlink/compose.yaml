@@ -10,4 +10,4 @@ services:
       - DB_DRIVER=sqlite
       - INITIAL_API_KEY=${INITIAL_API_KEY}
     ports:
-      - <127.0.0.1>:<8080>:8080
+      - 127.0.0.1:8080:8080
