@@ -11,7 +11,7 @@ services:
       TRUST_PROXY: true
       CUSTOM_DOMAIN_USE_HTTPS: true
       MAIL_ENABLED: true
-      JWT_SECRET: "51c3ac56-93ea-472c-bc04-ba00af6760ef"
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - 3743:3000
     network_mode: host
