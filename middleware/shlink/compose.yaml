@@ -7,23 +7,7 @@ services:
       - DEFAULT_DOMAIN=${DEFAULT_DOMAIN}
       - IS_HTTPS_ENABLED=true
       - GEOLITE_LICENSE_KEY=${GEOLITE_LICENSE_KEY}
-      - DB_DRIVER=maria
-      - DB_USER=shlink
-      - DB_NAME=shlink
-      - DB_PASSWORD=${MARIADB_ROOT_PASSWORD}
-      - DB_HOST=database
-    depends_on:
-      - database
+      - DB_DRIVER=sqlite
+      - INITIAL_API_KEY=${INITIAL_API_KEY}
     ports:
-      - 8080:8080
-
-  database:
-    image: mariadb:10.8
-    restart: always
-    environment:
-      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-      - MARIADB_DATABASE=shlink
-      - MARIADB_USER=shlink
-      - MARIADB_PASSWORD=${MARIADB_ROOT_PASSWORD}
-    volumes:
-      - /mnt/configs/shlink:/var/lib/mysql
+      - <127.0.0.1>:<8080>:8080
