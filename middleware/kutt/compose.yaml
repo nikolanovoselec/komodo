@@ -14,4 +14,4 @@ services:
       JWT_SECRET: "51c3ac56-93ea-472c-bc04-ba00af6760ef"
     ports:
       - 3743:3000
-    network_mode: bridge
+    network_mode: host
