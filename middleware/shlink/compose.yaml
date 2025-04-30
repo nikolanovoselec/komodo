@@ -3,7 +3,7 @@
 services:
     shlink_app:
         container_name: middleware_shlink_server
-        image: shlinkio/shlink:stable
+        image: shlinkio/shlink:4.4.5
         restart: unless-stopped
         ports:
             - 8788:8080
@@ -23,7 +23,7 @@ services:
 
     shlink_web_client:
         container_name: middleware_shlink_admin
-        image: shlinkio/shlink-web-client:stable
+        image: shlinkio/shlink-web-client:4.3
         restart: unless-stopped
         ports:
             - 8787:8080
