@@ -13,6 +13,9 @@ services:
       - DB_PASSWORD=${MARIADB_PASSWORD}
       - DB_HOST=database
       - INITIAL_API_KEY=${INITIAL_API_KEY}
+      - DEFAULT_INVALID_SHORT_URL_REDIRECT=https://github.com/nikolanovoselec
+      - DEFAULT_REGULAR_404_REDIRECT=https://github.com/nikolanovoselec
+      - DEFAULT_BASE_URL_REDIRECT=https://github.com/nikolanovoselec
     depends_on:
       - database
     ports:
