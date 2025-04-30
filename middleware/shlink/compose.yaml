@@ -27,7 +27,7 @@ services:
         image: shlinkio/shlink-web-client:stable
         restart: unless-stopped
         ports:
-            - 8081:8080
+            - 8081:80
         environment:
           - SHLINK_SERVER_URL=${SHLINK_SERVER_URL}
           - SHLINK_SERVER_API_KEY=${SHLINK_SERVER_API_KEY}
