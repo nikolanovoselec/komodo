@@ -5,13 +5,13 @@ services:
     container_name: middleware_shlink_server
     environment:
       - TZ="Europe/Zurich"
-      - DEFAULT_DOMAIN=${SHLINK_DEFAULT_DOMAIN}
+      - DEFAULT_DOMAIN=${DEFAULT_DOMAIN}
       - IS_HTTPS_ENABLED=true
-      - GEOLITE_LICENSE_KEY=${SHLINK_GEOLIGHT_LICENSE}
+      - GEOLITE_LICENSE_KEY=${GEOLITE_LICENSE_KEY}
       - DB_DRIVER=maria
       - DB_USER=shlink
       - DB_NAME=shlink
-      - DB_PASSWORD=${SHLINK_MARIADB_ROOT_PASSWORD}
+      - DB_PASSWORD=${MARIADB_ROOT_PASSWORD}
       - DB_HOST=database
     depends_on:
       - database
@@ -23,10 +23,10 @@ services:
     restart: unless-stopped
     container_name: middleware_shlink_database
     environment:
-      - MARIADB_ROOT_PASSWORD=${SHLINK_MARIADB_ROOT_PASSWORD}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
       - MARIADB_DATABASE=shlink
       - MARIADB_USER=shlink
-      - MARIADB_PASSWORD=${SHLINK_MARIADB_ROOT_PASSWORD}
+      - MARIADB_PASSWORD=${MARIADB_ROOT_PASSWORD}
     volumes:
       - /mnt/configs/shlink:/var/lib/mysql
 
