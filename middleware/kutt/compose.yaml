@@ -14,4 +14,3 @@ services:
       JWT_SECRET: ${JWT_SECRET}
     ports:
       - 3743:3000
-    network_mode: host
