@@ -1,3 +1,5 @@
+### Once deployed, generate a working API key within the shlink_app container with "shlink api-key:generate"
+
 services:
     shlink_app:
         container_name: middleware_shlink_server
