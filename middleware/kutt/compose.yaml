@@ -7,5 +7,10 @@ services:
        - /mnt/configs/kutt:/kutt/custom
     environment:
       DB_FILENAME: "/var/lib/kutt/data.sqlite"
+      DEFAULT_DOMAIN: ${DEFAULT_DOMAIN}
+      TRUST_PROXY: true
+      CUSTOM_DOMAIN_USE_HTTPS: true
+      MAIL_ENABLED: true
     ports:
       - 3743:3000
+    network_mode: bridge
