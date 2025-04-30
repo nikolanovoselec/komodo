@@ -1,42 +1,30 @@
 services:
   shlink:
     image: shlinkio/shlink:stable
-    restart: unless-stopped
-    container_name: middleware_shlink_server
+    restart: always
     environment:
       - TZ="Europe/Zurich"
-      - DEFAULT_DOMAIN=${SHLINK_DEFAULT_DOMAIN}
+      - DEFAULT_DOMAIN=${DEFAULT_DOMAIN}
       - IS_HTTPS_ENABLED=true
-      - GEOLITE_LICENSE_KEY=${SHLINK_GEOLIGHT_LICENSE}
+      - GEOLITE_LICENSE_KEY=${GEOLITE_LICENSE_KEY}
       - DB_DRIVER=maria
       - DB_USER=shlink
       - DB_NAME=shlink
-      - DB_PASSWORD=${SHLINK_MARIADB_ROOT_PASSWORD}
+      - DB_PASSWORD=${MARIADB_PASSWORD}
       - DB_HOST=database
+      - INITIAL_API_KEY=${INITIAL_API_KEY}
     depends_on:
       - database
     ports:
       - 8080:8080
 
   database:
-    image: mariadb:10.11
-    restart: unless-stopped
-    container_name: middleware_shlink_database
+    image: mariadb:10.8
+    restart: always
     environment:
-      - MARIADB_ROOT_PASSWORD=${SHLINK_MARIADB_ROOT_PASSWORD}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
       - MARIADB_DATABASE=shlink
       - MARIADB_USER=shlink
-      - MARIADB_PASSWORD=${SHLINK_MARIADB_ROOT_PASSWORD}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
     volumes:
       - /mnt/configs/shlink:/var/lib/mysql
-
-  shlink-web-client:
-    image: shlinkio/shlink-web-client:stable
-    restart: unless-stopped
-    container_name: middleware_shlink_gui
-    volumes:
-      - /mnt/configs/shlink/servers.json:/usr/share/nginx/html/servers.json
-    depends_on:
-      - shlink
-    ports:
-      - 8081:8080
