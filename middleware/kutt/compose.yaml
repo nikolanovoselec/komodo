@@ -2,13 +2,11 @@ services:
   server:
     build:
       context: .
+    container_name: middleware_kutt
     volumes:
-       - db_data_sqlite:/var/lib/kutt
-       - custom:/kutt/custom
+       - /mnt/configs/kutt/db:/var/lib/kutt
+       - /mnt/configs/kutt:/kutt/custom
     environment:
       DB_FILENAME: "/var/lib/kutt/data.sqlite"
     ports:
-      - 3000:3000
-volumes:
-  db_data_sqlite:
-  custom:
+      - 3743:3000
