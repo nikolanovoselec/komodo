@@ -19,8 +19,6 @@ services:
           - GEOLITE_LICENSE_KEY=${GEOLITE_LICENSE_KEY}
         depends_on:
           - shlink_db
-        labels:
-          com.centurylinklabs.watchtower.enable: "true"
 
     shlink_web_client:
         container_name: shlink_web_client
@@ -33,8 +31,6 @@ services:
           - SHLINK_SERVER_API_KEY=${SHLINK_SERVER_API_KEY}
         depends_on:
           - shlink_app
-        labels:
-          com.centurylinklabs.watchtower.enable: "true"
 
     shlink_db:
         container_name: shlink_db
@@ -49,5 +45,3 @@ services:
           - MARIADB_DATABASE=shlink
           - MYSQL_INITDB_SKIP_TZINFO=1
           - MARIADB_AUTO_UPGRADE=1
-        labels:
-          com.centurylinklabs.watchtower.enable: "true"
