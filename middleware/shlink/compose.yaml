@@ -10,8 +10,8 @@ services:
           - INITIAL_API_KEY=${INITIAL_API_KEY}
           - DB_DRIVER=maria
           - DB_NAME=shlink
-          - DB_USER=${DB_USER}
-          - DB_PASSWORD=${DB_PASSWORD}
+          - DB_USER=shlink
+          - DB_PASSWORD=shlink
           - DB_HOST=shlink_db
 #          - DEFAULT_INVALID_SHORT_URL_REDIRECT=${DEFAULT_INVALID_SHORT_URL_REDIRECT}
 #          - DEFAULT_REGULAR_404_REDIRECT=${DEFAULT_REGULAR_404_REDIRECT}
@@ -43,10 +43,10 @@ services:
         volumes:
             - /mnt/configs/shlink/db_data:/var/lib/mysql
         environment:
-          - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-          - MARIADB_USER=${MARIADB_USER}
-          - MARIADB_PASSWORD=${MARIADB_PASSWORD}
-          - MARIADB_DATABASE=${MARIADB_DATABASE}
+          - MARIADB_ROOT_PASSWORD=shlink
+          - MARIADB_USER=shlink
+          - MARIADB_PASSWORD=shlink
+          - MARIADB_DATABASE=shlink
           - MYSQL_INITDB_SKIP_TZINFO=1
           - MARIADB_AUTO_UPGRADE=1
         labels:
