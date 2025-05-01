@@ -1,0 +1,7 @@
+services:
+    speedtest:
+        restart: unless-stopped
+        container_name: storage_openspeedtest
+        ports:
+            - 3636:3000
+        image: openspeedtest/latest:latest
