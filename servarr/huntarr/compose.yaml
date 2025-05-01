@@ -9,3 +9,4 @@ services:
       - /mnt/configs/huntarr:/config
     environment:
       - TZ=Europe/Zurich
+    network_mode: bridge
