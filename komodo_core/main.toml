@@ -364,27 +364,6 @@ run_directory = "middleware/heimdall"
 ##
 
 [[stack]]
-name = "middleware_kutt"
-tags = ["sync"]
-[stack.config]
-server = "middleware"
-run_build = true
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
-destroy_before_deploy = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-webhook_force_deploy = true
-run_directory = "middleware/kutt"
-environment = """
-DEFAULT_DOMAIN = [[KUTT_DEFAULT_DOMAIN]]
-JWT_SECRET = [[KUTT_JWT_SECRET]]
-"""
-
-##
-
-[[stack]]
 name = "middleware_nebula_sync"
 tags = ["sync"]
 [stack.config]
@@ -419,27 +398,6 @@ run_directory = "middleware/npm"
 ##
 
 [[stack]]
-name = "middleware_shlink"
-tags = ["sync"]
-[stack.config]
-server = "middleware"
-run_build = true
-poll_for_updates = true
-auto_update = true
-destroy_before_deploy = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-run_directory = "middleware/shlink"
-environment = """
-DEFAULT_DOMAIN = [[SHLINK_DEFAULT_DOMAIN]]
-INITIAL_API_KEY = [[SHLINK_INITIAL_API_KEY]]
-MARIADB_ROOT_PASSWORD = [[SHLINK_MARIADB_ROOT_PASSWORD]]
-MARIADB_USER_PASSWORD = [[SHLINK_MARIADB_USER_PASSWORD]]
-"""
-
-##
-
-[[stack]]
 name = "middleware_uptime_kuma"
 tags = ["sync"]
 [stack.config]
@@ -451,28 +409,6 @@ destroy_before_deploy = true
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 run_directory = "middleware/uptime_kuma/"
-
-##
-
-[[stack]]
-name = "middleware_yourls"
-tags = ["sync"]
-[stack.config]
-server = "middleware"
-run_build = true
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
-destroy_before_deploy = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-webhook_force_deploy = true
-run_directory = "middleware/yourls"
-environment = """
-YOURLS_DB_PASS = [[YOURLS_DB_PASS]]
-YOURLS_SITE = [[YOURLS_SITE]]
-ADMIN_PASS = [[YOURLS_ADMIN_PASS]]
-"""
 
 ##
 
@@ -832,7 +768,7 @@ config.webhook_secret = "ceTXriBfjq!G4r_H_ZDbpn.@Qq_3FqjFh@zPPezFZsskcbdd7F-qYRZ
 name = "Deploy Stacks If Changed"
 enabled = true
 executions = [
-  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = """, komodo_core*, middleware*, storage*, servarr*, media_servers*, """, enabled = true }
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "komodo_core*, middleware*, storage*, servarr*, media_servers*", enabled = true }
 ]
 
 ##
