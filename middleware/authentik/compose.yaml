@@ -22,8 +22,6 @@ services:
       - authentik
     volumes:
       - /mnt/configs/authentik/redis:/data
-    labels:
-      com.centurylinklabs.watchtower.enable: "false"
       
   server:
     image: ghcr.io/goauthentik/server:${VERSION} #manual upgrade
@@ -48,8 +46,6 @@ services:
     depends_on:
       - postgresql
       - redis
-    labels:
-      com.centurylinklabs.watchtower.enable: "false"
       
   worker:
     image: ghcr.io/goauthentik/server:${VERSION} #manual upgrade
@@ -74,8 +70,6 @@ services:
     depends_on:
       - postgresql
       - redis
-    labels:
-      com.centurylinklabs.watchtower.enable: "false"
 
 networks:
   authentik:
