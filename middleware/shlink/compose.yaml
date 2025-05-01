@@ -9,6 +9,7 @@ services:
             - 8080:8080
         environment:
           - DEFAULT_DOMAIN=${DEFAULT_DOMAIN}
+          - INITIAL_API_KEY=${INITIAL_API_KEY}
           - IS_HTTPS_ENABLED=true
           - DEFAULT_INVALID_SHORT_URL_REDIRECT=https://github.com/nikolanovoselec
           - DEFAULT_REGULAR_404_REDIRECT=https://github.com/nikolanovoselec
