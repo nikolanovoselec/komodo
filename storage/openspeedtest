@@ -5,4 +5,4 @@ ervices:
         ports:
             - '3000:3000'
             - '3001:3001'
-        image: openspeedtest:latest
+        image: openspeedtest/latest:latest
