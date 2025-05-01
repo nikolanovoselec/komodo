@@ -364,6 +364,47 @@ run_directory = "middleware/heimdall"
 ##
 
 [[stack]]
+name = "middleware_kutt"
+tags = ["sync"]
+[stack.config]
+server = "middleware"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "middleware/kutt"
+environment = """
+DEFAULT_DOMAIN = [[KUTT_DEFAULT_DOMAIN]]
+JWT_SECRET = [[KUTT_JWT_SECRET]]
+"""
+
+##
+
+[[stack]]
+name = "middleware_nebula_sync"
+tags = ["sync"]
+[stack.config]
+server = "middleware"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "middleware/nebula_sync"
+environment = """
+PIHOLE_API_KEY = [[PIHOLE_API_KEY]]
+"""
+
+##
+
+[[stack]]
 name = "middleware_npm"
 tags = ["sync"]
 [stack.config]
@@ -410,6 +451,28 @@ destroy_before_deploy = true
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 run_directory = "middleware/uptime_kuma/"
+
+##
+
+[[stack]]
+name = "middleware_yourls"
+tags = ["sync"]
+[stack.config]
+server = "middleware"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "middleware/yourls"
+environment = """
+YOURLS_DB_PASS = [[YOURLS_DB_PASS]]
+YOURLS_SITE = [[YOURLS_SITE]]
+ADMIN_PASS = [[YOURLS_ADMIN_PASS]]
+"""
 
 ##
 
@@ -520,6 +583,23 @@ git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "servarr/flaresolver"
+
+##
+
+[[stack]]
+name = "servarr_huntarr"
+tags = ["sync"]
+[stack.config]
+server = "servarr"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "servarr/huntarr"
 
 ##
 
@@ -740,6 +820,20 @@ environment = """
 SONARR_API_KEY = [[SONARR_API_KEY]]
 RADARR_API_KEY = [[RADARR_API_KEY]]
 """
+
+##
+
+[[procedure]]
+name = "deploy_stacks_if_changed"
+tags = ["sync"]
+config.webhook_secret = "ceTXriBfjq!G4r_H_ZDbpn.@Qq_3FqjFh@zPPezFZsskcbdd7F-qYRZkT3kV"
+
+[[procedure.config.stage]]
+name = "Deploy Stacks If Changed"
+enabled = true
+executions = [
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = """, komodo_core*, middleware*, storage*, servarr*, media_servers*, """, enabled = true }
+]
 
 ##
 
