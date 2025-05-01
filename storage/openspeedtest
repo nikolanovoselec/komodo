@@ -5,3 +5,4 @@ services:
         ports:
             - 3456:3000
         image: openspeedtest/latest:latest
+        network_mode: host
