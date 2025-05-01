@@ -8,4 +8,4 @@ services:
     - REPLICAS=http://pihole-slave.local|${PIHOLE_API_KEY}
     - FULL_SYNC=true
     - RUN_GRAVITY=false
-    - CRON=0 * * * *
+    - CRON=5 * * * *
