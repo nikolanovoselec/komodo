@@ -3,6 +3,5 @@ services:
         restart: unless-stopped
         container_name: storage_openspeedtest
         ports:
-            - 3456:3000
+            - 3636:3000
         image: openspeedtest/latest:latest
-        network_mode: host
