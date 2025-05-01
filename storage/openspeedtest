@@ -1,4 +1,4 @@
-ervices:
+services:
     speedtest:
         restart: unless-stopped
         container_name: storage_openspeedtest
