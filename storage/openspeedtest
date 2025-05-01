@@ -1,16 +1,8 @@
-## Add your compose file here
-services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+ervices:
+    speedtest:
+        restart: unless-stopped
+        container_name: storage_openspeedtest
+        ports:
+            - '3000:3000'
+            - '3001:3001'
+        image: openspeedtest/latest
