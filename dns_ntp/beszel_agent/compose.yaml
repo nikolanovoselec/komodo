@@ -10,5 +10,5 @@ services:
       # - /mnt/disk/.beszel:/extra-filesystems/sda1:ro
     environment:
       LISTEN: 45876
-      KEY: "${BESZEL_KEY}" #secrets
+      KEY: ${BESZEL_KEY} #secrets
       SYS_SENSORS: /mnt/sys
