@@ -1,7 +1,7 @@
 services:
     pihole:
       image: pihole/pihole:2025.04.0
-      container_name: pihole-pihole
+      container_name: dns_ntp_pihole_pihole
       restart: unless-stopped
       ports:
         - 53:53/tcp
@@ -29,7 +29,7 @@ services:
 
     stubby:
       image: mvance/stubby:latest
-      container_name: pihole-stubby
+      container_name: dns_ntp_pihole_stubby
       restart: unless-stopped
       network_mode: host
       user: 0:0
