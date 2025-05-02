@@ -9,3 +9,5 @@ services:
     - FULL_SYNC=true
     - RUN_GRAVITY=false
     - CRON=1 * * * *
+    restart: unless-stopped
+    network_mode: bridge
