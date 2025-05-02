@@ -1,16 +1,21 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  backrest:
+    image: garethgeorge/backrest:latest
+    container_name: dns_ntp_backrest
+    hostname: backrest-pihole-master.local.graymatter.ch
+    volumes:
+      - /mnt/configs/backrest/data:/data
+      - /mnt/configs/backrest/config:/config
+      - /mnt/configs/backrest/cache:/cache
+      - /mnt/configs/backrest/tmp:/tmp
+      - /mnt/configs/:/userdata #Local mount to be backed up
+      - /mnt/docker/_restic_backup_repository/:/repos #NFS mount of the remote repository
+    environment:
+      - BACKREST_DATA=/data
+      - BACKREST_CONFIG=/config/config.json
+      - XDG_CACHE_HOME=/cache
+      - TMPDIR=/tmp
+      - TZ=Europe/Zurich
+    ports:
+      - "9898:9898"
+    restart: unless-stopped
