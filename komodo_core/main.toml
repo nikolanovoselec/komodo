@@ -40,6 +40,8 @@ tags = ["sync"]
 [server.config]
 address = "https://nas.local:8120"
 enabled = true
+disk_warning = 80.0
+disk_critical = 90.0
 
 ##
 
