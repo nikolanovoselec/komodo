@@ -4,6 +4,7 @@ services:
     container_name: middleware_cloudflared
     restart: unless-stopped
     network_mode: host
+    user: root
     labels:
       com.centurylinklabs.watchtower.enable: "true"
     command: tunnel --no-autoupdate run --token
