@@ -4,7 +4,6 @@ services:
     container_name: komodo_core_cloudflared
     restart: unless-stopped
     network_mode: host
-    #labels:
-    #  com.centurylinklabs.watchtower.enable: "true"
+    user: 1000:1000
     command: tunnel --no-autoupdate run --token
       ${TOKEN} #secrets
