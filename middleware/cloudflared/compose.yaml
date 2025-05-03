@@ -4,9 +4,6 @@ services:
     container_name: middleware_cloudflared
     restart: unless-stopped
     network_mode: host
-    user: root
-    environment:
-      - UID=0
-      - GID=0
+    user: "1000:1000"
     command: tunnel --no-autoupdate run --token
       ${TOKEN} #secret
