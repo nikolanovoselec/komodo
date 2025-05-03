@@ -3,5 +3,5 @@ services:
         restart: unless-stopped
         container_name: storage_openspeedtest
         ports:
-            - 3636:3000
+            - 3636:3000 #port on DSM FW
         image: openspeedtest/latest:latest
