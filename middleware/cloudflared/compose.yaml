@@ -5,7 +5,8 @@ services:
     restart: unless-stopped
     network_mode: host
     user: root
-    labels:
-      com.centurylinklabs.watchtower.enable: "true"
+    environment:
+      - UID=0
+      - GID=0
     command: tunnel --no-autoupdate run --token
       ${TOKEN} #secret
