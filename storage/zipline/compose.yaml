@@ -2,11 +2,12 @@ services:
   postgresql:
     image: postgres:16
     restart: unless-stopped
-    container_name: storage_zipline_database
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: zipline
-      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
-      POSTGRES_DB: zipline
+      POSTGRES_USER: ${POSTGRESQL_USER:-zipline}
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD:?POSTGRESSQL_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRESQL_DB:-zipline}
     volumes:
       - /volume1/docker/_synology_configs/zipline/database:/var/lib/postgresql/data
     healthcheck:
@@ -17,11 +18,12 @@ services:
 
   zipline:
     image: ghcr.io/diced/zipline
-    container_name: storage_zipline_server
     ports:
       - '3000:3000'
+    env_file:
+      - .env
     environment:
-      - DATABASE_URL=postgres://zipline:${POSTGRESQL_PASSWORD}@postgresql:5432/zipline
+      - DATABASE_URL=postgres://${POSTGRESQL_USER:-zipline}:${POSTGRESQL_PASSWORD}@postgresql:5432/${POSTGRESQL_DB:-zipline}
     depends_on:
       - postgresql
     volumes:
