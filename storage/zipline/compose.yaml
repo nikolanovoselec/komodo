@@ -29,6 +29,6 @@ services:
     depends_on:
       - postgresql
     volumes:
-      - /volume1/docker/_synology_configs/zipline/uploads:/zipline/uploads
+      - /volume1/photo/_Zipline_Uploads:/zipline/uploads
       - /volume1/docker/_synology_configs/zipline/public:/zipline/public
       - /volume1/docker/_synology_configs/zipline/themes:/zipline/themes
