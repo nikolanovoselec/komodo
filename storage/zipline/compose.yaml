@@ -1,16 +1,30 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  postgresql:
+    image: postgres:16
+    restart: unless-stopped
+    container_name: storage_zipline_database
+    environment:
+      POSTGRES_USER: zipline
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRES_DB: zipline
+    volumes:
+      - /volume1/docker/_synology_configs/zipline/database:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'zipline']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  zipline:
+    image: ghcr.io/diced/zipline
+    container_name: storage_zipline_server
+    ports:
+      - '3000:3000'
+    environment:
+      - DATABASE_URL=postgres://zipline:${POSTGRESQL_PASSWORD}@postgresql:5432/zipline
+    depends_on:
+      - postgresql
+    volumes:
+      - /volume1/docker/_synology_configs/zipline/uploads:/zipline/uploads
+      - /volume1/docker/_synology_configs/zipline/public:/zipline/public
+      - /volume1/docker/_synology_configs/zipline/themes:/zipline/themes
