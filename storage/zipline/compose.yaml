@@ -3,8 +3,8 @@ services:
     image: postgres:16
     restart: unless-stopped
     container_name: storage_zipline_database
-#    env_file:
-#      - .env
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${POSTGRESQL_USER:-zipline}
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD:?POSTGRESSQL_PASSWORD is required}
@@ -22,8 +22,8 @@ services:
     container_name: storage_zipline_server
     ports:
       - '3000:3000'
-#    env_file:
-#      - .env
+    env_file:
+      - .env
     environment:
       - DATABASE_URL=postgres://${POSTGRESQL_USER:-zipline}:${POSTGRESQL_PASSWORD}@postgresql:5432/${POSTGRESQL_DB:-zipline}
     depends_on:
