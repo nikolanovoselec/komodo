@@ -1,7 +1,7 @@
 services:
   gluetun:
     image: qmcgaw/gluetun:latest
-    container_name: storage_gluetun
+    container_name: storage_qbittorrent_gluetun
     cap_add:
       - NET_ADMIN
     devices:
@@ -21,16 +21,12 @@ services:
 #      - /etc/localtime:/etc/localtime:ro
       - /volume1/docker/_synology_configs/gluetun/wg0.conf:/gluetun/wireguard/wg0.conf:ro
     labels:
-#      com.centurylinklabs.watchtower.enable: "true"
       deunhealth.restart.on.unhealthy: "true"
     restart: unless-stopped
-#    privileged: true
-
-###########
 
   qbittorrent:
     image: linuxserver/qbittorrent:latest
-    container_name: storage_qbittorrent
+    container_name: storage_qbittorrent_client
     environment:
       - PUID=1026
       - PGID=100
@@ -46,7 +42,6 @@ services:
       gluetun:
         condition: service_healthy
     labels:
-#      com.centurylinklabs.watchtower.enable: "true"
       deunhealth.restart.on.unhealthy: "true"
     restart: unless-stopped
     healthcheck: # https://github.com/qdm12/gluetun/issues/641#issuecomment-933856220
@@ -54,14 +49,11 @@ services:
       interval: 1m
       timeout: 10s
       retries: 1
-#    privileged: true
-
-###########
 
 #  cloudflared:
 #    image: cloudflare/cloudflared:latest
 #    restart: unless-stopped
-#    container_name: gluetun-cloudflared
+#    container_name: storage_qbittorrent_cloudflared
 #    network_mode: "service:gluetun"
 #    depends_on:
 #      - gluetun
@@ -76,7 +68,7 @@ services:
   deunhealth:
 #    build: .
     image: qmcgaw/deunhealth
-    container_name: storage_deunhealth
+    container_name: storage_qbittorrent_deunhealth
     network_mode: "none"
     environment:
       - LOG_LEVEL=info
