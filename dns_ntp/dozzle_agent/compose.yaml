@@ -10,3 +10,4 @@ services:
     restart: unless-stopped
     environment:
     - DOZZLE_HOSTNAME=pihole-master
+    network_mode: bridge
