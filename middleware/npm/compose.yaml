@@ -16,5 +16,3 @@ services:
 networks:
   authentik:
     external: true
-  proxy:
-    external: true
