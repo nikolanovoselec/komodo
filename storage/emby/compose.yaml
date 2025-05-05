@@ -1,16 +1,18 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  emby:
+    image: lscr.io/linuxserver/emby:latest
+    container_name: storage_emby
+    environment:
+      - PUID=1026
+      - PGID=100
+      - TZ=Europe/Zurich
+    volumes:
+      - /volume1/docker/emby:/config
+      - /volume1/video/tv shows/:/mnt/share1
+      - /volume1/video/movies/:/mnt/share2
+#    ports:
+#      - 8093:8096
+    devices:
+      - /dev/dri:/dev/dri #optional
+    restart: unless-stopped
+    network_mode: host
