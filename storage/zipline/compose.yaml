@@ -30,8 +30,8 @@ services:
       - DATABASE_URL=postgres://${POSTGRESQL_USER:-zipline}:${POSTGRESQL_PASSWORD}@postgresql:5432/${POSTGRESQL_DB:-zipline}
     depends_on:
       - postgresql
-    devices:
-      - /dev/dri:/dev/dri
+#    devices:
+#      - /dev/dri:/dev/dri
     volumes:
       - /volume1/photo/_Zipline_Uploads:/zipline/uploads
       - /volume1/docker/_synology_configs/zipline/public:/zipline/public
