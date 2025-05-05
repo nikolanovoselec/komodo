@@ -26,7 +26,7 @@ services:
       - .env
     environment:
       - DATABASE_URL=postgres://${POSTGRESQL_USER:-zipline}:${POSTGRESQL_PASSWORD}@postgresql:5432/${POSTGRESQL_DB:-zipline}
-    user: 1026:100
+#    user: 1026:100
     depends_on:
       - postgresql
     devices:
