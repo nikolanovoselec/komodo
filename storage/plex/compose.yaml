@@ -1,16 +1,18 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: storage_plex
+    network_mode: host
+    environment:
+      - PUID=1026
+      - PGID=100
+      - TZ=Europe/Zurich
+      - VERSION=docker
+      - PLEX_CLAIM= #optional
+    devices:
+      - /dev/dri:/dev/dri # Binds the Intel Quicksync decoder to Plex HW Transcode
+    volumes:
+      - /volume1/docker/plex/:/config
+      - /volume1/video/tv shows/:/data/tv shows/
+      - /volume1/video/movies/:/data/movies/
+    restart: unless-stopped
