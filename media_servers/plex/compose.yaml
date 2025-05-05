@@ -8,7 +8,7 @@ services:
       - PGID=0
       - TZ=Europe/Zurich
       - VERSION=docker
-      #- PLEX_CLAIM=
+#      - PLEX_CLAIM=
     volumes:
       - /mnt/configs/plex/:/config
       - /mnt/synology/tv shows/:/mnt/synology/tv shows/
