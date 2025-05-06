@@ -894,33 +894,6 @@ RADARR_API_KEY = [[RADARR_API_KEY]]
 ##
 
 [[stack]]
-name = "storage_zipline"
-tags = ["sync"]
-[stack.config]
-server = "storage"
-run_build = true
-poll_for_updates = true
-auto_update_all_services = true
-destroy_before_deploy = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-webhook_force_deploy = true
-run_directory = "storage/zipline"
-environment = """
-POSTGRESQL_USER = zipline
-POSTGRESQL_DB = zipline
-POSTGRESQL_PASSWORD = [[ZIPLINE_DB_PASS]]
-CORE_SECRET = [[ZIPLINE_CORE_SECRET]]
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/zipline?schema=public"
-CORE_PORT=3000
-CORE_HOSTNAME=0.0.0.0
-DATASOURCE_TYPE="local"
-DATASOURCE_LOCAL_DIRECTORY="/volume1/photo/_Zipline_Uploads"
-"""
-
-##
-
-[[stack]]
 name = "tools_it-tools"
 tags = ["sync"]
 [stack.config]
@@ -985,6 +958,32 @@ PAPERLESS_OCR_LANGUAGE=eng
 # See https://packages.debian.org/search?keywords=tesseract-ocr-&searchon=names&suite=buster
 # for available languages.
 #PAPERLESS_OCR_LANGUAGES=tur ces
+"""
+
+##
+
+[[stack]]
+name = "tools_zipline"
+tags = ["sync"]
+[stack.config]
+server = "tools"
+run_build = true
+poll_for_updates = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+run_directory = "tools/zipline"
+environment = """
+POSTGRESQL_USER = zipline
+POSTGRESQL_DB = zipline
+POSTGRESQL_PASSWORD = [[ZIPLINE_DB_PASS]]
+CORE_SECRET = [[ZIPLINE_CORE_SECRET]]
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/zipline?schema=public"
+CORE_PORT=3000
+CORE_HOSTNAME=0.0.0.0
+DATASOURCE_TYPE="local"
+DATASOURCE_LOCAL_DIRECTORY="/volume1/photo/_Zipline_Uploads"
 """
 
 ##
