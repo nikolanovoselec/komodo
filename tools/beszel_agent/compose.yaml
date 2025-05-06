@@ -1,16 +1,13 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  beszel-agent:
+    image: henrygd/beszel-agent:latest
+    container_name: tools_beszel_agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # monitor other disks / partitions by mounting a folder in /extra-filesystems
+      # - /mnt/disk/.beszel:/extra-filesystems/sda1:ro
+    environment:
+      LISTEN: 45876
+      KEY: ${BESZEL_KEY}
