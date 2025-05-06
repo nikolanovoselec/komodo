@@ -894,6 +894,54 @@ RADARR_API_KEY = [[RADARR_API_KEY]]
 ##
 
 [[stack]]
+name = "tools_backrest"
+tags = ["sync"]
+[stack.config]
+server = "tools"
+run_build = true
+poll_for_updates = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+run_directory = "tools/backrest"
+
+##
+
+[[stack]]
+name = "tools_beszel_agent"
+tags = ["sync"]
+[stack.config]
+server = "tools"
+run_build = true
+poll_for_updates = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+run_directory = "tools/beszel_agent"
+environment = """
+BESZEL_KEY = [[BESZEL_KEY]]
+"""
+
+##
+
+[[stack]]
+name = "tools_dozzle_agent"
+tags = ["sync"]
+[stack.config]
+server = "tools"
+run_build = true
+poll_for_updates = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+run_directory = "tools/dozzle_agent"
+
+##
+
+[[stack]]
 name = "tools_it-tools"
 tags = ["sync"]
 [stack.config]
