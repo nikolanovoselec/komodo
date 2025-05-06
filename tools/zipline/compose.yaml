@@ -29,8 +29,6 @@ services:
 #    user: 1026:100
     depends_on:
       - postgresql
-    devices:
-      - /dev/dri:/dev/dri
     volumes:
       - /mnt/configs/zipline/uploads:/zipline/uploads
       - /mnt/configs/zipline/public:/zipline/public
