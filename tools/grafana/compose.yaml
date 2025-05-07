@@ -1,6 +1,6 @@
 networks:
   grafana_frontend:
-  grafana_frontend:
+  grafana_backend:
 
 services:
   prometheus:
