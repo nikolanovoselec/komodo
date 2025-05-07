@@ -61,7 +61,7 @@ services:
     ports:
       - 9093:9093
     volumes:
-      - ./alertmanager/:/etc/alertmanager/
+      - /mnt/configs/grafana_prometheus/alertmanager/:/etc/alertmanager/
     user: root
     networks:
       - backend
