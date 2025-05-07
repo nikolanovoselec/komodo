@@ -7,7 +7,7 @@ services:
     image: prom/prometheus:latest
     container_name: tools_grafana_prometheus
     volumes:
-      - ./prometheus/:/etc/prometheus/
+      - /mnt/configs/grafana_prometheus/prometheus/:/etc/prometheus/
       - /mnt/configs/grafana_prometheus/prometheus:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
