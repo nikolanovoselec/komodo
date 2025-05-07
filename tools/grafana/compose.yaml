@@ -93,7 +93,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: tools_grafana_server
-    user: "472"
+#    user: "472"
     depends_on:
       - prometheus
     ports:
