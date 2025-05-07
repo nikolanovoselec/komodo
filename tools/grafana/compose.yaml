@@ -1,6 +1,6 @@
 networks:
-  grafana_frontend:
-  grafana_backend:
+  frontend:
+  backend:
 
 services:
   prometheus:
@@ -24,7 +24,7 @@ services:
       - cadvisor
 #      - pushgateway
     networks:
-      - grafana_backend
+      - backend
     restart: always
 #    deploy:
 #      placement:
@@ -48,7 +48,7 @@ services:
     ports:
       - 9100:9100
     networks:
-      - grafana_backend
+      - backend
     restart: always
     deploy:
       mode: global
@@ -61,7 +61,7 @@ services:
     volumes:
       - ./alertmanager/:/etc/alertmanager/
     networks:
-      - grafana_backend
+      - backend
     restart: always
     command:
       - '--config.file=/etc/alertmanager/config.yml'
@@ -81,7 +81,7 @@ services:
     ports:
       - 8080:8080
     networks:
-      - grafana_backend
+      - backend
     restart: always
     deploy:
       mode: global
@@ -100,8 +100,8 @@ services:
     env_file:
       - .env
     networks:
-      - grafana_backend
-      - grafana_frontend
+      - backend
+      - frontend
     restart: always
 
 #  pushgateway:
