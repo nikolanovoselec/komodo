@@ -93,7 +93,7 @@ services:
     depends_on:
       - prometheus
     ports:
-      - 3000:3000
+      - 3333:3000
     volumes:
       - /mnt/configs/grafana_prometheus/grafana:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
