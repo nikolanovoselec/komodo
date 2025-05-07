@@ -1031,7 +1031,7 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5432/zipline?schema=publi
 CORE_PORT=3000
 CORE_HOSTNAME=0.0.0.0
 DATASOURCE_TYPE="local"
-DATASOURCE_LOCAL_DIRECTORY="/volume1/photo/_Zipline_Uploads"
+DATASOURCE_LOCAL_DIRECTORY="/mnt/configs/zipline/uploads"
 """
 
 ##
