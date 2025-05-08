@@ -9,6 +9,7 @@ services:
       POSTGRES_USER: ${POSTGRESQL_USER:-zipline}
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD:?POSTGRESSQL_PASSWORD is required}
       POSTGRES_DB: ${POSTGRESQL_DB:-zipline}
+    user: root
     volumes:
       - /mnt/configs/zipline/database:/var/lib/postgresql/data
     healthcheck:
@@ -26,7 +27,7 @@ services:
       - .env
     environment:
       - DATABASE_URL=postgres://${POSTGRESQL_USER:-zipline}:${POSTGRESQL_PASSWORD}@postgresql:5432/${POSTGRESQL_DB:-zipline}
-#    user: 1026:100
+    user: root
     depends_on:
       - postgresql
     volumes:
