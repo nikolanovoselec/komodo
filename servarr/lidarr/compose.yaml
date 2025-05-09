@@ -1,16 +1,14 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: servarr_lidarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Zurich
+    volumes:
+      - /mnt/configs/lidarr:/config
+      - /mnt/synology:/data
+    ports:
+      - 8686:8686
+    restart: unless-stopped
