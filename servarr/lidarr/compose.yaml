@@ -8,7 +8,7 @@ services:
       - TZ=Europe/Zurich
     volumes:
       - /mnt/configs/lidarr:/config
-      - /mnt/synology:/data
+      - /mnt/synology:/muzika
     ports:
       - 8686:8686
     restart: unless-stopped
