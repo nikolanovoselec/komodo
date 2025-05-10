@@ -1042,6 +1042,7 @@ git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 run_directory = "tools/zipline"
 environment = """
+DEBUG=zipline
 POSTGRESQL_USER = zipline
 POSTGRESQL_DB = zipline
 POSTGRESQL_PASSWORD = [[ZIPLINE_DB_PASS]]
@@ -1050,7 +1051,7 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5432/zipline?schema=publi
 CORE_PORT=3000
 CORE_HOSTNAME=0.0.0.0
 DATASOURCE_TYPE="local"
-DATASOURCE_LOCAL_DIRECTORY="/mnt/configs/zipline/uploads"
+#DATASOURCE_LOCAL_DIRECTORY="/mnt/configs/zipline/uploads"
 """
 
 ##
