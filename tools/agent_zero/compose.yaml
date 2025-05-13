@@ -5,6 +5,7 @@ services:
     user: root
     environment:
       - TZ=Europe/Zurich
+      - 'OLLAMA_BASE_URL=http://ollama:11434'
     volumes:
         - /mnt/configs/agent_zero:/a0
     ports:
