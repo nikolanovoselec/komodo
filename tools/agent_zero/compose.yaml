@@ -11,6 +11,7 @@ services:
     ports:
         - 8888:80
     restart: unless-stopped
+    network_mode: host
 
   ollama:
     image: ollama/ollama:latest
