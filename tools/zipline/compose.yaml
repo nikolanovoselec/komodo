@@ -32,3 +32,4 @@ services:
       - './uploads:/zipline/uploads'
       - './public:/zipline/public'
       - './themes:/zipline/themes'
+    restart: unless-stopped
