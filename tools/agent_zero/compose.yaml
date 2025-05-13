@@ -3,6 +3,8 @@ services:
     image: frdel/agent-zero-run:latest
     container_name: tools_agent_zero_app
     user: root
+    timezone:
+        - Europe/Zurich
     volumes:
         - /mnt/configs/agent_zero:/a0
     ports:
