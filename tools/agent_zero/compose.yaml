@@ -2,6 +2,7 @@ services:
   agent-zero-run:
     image: frdel/agent-zero-run:latest
     container_name: tools_agent_zero_app
+    user: root
     volumes:
         - /mnt/configs/agent_zero:/a0
     ports:
@@ -10,6 +11,7 @@ services:
 
   ollama:
     image: ollama/ollama:latest
+    user: root
     ports:
       - 11434:11434
     volumes:
@@ -21,6 +23,7 @@ services:
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: tools_agent_zero_ollama_webui
+    user: root
     volumes:
       - /mnt/configs/agent_zero/ollama_ui:/app/backend/data
     depends_on:
