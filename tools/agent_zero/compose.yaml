@@ -1,16 +1,9 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+    agent-zero-run:
+        image: frdel/agent-zero-run:latest
+        container_name: tools_agent_zero
+        volumes:
+            - /mnt/configs/agent_zero:/a0
+        ports:
+            - '8888:80'
+        network_mode: bridge
