@@ -11,11 +11,11 @@ services:
 #      - PLEX_CLAIM=
     volumes:
       - /mnt/configs/plex/:/config
-      - /mnt/synology/tv shows/:/mnt/synology/tv shows/
-      - /mnt/synology/movies/:/mnt/synology/movies/
-      - /mnt/synology-music/:/mnt/synology-music/
-      - /mnt/synology-photos/:/mnt/synology-photos/
-      - /mnt/synology/backup/:/mnt/synology/backup/
+      - /mnt/video/tv shows/:/mnt/synology/tv shows/
+      - /mnt/video/movies/:/mnt/synology/movies/
+      - /mnt/music/:/mnt/synology-music/
+      - /mnt/photo/:/mnt/synology-photos/
+      - /mnt/video/backup/:/mnt/synology/backup/
 #    ports:
 #      - 32397:32400
     devices:
