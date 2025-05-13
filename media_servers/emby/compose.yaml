@@ -9,9 +9,9 @@ services:
       - TZ=Europe/Zurich
     volumes:
       - /mnt/configs/emby:/config
-      - /mnt/synology/tv shows/:/mnt/synology/tv shows/
-      - /mnt/synology/movies/:/mnt/synology/movies/
-      - /mnt/synology/backup/:/mnt/synology/backup/
+      - /mnt/video/tv shows/:/mnt/synology/tv shows/
+      - /mnt/video/movies/:/mnt/synology/movies/
+      - /mnt/video/backup/:/mnt/synology/backup/
 #    ports:
 #      - 8093:8096
     devices:
