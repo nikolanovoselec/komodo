@@ -8,8 +8,6 @@ services:
       - 'OLLAMA_BASE_URL=http://ollama:11434'
     volumes:
         - /docker/configs/agent_zero:/a0
-    devices:
-        - /dev/dri:/dev/dri
     ports:
         - 8888:80
         - 5000:5000
