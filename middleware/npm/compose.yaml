@@ -12,7 +12,11 @@ services:
     volumes:
       - /mnt/configs/npm/data:/data
       - /mnt/configs/npm/letsencrypt:/etc/letsencrypt
+    networks:
+#      - authentik
+      - proxy
 
 networks:
-  authentik:
-    external: true
+#  authentik:
+#    external: true
+  proxy:
