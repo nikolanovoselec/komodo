@@ -5,7 +5,6 @@ services:
     restart: unless-stopped
     logging:
       driver: local
-    user: 0:0 #root
     environment:
       - TZ=Europe/Zurich
       - AUTOBRR__OIDC_ENABLED=true
