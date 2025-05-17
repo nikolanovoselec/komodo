@@ -6,7 +6,7 @@ services:
     ports:
       - 9705:9705
     volumes:
-      - /mnt/configs/huntarr:/config
+      - /docker/configs/huntarr:/config
     environment:
       - TZ=Europe/Zurich
     network_mode: bridge
