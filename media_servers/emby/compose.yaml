@@ -4,8 +4,6 @@ services:
     container_name: media_servers_emby
     network_mode: host #for local/remote stream discovery
     environment:
-      - PUID=0
-      - PGID=0
       - TZ=Europe/Zurich
     volumes:
       - /mnt/configs/emby:/config
@@ -13,7 +11,7 @@ services:
       - /mnt/synology/movies/:/mnt/synology/movies/
       - /mnt/synology/backup/:/mnt/synology/backup/
 #    ports:
-#      - 8093:8096
+#      - 8093:8096 #not needed when running on host
     devices:
       - /dev/dri:/dev/dri
     restart: unless-stopped
