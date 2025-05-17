@@ -7,8 +7,6 @@ services:
       - /mnt/configs/authentik/database/authentik_database/_data:/var/lib/postgresql/data
     networks:
       - authentik
-    labels:
-      com.centurylinklabs.watchtower.enable: "false"
     environment:
       POSTGRES_PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
       POSTGRES_USER: authentik
