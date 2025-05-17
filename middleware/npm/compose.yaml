@@ -13,11 +13,8 @@ services:
       - /mnt/configs/npm/data:/data
       - /mnt/configs/npm/letsencrypt:/etc/letsencrypt
     networks:
-#      - authentik
       - proxy
 
 networks:
-#  authentik:
-#    external: true
   proxy:
       name: proxy
