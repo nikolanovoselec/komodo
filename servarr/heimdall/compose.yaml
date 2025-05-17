@@ -7,7 +7,7 @@ services:
       - PGID=1000
       - TZ=Europe/Zurich
     volumes:
-      - /mnt/configs/heimdall/:/config
+      - /docker/configs/heimdall/:/config
     ports:
       - 7140:80
 #      - 7141:443 #https
