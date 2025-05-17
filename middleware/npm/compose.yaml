@@ -20,3 +20,4 @@ networks:
 #  authentik:
 #    external: true
   proxy:
+      name: proxy
