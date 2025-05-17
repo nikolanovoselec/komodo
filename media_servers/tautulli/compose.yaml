@@ -3,8 +3,6 @@ services:
     image: lscr.io/linuxserver/tautulli:latest
     container_name: media_servers_tautulli
     environment:
-      - PUID=0 #root
-      - PGID=0
       - TZ=Europe/Zurich
     volumes:
       - /mnt/configs/tautulli:/config
