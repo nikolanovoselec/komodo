@@ -1063,6 +1063,45 @@ executions = [
 
 ##
 
+[[action]]
+name = "update_servers"
+tags = ["sync"]
+[action.config]
+schedule_format = "Cron"
+schedule = "0 0 5 * * *"
+webhook_enabled = false
+file_contents = """
+const servers = await komodo.read("ListServers", {
+  query: { tags: ["auto-update"] },
+});
+
+for (const server of servers) {
+  console.log();
+  console.log("------------------");
+  console.log("Updating", server.name);
+  await komodo.write("CreateTerminal", {
+    server: server.name,
+    name: "apt-upgrade",
+    command: "bash",
+    recreate: Types.TerminalRecreateMode.DifferentCommand,
+  });
+  await komodo.execute_terminal(
+    {
+      server: server.name,
+      terminal: "apt-upgrade",
+      command:
+        "apt update && apt upgrade -y && apt autoremove -y",
+    },
+    {
+      onLine: console.log,
+      onFinish: (code) => console.log("Finished", code),
+    },
+  );
+}
+"""
+
+##
+
 [[resource_sync]]
 name = "secrets"
 tags = ["sync"]
