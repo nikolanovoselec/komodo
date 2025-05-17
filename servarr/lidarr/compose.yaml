@@ -3,11 +3,11 @@ services:
     image: lscr.io/linuxserver/lidarr:latest
     container_name: servarr_lidarr
     environment:
-      - PUID=0
-      - PGID=0
+      - PUID=1000
+      - PGID=1000
       - TZ=Europe/Zurich
     volumes:
-      - /mnt/configs/lidarr:/config
+      - /docker/configs/lidarr:/config
       - /mnt/synology:/data
     ports:
       - 8686:8686
