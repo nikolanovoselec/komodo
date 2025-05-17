@@ -2,13 +2,11 @@ services:
   plex:
     image: lscr.io/linuxserver/plex:latest
     container_name: media_servers_plex
-    network_mode: host  #host for local/remote stream discovery
+    network_mode: host #host for local/remote stream discovery
     environment:
-      - PUID=0
-      - PGID=0
       - TZ=Europe/Zurich
       - VERSION=docker
-#      - PLEX_CLAIM=
+#      - PLEX_CLAIM= #only for initial start to claim the server
     volumes:
       - /mnt/configs/plex/:/config
       - /mnt/synology/tv shows/:/mnt/synology/tv shows/
@@ -17,7 +15,7 @@ services:
       - /mnt/synology-photos/:/mnt/synology-photos/
       - /mnt/synology/backup/:/mnt/synology/backup/
 #    ports:
-#      - 32397:32400
+#      - 32397:32400 #not needed when running on host network
     devices:
       - /dev/dri:/dev/dri
     restart: unless-stopped
