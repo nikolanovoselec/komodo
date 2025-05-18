@@ -2,7 +2,7 @@ services:
   lidarr:
     image: lscr.io/linuxserver/lidarr:latest
     container_name: servarr_lidarr
-    user: root
+    user: 911:911
     environment:
       - TZ=Europe/Zurich
     volumes:
