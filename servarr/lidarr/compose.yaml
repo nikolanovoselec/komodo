@@ -2,6 +2,7 @@ services:
   lidarr:
     image: lscr.io/linuxserver/lidarr:latest
     container_name: servarr_lidarr
+    user: 1026:100
     environment:
       - TZ=Europe/Zurich
     volumes:
