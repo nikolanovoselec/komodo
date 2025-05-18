@@ -2,9 +2,7 @@ services:
   lidarr:
     image: lscr.io/linuxserver/lidarr:latest
     container_name: servarr_lidarr
-    user: 1000:1000
-    PUID: 1026
-    PGID: 100
+    user: root
     environment:
       - TZ=Europe/Zurich
     volumes:
