@@ -1,6 +1,6 @@
 [[server]]
 name = "ai_llm"
-tags = ["sync", "auto-update"]
+tags = ["sync"]
 [server.config]
 address = "https://ai_llm.local:8120"
 
@@ -8,7 +8,7 @@ address = "https://ai_llm.local:8120"
 
 [[server]]
 name = "dns_ntp"
-tags = ["sync", "auto-update"]
+tags = ["sync"]
 [server.config]
 address = "https://192.168.5.33:8120"
 
