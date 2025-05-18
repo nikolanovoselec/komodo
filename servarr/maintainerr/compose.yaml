@@ -2,6 +2,7 @@ services:
   maintainerr:
     image: ghcr.io/jorenn92/maintainerr:latest #or jorenn92/maintainerr:latest
     container_name: servarr_maintainerr
+    user: 1026:100
     volumes:
       - type: bind
         source: /docker/configs/maintainerr
