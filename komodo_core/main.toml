@@ -1167,7 +1167,6 @@ tags = ["sync"]
 [resource_sync.config]
 repo = "nikolanovoselec/komodo"
 git_account = "nikolanovoselec"
-webhook_enabled = false
 resource_path = ["komodo_core/main.toml"]
 managed = true
 match_tags = ["sync"]
