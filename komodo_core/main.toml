@@ -1148,6 +1148,15 @@ for (const server of servers) {
 
 ##
 
+[[builder]]
+name = "local"
+tags = ["sync"]
+[builder.config]
+type = "Server"
+params.server_id = "komodo_core"
+
+##
+
 [[resource_sync]]
 name = "secrets"
 tags = ["sync"]
