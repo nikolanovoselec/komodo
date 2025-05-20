@@ -4,11 +4,11 @@ services:
     container_name: media_servers_backrest
     hostname: backrest-mediaservers.local.graymatter.ch
     volumes:
-      - /mnt/configs/backrest/data:/data
-      - /mnt/configs/backrest/config:/config
-      - /mnt/configs/backrest/cache:/cache
-      - /mnt/configs/backrest/tmp:/tmp
-      - /mnt/configs/:/userdata #Mount local paths to be backed up
+      - /docker/configs/backrest/data:/data
+      - /docker/configs/backrest/config:/config
+      - /docker/configs/backrest/cache:/cache
+      - /docker/configs/backrest/tmp:/tmp
+      - /docker/configs/:/userdata #Mount local paths to be backed up
       - /mnt/docker/_restic_backup_repository/:/repos #NFS mount of the remote repository
     environment:
       - BACKREST_DATA=/data
