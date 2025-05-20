@@ -5,7 +5,7 @@ services:
     environment:
       - TZ=Europe/Zurich
     volumes:
-      - /mnt/configs/tautulli:/config
+      - /docker/configs/tautulli:/config
     ports:
       - 8181:8181
     restart: unless-stopped
