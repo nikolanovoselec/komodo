@@ -6,7 +6,7 @@ services:
     environment:
       - TZ=Europe/Zurich
     volumes:
-      - /mnt/configs/emby:/config
+      - /docker/configs/emby:/config
       - /mnt/synology/tv shows/:/mnt/synology/tv shows/
       - /mnt/synology/movies/:/mnt/synology/movies/
       - /mnt/synology/backup/:/mnt/synology/backup/
