@@ -19,11 +19,11 @@ services:
       - ffmpegVersion=7
       - nodeName=MyInternalNode
     volumes:
-      - /mnt/configs/tdarr/server:/app/server
-      - /mnt/configs/tdarr/configs:/app/configs
-      - /mnt/configs/tdarr/logs:/app/logs
+      - /docker/configs/tdarr/server:/app/server
+      - /docker/configs/tdarr/configs:/app/configs
+      - /docker/configs/tdarr/logs:/app/logs
       - /mnt/synology-photos:/media
-      - /mnt/configs/tdarr/temp:/temp
+      - /docker/configs/tdarr/temp:/temp
     devices:
       - /dev/dri:/dev/dri
 
@@ -43,9 +43,9 @@ services:
       - inContainer=true
       - ffmpegVersion=7
     volumes:
-      - /mnt/configs/tdarr/configs:/app/configs
-      - /mnt/configs/tdarr/logs:/app/logs
+      - /docker/configs/tdarr/configs:/app/configs
+      - /docker/configs/tdarr/logs:/app/logs
       - /mnt/synology-photos:/media
-      - /mnt/configs/tdarr/temp:/temp
+      - /docker/configs/tdarr/temp:/temp
     devices:
       - /dev/dri:/dev/dri
