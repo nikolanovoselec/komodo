@@ -183,6 +183,9 @@ git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "dns_ntp/nebula_sync"
+environment = """
+PIHOLE_API_KEY = [[PIHOLE_API_KEY]]
+"""
 
 ##
 
