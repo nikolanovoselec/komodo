@@ -1,16 +1,11 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+    profilarr:
+        image: santiagosayshey/profilarr:latest # Use :beta for early access to new features
+        container_name: servarr_profilarr
+        ports:
+            - 6868:6868
+        volumes:
+            - /mnt/configs/profilarr:/config # Replace with your actual path
+        environment:
+            - TZ=Europe/Zurich # Set your timezone
+        restart: unless-stopped
