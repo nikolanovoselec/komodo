@@ -101,25 +101,6 @@ run_directory = "ai_llm/dozzle_agent"
 ##
 
 [[stack]]
-name = "dns_npt_pihole_stubby"
-tags = ["sync"]
-[stack.config]
-server = "dns_ntp"
-run_build = true
-poll_for_updates = true
-auto_update_all_services = true
-destroy_before_deploy = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-webhook_force_deploy = true
-run_directory = "dns_ntp/pihole_stubby"
-environment = """
-PIHOLE_API_KEY = [[PIHOLE_API_KEY]]
-"""
-
-##
-
-[[stack]]
 name = "dns_ntp_backrest"
 tags = ["sync"]
 [stack.config]
@@ -183,6 +164,25 @@ git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "dns_ntp/nebula_sync"
+environment = """
+PIHOLE_API_KEY = [[PIHOLE_API_KEY]]
+"""
+
+##
+
+[[stack]]
+name = "dns_ntp_pihole_stubby"
+tags = ["sync"]
+[stack.config]
+server = "dns_ntp"
+run_build = true
+poll_for_updates = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "dns_ntp/pihole_stubby"
 environment = """
 PIHOLE_API_KEY = [[PIHOLE_API_KEY]]
 """
