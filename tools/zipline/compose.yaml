@@ -24,6 +24,7 @@ services:
       - '3000:3000'
     env_file:
       - .env
+    user: root
     environment:
       - DATABASE_URL=postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgresql:5432/${POSTGRESQL_DB}
     depends_on:
