@@ -35,6 +35,6 @@ services:
     restart: unless-stopped
 
 volumes:
-    uploads:
-    themes:
-    public:
+  uploads:
+  themes:
+  public:
