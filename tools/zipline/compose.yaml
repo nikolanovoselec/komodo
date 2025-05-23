@@ -5,6 +5,7 @@ services:
     container_name: tools_zipline_database
     env_file:
       - .env
+    user: 1026:100
     environment:
       POSTGRES_USER: ${POSTGRESQL_USER}
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
@@ -22,6 +23,7 @@ services:
     container_name: tools_zipline_server
     ports:
       - '3000:3000'
+    user: 1026:100
     env_file:
       - .env
     environment:
