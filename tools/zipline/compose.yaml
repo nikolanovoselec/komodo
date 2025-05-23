@@ -29,12 +29,12 @@ services:
     depends_on:
       - postgresql
     volumes:
-      - uploads:/zipline/uploads
-      - public:/zipline/public
-      - themes:/zipline/themes
+      - zipline_uploads:/zipline/uploads
+      - zipline_public:/zipline/public
+      - zipline_themes:/zipline/themes
     restart: unless-stopped
 
 volumes:
-  uploads:
-  themes:
-  public:
+  zipline_uploads:
+  zipline_themes:
+  zipline_public:
