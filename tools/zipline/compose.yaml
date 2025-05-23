@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
       POSTGRES_DB: ${POSTGRESQL_DB}
     volumes:
-      - /mnt/docker/_tools_configs/zipline/database:/var/lib/postgresql/data
+      - /mnt/configs/zipline/database:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'zipline']
       interval: 10s
@@ -29,12 +29,7 @@ services:
     depends_on:
       - postgresql
     volumes:
-      - /mnt/docker/_tools_configs/zipline/uploads:/zipline/uploads
-      - /mnt/docker/_tools_configs/zipline/public:/zipline/public
-      - /mnt/docker/_tools_configs/zipline/themes:/zipline/themes
+      - /mnt/configs/zipline/uploads:/zipline/uploads
+      - /mnt/configs/zipline/public:/zipline/public
+      - /mnt/configs/zipline/themes:/zipline/themes
     restart: unless-stopped
-
-volumes:
-    uploads:
-    themes:
-    public:
