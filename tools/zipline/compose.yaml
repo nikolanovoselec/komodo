@@ -29,7 +29,12 @@ services:
     depends_on:
       - postgresql
     volumes:
-      - /mnt/configs/zipline/uploads:/zipline/uploads
-      - /mnt/configs/zipline/public:/zipline/public
-      - /mnt/configs/zipline/themes:/zipline/themes
+      - uploads:/zipline/uploads
+      - public:/zipline/public
+      - themes:/zipline/themes
     restart: unless-stopped
+
+volumes:
+    uploads:
+    themes:
+    public:
