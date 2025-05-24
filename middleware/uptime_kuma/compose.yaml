@@ -5,7 +5,7 @@ services:
     ports:
       - 3001:3001
     volumes:
-      - /mnt/configs/uptime-kuma:/app/data
+      - /docker/configs/uptime-kuma:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
     image: louislam/uptime-kuma:latest
     network_mode: bridge
