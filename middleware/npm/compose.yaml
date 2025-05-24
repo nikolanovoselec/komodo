@@ -10,8 +10,8 @@ services:
     environment:
       DISABLE_IPV6: 'true'
     volumes:
-      - /mnt/configs/npm/data:/data
-      - /mnt/configs/npm/letsencrypt:/etc/letsencrypt
+      - /docker/configs/npm/data:/data
+      - /docker/configs/npm/letsencrypt:/etc/letsencrypt
     networks:
       - proxy
 
