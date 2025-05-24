@@ -7,8 +7,8 @@ services:
     ports:
       - 8090:8090
     volumes:
-      - /mnt/configs/beszel/beszel_data:/beszel_data
-      - /mnt/configs/beszel/beszel_socket:/beszel_socket
+      - /docker/configs/beszel/beszel_data:/beszel_data
+      - /docker/configs/beszel/beszel_socket:/beszel_socket
     network_mode: bridge
     
   beszel-agent:
@@ -18,7 +18,7 @@ services:
     network_mode: host
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /mnt/configs/beszel/beszel_socket:/beszel_socket
+      - /docker/configs/beszel/beszel_socket:/beszel_socket
       # monitor other disks or partitions by mounting a folder in /extra-filesystems
       # - /mnt/disk/.beszel:/extra-filesystems/sda1:ro
     environment:
