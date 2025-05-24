@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     container_name: middleware_authentik_postgres
     volumes:
-      - /mnt/configs/authentik/database/authentik_database/_data:/var/lib/postgresql/data
+      - /docker/configs/authentik/database/authentik_database/_data:/var/lib/postgresql/data
     networks:
       - authentik
     environment:
@@ -19,7 +19,7 @@ services:
     networks:
       - authentik
     volumes:
-      - /mnt/configs/authentik/redis:/data
+      - /docker/configs/authentik/redis:/data
       
   server:
     image: ghcr.io/goauthentik/server:${VERSION} #manual upgrade
@@ -36,8 +36,8 @@ services:
       AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
     volumes:
-      - /mnt/configs/authentik/media:/media
-      - /mnt/configs/authentik/custom-templates:/templates
+      - /docker/configs/authentik/media:/media
+      - /docker/configs/authentik/custom-templates:/templates
     ports:
       - 7080:9000
       - 7443:9443
@@ -62,9 +62,9 @@ services:
     user: root
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /mnt/configs/authentik/media:/media
-      - /mnt/configs/authentik/certs:/certs
-      - /mnt/configs/authentik/custom-templates:/templates
+      - /docker/configs/authentik/media:/media
+      - /docker/configs/authentik/certs:/certs
+      - /docker/configs/authentik/custom-templates:/templates
     depends_on:
       - postgresql
       - redis
