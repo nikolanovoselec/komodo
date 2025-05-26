@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     container_name: tools_paperless_database
     volumes:
-      - /mnt/configs/paperless-ngx/redisdata:/data
+      - /docker/configs/paperless-ngx/redisdata:/data
 
   webserver:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
@@ -17,10 +17,10 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - /mnt/configs/paperless-ngx/data:/usr/src/paperless/data
-      - /mnt/configs/paperless-ngx/media:/usr/src/paperless/media
-      - /mnt/configs/paperless-ngx/export:/usr/src/paperless/export
-      - /mnt/configs/paperless-ngx/consume:/usr/src/paperless/consume
+      - /docker/configs/paperless-ngx/data:/usr/src/paperless/data
+      - /docker/configs/paperless-ngx/media:/usr/src/paperless/media
+      - /docker/configs/paperless-ngx/export:/usr/src/paperless/export
+      - /docker/configs/paperless-ngx/consume:/usr/src/paperless/consume
     env_file: .env
     environment:
       PAPERLESS_REDIS: redis://broker:6379
