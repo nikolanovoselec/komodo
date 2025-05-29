@@ -1,7 +1,6 @@
 services:
   flaresolverr:
-    # DockerHub mirror flaresolverr/flaresolverr:latest
-    image: pantlesscoding/flaresolverr:latest #experimental_version
+    image: 21hsmw/flaresolverr:nodriver
     container_name: servarr_flaresolverr
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-info}
