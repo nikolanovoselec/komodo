@@ -1,16 +1,11 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+    portainer-ce:
+        image: 'portainer/portainer-ce:lts'
+        volumes:
+            - '/docker/configs/portainer:/data'
+            - '/var/run/docker.sock:/var/run/docker.sock'
+        restart: always
+        container_name: middleware_portainer
+        ports:
+            - '9443:9443'
+            - '8000:8000'
