@@ -2,13 +2,14 @@ services:
   maintainerr:
     image: ghcr.io/jorenn92/maintainerr:latest #or jorenn92/maintainerr:latest
     container_name: servarr_maintainerr
-    user: 1026:100
     volumes:
       - type: bind
         source: /docker/configs/maintainerr
         target: /opt/data
     environment:
       - TZ=Europe/Zurich
+      - PUID=1026
+      - PGID=100
     ports:
       - 6246:6246
     restart: unless-stopped
