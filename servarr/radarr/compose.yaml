@@ -2,9 +2,10 @@ services:
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: servarr_radarr
-    user: 1026:100
     environment:
       - TZ=Europe/Zurich
+      - PUID=1026
+      - PGID=100
     volumes:
       - /docker/configs/radarr:/config
       - /mnt/synology:/data
