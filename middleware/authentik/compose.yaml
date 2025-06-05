@@ -21,9 +21,16 @@ services:
   redis:
     image: docker.io/library/redis:alpine
     restart: unless-stopped
+    command: --save 60 1 --loglevel warning
     container_name: middleware_authentik_redis
     networks:
       - authentik
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 3s
     volumes:
       - /docker/configs/authentik/redis:/data
       
@@ -48,11 +55,13 @@ services:
       - 7080:9000
       - 7443:9443
     depends_on:
-      - postgresql
-      - redis
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
       
   worker:
-    image: ghcr.io/goauthentik/server:${VERSION}  #manual upgrade
+    image: ghcr.io/goauthentik/server:${VERSION} #manual upgrade
     restart: unless-stopped
     container_name: middleware_authentik_worker
     networks:
@@ -72,8 +81,10 @@ services:
       - /docker/configs/authentik/certs:/certs
       - /docker/configs/authentik/custom-templates:/templates
     depends_on:
-      - postgresql
-      - redis
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 networks:
   authentik:
