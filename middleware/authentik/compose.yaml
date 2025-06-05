@@ -3,12 +3,18 @@ services:
     image: docker.io/library/postgres:16-alpine
     restart: unless-stopped
     container_name: middleware_authentik_postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
     volumes:
-      - /docker/configs/authentik/database/authentik_database/_data:/var/lib/postgresql/data
+      - /docker/configs/authentik/database:/var/lib/postgresql/data
     networks:
       - authentik
     environment:
-      POSTGRES_PASSWORD: ${AUTHENTIK_POSTGRESQL__PASSWORD}
+      POSTGRES_PASSWORD: ${AUTHENTIK_POSTGRESQL_PASSWORD}
       POSTGRES_USER: authentik
       POSTGRES_DB: authentik
       
