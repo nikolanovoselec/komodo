@@ -407,7 +407,7 @@ repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "middleware/authentik"
 environment = """
-AUTHENTIK_POSTGRESQL__PASSWORD = [[AUTHENTIK_POSTGRESQL__PASSWORD]]
+AUTHENTIK_POSTGRESQL_PASSWORD = [[AUTHENTIK_POSTGRESQL_PASSWORD]]
 AUTHENTIK_SECRET_KEY = [[AUTHENTIK_SECRET_KEY]]
 VERSION = 2025.4.1
 """
