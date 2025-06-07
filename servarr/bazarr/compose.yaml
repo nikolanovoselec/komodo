@@ -4,6 +4,8 @@ services:
     container_name: servarr_bazarr
     environment:
       - TZ=Europe/Zurich
+      - PUID=1026
+      - PGID=100
     volumes:
       - /docker/configs/bazarr:/config
       - /mnt/synology:/data
