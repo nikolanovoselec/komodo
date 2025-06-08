@@ -1,6 +1,6 @@
 services:
     pihole:
-      image: pihole/pihole:2025.06.0
+      image: pihole/pihole:2025.06.1
       container_name: dns_ntp_pihole_pihole
       restart: unless-stopped
       ports:
