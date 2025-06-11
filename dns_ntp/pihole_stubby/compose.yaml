@@ -14,7 +14,7 @@ services:
         - PIHOLE_UID=1000
         - PIHOLE_GID=1000
         - FTLCONF_webserver_api_password=${PIHOLE_API_KEY}
-        - FTLCONF_dns_upstreams=127.0.0.1#8053
+#        - FTLCONF_dns_upstreams=127.0.0.1#8053
         - FTLCONF_dns_listeningMode=ALL
         - IPv6=false
         - WEBUIBOXEDLAYOUT=traditional
@@ -32,6 +32,6 @@ services:
       container_name: dns_ntp_pihole_stubby
       restart: unless-stopped
       network_mode: host
-      user: 0:0
+#      user: root
       volumes:
         - /mnt/configs/pihole_stubby/stubby.yml:/opt/stubby/etc/stubby/stubby.yml:ro
