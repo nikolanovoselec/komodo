@@ -2,8 +2,7 @@ services:
   cloudflared:
     image: cloudflare/cloudflared:latest
     restart: unless-stopped
-    container_name: media_servers_cloudflared
+    container_name: storage_cloudflared
     network_mode: host
-    user: 1000:1000
     command: tunnel --no-autoupdate run --token
       ${CFD_TOKEN_MEDIASERVERS}
