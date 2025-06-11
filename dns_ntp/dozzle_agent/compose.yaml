@@ -9,5 +9,5 @@ services:
       - 7007:7007
     restart: unless-stopped
     environment:
-    - DOZZLE_HOSTNAME=pihole-master
+    - DOZZLE_HOSTNAME=dns_ntp
     network_mode: bridge
