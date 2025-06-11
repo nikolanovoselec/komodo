@@ -7,5 +7,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
       - 7007:7007
+    environment:
+    - DOZZLE_HOSTNAME=media_servers
     restart: unless-stopped
     network_mode: bridge
