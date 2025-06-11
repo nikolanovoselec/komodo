@@ -9,5 +9,6 @@ services:
     - RUN_GRAVITY=false
     - CRON=1 * * * *
     - CLIENT_RETRY_DELAY_SECONDS=20
+    - TIMEZONE=Europe/Zurich
     restart: unless-stopped
     network_mode: bridge
