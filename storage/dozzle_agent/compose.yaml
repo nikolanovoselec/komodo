@@ -8,6 +8,6 @@ services:
     ports:
       - 7007:7007
     environment:
-    - DOZZLE_HOSTNAME=synology
+    - DOZZLE_HOSTNAME=storage
     restart: unless-stopped
     network_mode: bridge
