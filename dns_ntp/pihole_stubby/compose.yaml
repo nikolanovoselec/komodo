@@ -32,6 +32,6 @@ services:
       container_name: dns_ntp_pihole_stubby
       restart: unless-stopped
       network_mode: host
-#      user: root
+      user: root
       volumes:
         - /mnt/configs/pihole_stubby/stubby.yml:/opt/stubby/etc/stubby/stubby.yml:ro
