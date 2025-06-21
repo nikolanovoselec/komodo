@@ -1,5 +1,23 @@
 services:
-    helparr:
-        image: 'helparr/helparr:latest'
-        ports:
-            - '3003:3000'
+  helparr:
+    image: helparr/helparr:latest
+    container_name: servarr_helparr
+    restart: unless-stopped
+    ports:
+      - "3003:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      # Redis is optional - comment out REDIS_URL to use in-memory storage
+#      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      # Optional: Add custom configuration
+      - HELPARR_INSTANCE_NAME=${HELPARR_INSTANCE_NAME:-Helparr}
+      - HELPARR_ADMIN_EMAIL=${HELPARR_ADMIN_EMAIL:-admin@localhost}
+      # Optional: TMDb health monitoring
+      - TMDB_HEALTH_CHECK=${TMDB_HEALTH_CHECK:-false}
+      # Optional: Demo API key for public instances
+      - TMDB_DEMO_API_KEY=${TMDB_DEMO_API_KEY}
+    volumes:
+      - /docker/configs/helparr:/app/data
+      - /etc/localtime:/etc/localtime:ro
