@@ -1,9 +1,8 @@
-version: '3.9'
 services:
   it-tools:
-    image: 'corentinth/it-tools:latest'  # The Docker image to use.
+    image: 'corentinth/it-tools:latest'
     ports:
-      - '8081:80'  # Maps port 80 inside the container to port 8080 on the host.
-    restart: unless-stopped  # Ensures the container restarts unless it is explicitly stopped.
-    container_name: tools_it-tools  # Custom name for the container.
+      - '8081:80'
+    restart: unless-stopped
+    container_name: tools_it-tools
     network_mode: bridge
