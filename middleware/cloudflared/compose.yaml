@@ -5,8 +5,5 @@ services:
     restart: unless-stopped
     network_mode: host
     user: 1000:1000
-    dns:
-      - 192.168.5.92
-      - 192.168.5.162
     command: tunnel --no-autoupdate run --token
       ${TOKEN} #secret
