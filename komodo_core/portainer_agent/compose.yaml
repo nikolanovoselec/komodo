@@ -9,3 +9,4 @@ services:
         container_name: komodo_core_portainer_agent
         ports:
             - '9001:9001'
+        network_mode: bridge
