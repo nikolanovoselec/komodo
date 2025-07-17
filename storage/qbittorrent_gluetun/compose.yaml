@@ -18,7 +18,7 @@ services:
       - "32323:32323/tcp"
       - "32323:32323/udp"
     volumes:
-#      - /etc/localtime:/etc/localtime:ro
+      - /etc/localtime:/etc/localtime:ro
       - /volume1/docker/_synology_configs/gluetun/wg0.conf:/gluetun/wireguard/wg0.conf:ro
     labels:
       deunhealth.restart.on.unhealthy: "true"
@@ -45,7 +45,7 @@ services:
       deunhealth.restart.on.unhealthy: "true"
     restart: unless-stopped
     healthcheck: # https://github.com/qdm12/gluetun/issues/641#issuecomment-933856220
-      test: "curl -sf https://example.com  || exit 1"
+      test: "curl -sf https://cloudflare.com  || exit 1"
       interval: 1m
       timeout: 10s
       retries: 1
