@@ -69,7 +69,7 @@ services:
 #    build: .
     image: qmcgaw/deunhealth
     container_name: storage_qbittorrent_deunhealth
-    network_mode: "service:gluetun"
+    network_mode: "none"
     environment:
       - LOG_LEVEL=info
       - HEALTH_SERVER_ADDRESS=127.0.0.1:9999
