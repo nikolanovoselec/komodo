@@ -44,11 +44,11 @@ services:
     labels:
       deunhealth.restart.on.unhealthy: "true"
     restart: unless-stopped
-   # healthcheck: # https://github.com/qdm12/gluetun/issues/641#issuecomment-933856220
-   #   test: "curl -sf https://qbittorrent.graymatter.ch  || exit 1"
-   #   interval: 1m
-   #   timeout: 10s
-   #   retries: 1
+    healthcheck: # https://github.com/qdm12/gluetun/issues/641#issuecomment-933856220
+      test: "curl -sf https://google.com  || exit 1"
+      interval: 1m
+      timeout: 10s
+      retries: 3
 
 #  cloudflared:
 #    image: cloudflare/cloudflared:latest
@@ -65,15 +65,15 @@ services:
 
 ###########
 
-  #deunhealth:
+  deunhealth:
 #    build: .
-   # image: qmcgaw/deunhealth
-  #  container_name: storage_qbittorrent_deunhealth
-   # network_mode: "none"
-  #  environment:
-   #   - LOG_LEVEL=info
-   #   - HEALTH_SERVER_ADDRESS=127.0.0.1:9999
-  #    - TZ=Europe/Zurich
- #   restart: unless-stopped
-   # volumes:
-   #   - /var/run/docker.sock:/var/run/docker.sock
+    image: qmcgaw/deunhealth
+    container_name: storage_qbittorrent_deunhealth
+    network_mode: "none"
+    environment:
+      - LOG_LEVEL=info
+      - HEALTH_SERVER_ADDRESS=127.0.0.1:9999
+      - TZ=Europe/Zurich
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
