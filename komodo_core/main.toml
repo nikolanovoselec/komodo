@@ -1213,6 +1213,7 @@ tags = ["sync"]
 [action.config]
 schedule_format = "Cron"
 schedule = "0 0 5 * * *"
+schedule_timezone = "Europe/Berlin"
 webhook_enabled = false
 file_contents = """
 const servers = await komodo.read("ListServers", {
