@@ -1,16 +1,7 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  minecraft_playit:
+    image: ghcr.io/playit-cloud/playit-agent:latest
+    network_mode: host
+    environment:
+    - SECRET_KEY=${TOKEN}
+    restart: unless_stopped
