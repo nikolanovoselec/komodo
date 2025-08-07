@@ -597,6 +597,25 @@ run_directory = "middleware/uptime_kuma/"
 ##
 
 [[stack]]
+name = "minecraft_playit_agent"
+tags = ["sync", "auto-update"]
+[stack.config]
+server = "minecraft"
+run_build = true
+poll_for_updates = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "minecraft/playit"
+environment = """
+  TOKEN = [[PLAYIT_TOKEN]]
+"""
+
+##
+
+[[stack]]
 name = "servarr_autobrr"
 tags = ["sync"]
 [stack.config]
