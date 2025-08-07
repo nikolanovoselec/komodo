@@ -1,5 +1,6 @@
 services:
   minecraft_playit:
+    name: minecraft_playit
     image: ghcr.io/playit-cloud/playit-agent:latest
     network_mode: host
     environment:
