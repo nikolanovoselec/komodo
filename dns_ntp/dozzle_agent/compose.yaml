@@ -9,5 +9,5 @@ services:
       - 7007:7007
     restart: unless-stopped
     environment:
-    - DOZZLE_HOSTNAME=dns_ntp
+    - DOZZLE_HOSTNAME=minecraft
     network_mode: bridge
