@@ -43,6 +43,15 @@ enabled = true
 ##
 
 [[server]]
+name = "minecraft"
+tags = ["sync", "auto-update"]
+[server.config]
+address = "https://minecraft.local:8120"
+enabled = true
+
+##
+
+[[server]]
 name = "servarr"
 tags = ["sync", "auto-update"]
 [server.config]
@@ -118,6 +127,7 @@ run_directory = "dns_ntp/backrest"
 
 [[stack]]
 name = "dns_ntp_beszel_agent"
+template = true
 tags = ["sync"]
 [stack.config]
 server = "dns_ntp"
@@ -137,6 +147,7 @@ BESZEL_KEY = [[BESZEL_KEY]]
 
 [[stack]]
 name = "dns_ntp_dozzle_agent"
+template = true
 tags = ["sync"]
 [stack.config]
 server = "dns_ntp"
