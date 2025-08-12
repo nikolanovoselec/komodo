@@ -1,16 +1,37 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+    pihole:
+      image: pihole/pihole:2025.07.1
+      container_name: storage_pihole_pihole
+      restart: unless-stopped
+      ports:
+        - 53:53/tcp
+        - 53:53/udp
+        - 80:80
+      volumes:
+        - /docker/_synology_configs/pihole_stubby:/etc/pihole
+      environment:
+        - TZ=Europe/Zurich
+        - PIHOLE_UID=1000
+        - PIHOLE_GID=1000
+        - FTLCONF_webserver_api_password=${PIHOLE_API_KEY}
+#        - FTLCONF_dns_upstreams=127.0.0.1#8053
+        - FTLCONF_dns_listeningMode=ALL
+        - IPv6=false
+        - WEBUIBOXEDLAYOUT=traditional
+        - WEBTHEME=default-auto
+      cap_add:
+        - CAP_SYS_TIME
+        - CAP_SYS_NICE
+      network_mode: host
+      depends_on:
+        stubby:
+          condition: service_healthy
 
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+    stubby:
+      image: mvance/stubby:latest
+      container_name: storage_pihole_stubby
+      restart: unless-stopped
+      network_mode: host
+      user: root
+      volumes:
+        - /docker/_synology_configs/pihole_stubby/stubby.yml:/opt/stubby/etc/stubby/stubby.yml:ro
