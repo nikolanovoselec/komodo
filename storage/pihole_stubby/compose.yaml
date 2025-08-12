@@ -1,7 +1,7 @@
 services:
     pihole:
       image: pihole/pihole:2025.07.1
-      container_name: storage_pihole_pihole
+      container_name: storage_pihole
       restart: unless-stopped
       ports:
         - 53:53/tcp
@@ -26,16 +26,3 @@ services:
       depends_on:
         stubby:
           condition: service_healthy
-
-    stubby:
-      image: mvance/stubby:latest
-      container_name: storage_pihole_stubby
-      restart: unless-stopped
-      network_mode: host
-      user: root
-      environment:
-        - TZ=Europe/Zurich
-        - PIHOLE_UID=1026
-        - PIHOLE_GID=100
-      volumes:
-        - "/docker/_synology_configs/pihole_stubby/stubby.yml":"/opt/stubby/etc/stubby/stubby.yml":ro
