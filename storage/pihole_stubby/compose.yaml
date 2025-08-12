@@ -38,4 +38,4 @@ services:
         - PIHOLE_UID=1026
         - PIHOLE_GID=100
       volumes:
-        - "/docker/_synology_configs/pihole_stubby/stubby.yml":"/opt/stubby/etc/stubby/stubby.yml:ro"
+        - "/docker/_synology_configs/pihole_stubby/stubby.yml":"/opt/stubby/etc/stubby/stubby.yml":ro
