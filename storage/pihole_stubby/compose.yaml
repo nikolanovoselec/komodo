@@ -22,7 +22,7 @@ services:
       cap_add:
         - CAP_SYS_TIME
         - CAP_SYS_NICE
-      network_mode: host
+      network_mode: bridge
       depends_on:
         stubby:
           condition: service_healthy
