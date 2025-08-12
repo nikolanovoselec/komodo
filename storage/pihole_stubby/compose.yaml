@@ -11,8 +11,8 @@ services:
         - /docker/_synology_configs/pihole_stubby:/etc/pihole
       environment:
         - TZ=Europe/Zurich
-        - PIHOLE_UID=1000
-        - PIHOLE_GID=1000
+        - PIHOLE_UID=1026
+        - PIHOLE_GID=100
         - FTLCONF_webserver_api_password=${PIHOLE_API_KEY}
 #        - FTLCONF_dns_upstreams=127.0.0.1#8053
         - FTLCONF_dns_listeningMode=ALL
