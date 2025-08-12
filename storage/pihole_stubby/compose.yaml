@@ -23,6 +23,3 @@ services:
         - CAP_SYS_TIME
         - CAP_SYS_NICE
       network_mode: bridge
-      depends_on:
-        stubby:
-          condition: service_healthy
