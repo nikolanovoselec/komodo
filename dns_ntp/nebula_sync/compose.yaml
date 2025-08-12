@@ -4,7 +4,7 @@ services:
     container_name: dns_ntp_nebula_sync
     environment:
     - PRIMARY=http://pihole-master.local|${PIHOLE_API_KEY}
-    - REPLICAS=http://pihole-slave.local|${PIHOLE_API_KEY} #,http://192.168.5.162|${PIHOLE_API_KEY}
+    - REPLICAS=http://pihole-slave.local|${PIHOLE_API_KEY},http://nas.local:81|${PIHOLE_API_KEY}
     - FULL_SYNC=true
     - RUN_GRAVITY=false
     - CRON=1 * * * *
