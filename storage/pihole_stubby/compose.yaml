@@ -8,7 +8,7 @@ services:
         - 53:53/udp
         - 81:80
       volumes:
-        - /docker/_synology_configs/pihole_stubby:/etc/pihole
+        - /volume1/docker/_synology_configs/pihole_stubby:/etc/pihole
       environment:
         - TZ=Europe/Zurich
         - PIHOLE_UID=1000
