@@ -11,8 +11,8 @@ services:
         - /docker/_synology_configs/pihole_stubby:/etc/pihole
       environment:
         - TZ=Europe/Zurich
-        - PIHOLE_UID=1026
-        - PIHOLE_GID=100
+        - PIHOLE_UID=1000
+        - PIHOLE_GID=1000
         - FTLCONF_webserver_api_password=${PIHOLE_API_KEY}
 #        - FTLCONF_dns_upstreams=127.0.0.1#8053
         - FTLCONF_dns_listeningMode=ALL
@@ -33,5 +33,9 @@ services:
       restart: unless-stopped
       network_mode: host
       user: root
+      environment:
+        - TZ=Europe/Zurich
+        - PIHOLE_UID=1000
+        - PIHOLE_GID=1000
       volumes:
         - /docker/_synology_configs/pihole_stubby/stubby.yml:/opt/stubby/etc/stubby/stubby.yml:ro
