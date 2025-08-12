@@ -23,4 +23,4 @@ services:
       cap_add:
         - CAP_SYS_TIME
         - CAP_SYS_NICE
-      network_mode: middleware_vlan
+      network_mode: middleware-vlan
