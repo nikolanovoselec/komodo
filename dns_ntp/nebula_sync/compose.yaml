@@ -11,4 +11,4 @@ services:
     - CLIENT_RETRY_DELAY_SECONDS=20
     - TIMEZONE=Europe/Zurich
     restart: unless-stopped
-    network_mode: middleware-vlan
+    network: middleware-vlan
