@@ -6,7 +6,7 @@ services:
       ports:
         - 53:53/tcp
         - 53:53/udp
-        - 80:80
+        - 81:80
       volumes:
         - /docker/_synology_configs/pihole_stubby:/etc/pihole
       environment:
