@@ -619,7 +619,7 @@ destroy_before_deploy = true
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
-run_directory = "dns_ntp/beszel_agent"
+run_directory = "minecraft/beszel_agent"
 environment = """
 BESZEL_KEY = [[BESZEL_KEY]]
 """
@@ -638,7 +638,7 @@ destroy_before_deploy = true
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
-run_directory = "dns_ntp/dozzle_agent"
+run_directory = "minecraft/dozzle_agent"
 
 ##
 
