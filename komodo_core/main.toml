@@ -183,6 +183,7 @@ PIHOLE_API_KEY = [[PIHOLE_API_KEY]]
 
 [[stack]]
 name = "dns_ntp_pihole_stubby"
+template = true
 tags = ["sync"]
 [stack.config]
 server = "dns_ntp"
@@ -1039,6 +1040,25 @@ git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "storage/openspeedtest"
+
+##
+
+[[stack]]
+name = "storage_pihole"
+tags = ["sync"]
+[stack.config]
+server = "storage"
+run_build = true
+poll_for_updates = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "storage/pihole_stubby"
+environment = """
+PIHOLE_API_KEY = [[PIHOLE_API_KEY]]
+"""
 
 ##
 
