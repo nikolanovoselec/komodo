@@ -1,8 +1,0 @@
-services:
-  minecraft_playit:
-    container_name: minecraft_playit_agent
-    image: ghcr.io/playit-cloud/playit-agent:latest
-    network_mode: host
-    environment:
-    - SECRET_KEY=${TOKEN}
-    restart: unless-stopped
