@@ -655,7 +655,7 @@ destroy_before_deploy = true
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
-run_directory = "minecraft/playit"
+run_directory = "minecraft/playit_agent"
 environment = """
   TOKEN = [[PLAYIT_TOKEN]]
 """
