@@ -3,7 +3,7 @@ services:
         image: 'portainer/agent:latest'
         volumes:
             - '/:/host'
-            - '/var/lib/docker/volumes:/var/lib/docker/volumes'
+            - '/volume1/@docker/:/var/lib/docker/volumes'
             - '/var/run/docker.sock:/var/run/docker.sock'
         restart: unless-stopped
         container_name: storage_portainer_agent
