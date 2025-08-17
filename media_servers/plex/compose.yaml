@@ -11,7 +11,7 @@ services:
       - /docker/configs/plex/:/config
       - /mnt/video/tv shows/:/mnt/synology/tv shows/
       - /mnt/video/movies/:/mnt/synology/movies/
-    #  - /mnt/music:/mnt/synology-music/
+      - /mnt/music:/mnt/synology-music/
       - /mnt/photo/:/mnt/synology-photos/
       - /mnt/video/backup/:/mnt/synology/backup/
 #    ports:
