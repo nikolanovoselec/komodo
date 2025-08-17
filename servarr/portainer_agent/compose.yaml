@@ -1,16 +1,12 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+    agent:
+        image: 'portainer/agent:latest'
+        volumes:
+            - '/:/host'
+            - '/var/lib/docker/volumes:/var/lib/docker/volumes'
+            - '/var/run/docker.sock:/var/run/docker.sock'
+        restart: unless-stopped
+        container_name: servarr_portainer_agent
+        ports:
+            - '9001:9001'
+        network_mode: bridge
