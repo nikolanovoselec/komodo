@@ -1,16 +1,19 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  coolify:
+    image: ghcr.io/coollabsio/coolify:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - COOLIFY_DATABASE_URL=postgresql://user:${COOLIFY_SECRET_KEY}@db:5432/coolify
+      - COOLIFY_SECRET_KEY=${COOLIFY_SECRET_KEY}
+    depends_on:
+      - db
+      - redis
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=${COOLIFY_SECRET_KEY}
+      - POSTGRES_DB=coolify
+  redis:
+    image: redis:7
