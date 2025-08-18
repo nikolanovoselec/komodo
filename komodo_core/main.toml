@@ -11,7 +11,6 @@ enabled = true
 name = "komodo_core"
 tags = ["sync"]
 [server.config]
-address = "https://periphery:8120"
 enabled = true
 
 ##
@@ -1198,11 +1197,51 @@ executions = [
 ##
 
 [[action]]
-name = "update_servers"
+name = "perip"
 tags = ["sync"]
 [action.config]
 schedule_format = "Cron"
 schedule = "0 0 5 * * *"
+schedule_timezone = "Europe/Berlin"
+webhook_enabled = false
+file_contents = """
+const servers = await komodo.read("ListServers", {
+  query: { tags: ["auto-update"] },
+});
+
+for (const server of servers) {
+  console.log();
+  console.log("------------------");
+  console.log("Updating", server.name);
+  await komodo.write("CreateTerminal", {
+    server: server.name,
+    name: "apt-upgrade",
+    command: "bash",
+    recreate: Types.TerminalRecreateMode.DifferentCommand,
+  });
+  await komodo.execute_terminal(
+    {
+      server: server.name,
+      terminal: "apt-upgrade",
+      command:
+        "apt update && apt upgrade -y && apt autoremove -y",
+    },
+    {
+      onLine: console.log,
+      onFinish: (code) => console.log("Finished", code),
+    },
+  );
+}
+"""
+
+##
+
+[[action]]
+name = "update_servers"
+tags = ["sync"]
+[action.config]
+schedule_format = "Cron"
+schedule = "0 0 6 * * *"
 schedule_timezone = "Europe/Berlin"
 webhook_enabled = false
 file_contents = """
