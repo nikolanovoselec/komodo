@@ -1212,19 +1212,19 @@ const servers = await komodo.read("ListServers", {
 for (const server of servers) {
   console.log();
   console.log("------------------");
-  console.log("Updating", server.name);
+  console.log("Updating Komodo Periphery on", server.name);
   await komodo.write("CreateTerminal", {
     server: server.name,
-    name: "apt-upgrade",
+    name: "periphery-update",
     command: "bash",
     recreate: Types.TerminalRecreateMode.DifferentCommand,
   });
   await komodo.execute_terminal(
     {
       server: server.name,
-      terminal: "apt-upgrade",
+      terminal: "periphery-update",
       command:
-        "apt update && apt upgrade -y && apt autoremove -y",
+        "nohup bash -c 'curl -sSL https://raw.githubusercontent.com/moghtech/komodo/main/scripts/setup-periphery.py | python3'",
     },
     {
       onLine: console.log,
