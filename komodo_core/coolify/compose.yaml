@@ -1,29 +1,44 @@
 services:
   coolify:
     image: ghcr.io/coollabsio/coolify:latest
+    container_name: komodo_core_coolify
     ports:
-      - "8000:8000" # Web UI access
-    environment:
-      - COOLIFY_DATABASE_URL=postgresql://coolify:${COOLIFY_SECRET_KEY}@db:5432/coolify
-      - COOLIFY_SECRET_KEY=${COOLIFY_SECRET_KEY} # Generate a secure key
-      - COOLIFY_HOST_ADDRESS=http://komodo-core.local:8000 # Replace with your server's IP/domain
+      - "8080:8080"
+    volumes:
+      - /docker/configs/coolify/data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    privileged: true
+    restart: unless-stopped
     depends_on:
-      - db
+      - postgres
       - redis
-    volumes:
-      - /docker/configs/coolify/data:/data/coolify # Persist Coolify config/logs
-    restart: unless-stopped
-  db:
-    image: postgres:15
     environment:
-      - POSTGRES_USER=coolify
-      - POSTGRES_PASSWORD=${COOLIFY_SECRET_KEY} # Change to a secure password
-      - POSTGRES_DB=coolify
-    volumes:
-      - /docker/configs/coolify/database:/var/lib/postgresql/data # Persist PostgreSQL data
+      DATABASE_URL: postgres://coolify:coolify@coolify-db:5432/coolify
+      REDIS_HOST: coolify-redis
+      APP_KEY: ${COOLIFY_SECRET_KEY}
+    networks:
+      - coolify
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: komodo_core_coolify_database
     restart: unless-stopped
+    environment:
+      POSTGRES_USER: coolify
+      POSTGRES_PASSWORD: coolify
+      POSTGRES_DB: coolify
+    volumes:
+      - /docker/configs/coolify/database:/var/lib/postgresql/data
+    networks:
+      - coolify
+
   redis:
-    image: redis:7
-    volumes:
-      - /docker/configs/coolify/redis:/data # Persist Redis data
+    image: redis:7-alpine
+    container_name: komodo_core_coolify_redis
     restart: unless-stopped
+    networks:
+      - coolify
+
+networks:
+  coolify:
+    driver: bridge
