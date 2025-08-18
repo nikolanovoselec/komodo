@@ -13,7 +13,7 @@ services:
       - postgres
       - redis
     environment:
-      DATABASE_URL: postgres://coolify:coolify@coolify-db:5432/coolify
+      DATABASE_URL: postgres://coolify:coolify@komodo_core_coolify_database:5432/coolify
       REDIS_HOST: komodo_core_coolify_redis
       APP_KEY: ${COOLIFY_SECRET_KEY}
     networks:
