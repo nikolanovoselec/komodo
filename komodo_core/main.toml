@@ -1224,7 +1224,7 @@ for (const server of servers) {
       server: server.name,
       terminal: "periphery-update",
       command:
-        "nohup bash -c 'curl -sSL https://raw.githubusercontent.com/moghtech/komodo/main/scripts/setup-periphery.py | python3'",
+        "curl -sSL https://raw.githubusercontent.com/moghtech/komodo/main/scripts/setup-periphery.py | python3",
     },
     {
       onLine: console.log,
