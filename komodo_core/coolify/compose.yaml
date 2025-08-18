@@ -18,6 +18,10 @@ services:
       APP_KEY: ${COOLIFY_SECRET_KEY}
     networks:
       - coolify
+    dns:
+      - 192.168.5.162
+      - 192.168.5.92
+      - 192.168.2.29
 
   postgres:
     image: postgres:15-alpine
