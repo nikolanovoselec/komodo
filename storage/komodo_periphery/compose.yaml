@@ -1,16 +1,50 @@
-## Add your compose file here
+####################################
+# ߦOMODO COMPOSE - PERIPHERY ߦ
+####################################
+
+## This compose file will deploy:
+##   1. Komodo Periphery
+
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  periphery:
+    image: ghcr.io/moghtech/komodo-periphery:latest
+    labels:
+      komodo.skip: # Prevent Komodo from stopping with StopAllContainers
+    container_name: storage_komodo_periphery
+    restart: unless-stopped
+    logging:
+      driver: local
+    ## https://komo.do/docs/connect-servers#configuration
+    environment:
+      PERIPHERY_ROOT_DIRECTORY: /mnt/configs/komodo/komodo-periphery
+      ## Pass the same passkey as used by the Komodo Core connecting to this Periphery agent.
+      PERIPHERY_PASSKEYS: ${KOMODO_PERIPHERY_PASSKEY}
+      ## Make server run over https
+      PERIPHERY_SSL_ENABLED: true
+      ## Specify whether to disable the terminals feature
+      ## and disallow remote shell access (inside the Periphery container).
+      PERIPHERY_DISABLE_TERMINALS: false
+      PUID: 1026
+      PGID: 100
+      ## If the disk size is overreporting, can use one of these to 
+      ## whitelist / blacklist the disks to filter them, whichever is easier.
+      ## Accepts comma separated list of paths.
+      ## Usually whitelisting just /etc/hostname gives correct size for single root disk.
+      PERIPHERY_INCLUDE_DISK_MOUNTS: /etc/hostname
+      # PERIPHERY_EXCLUDE_DISK_MOUNTS: /snap,/etc/repos
+    volumes:
+      ## Mount external docker socket
+      - /var/run/docker.sock:/var/run/docker.sock
+      ## Allow Periphery to see processes outside of container
+      - /proc:/proc
+      ## Specify the Periphery agent root directory.
+      ## Must be the same inside and outside the container,
+      ## or docker will get confused. See https://github.com/moghtech/komodo/discussions/180.
+      ## Default: /etc/komodo.
+      - /volume1/docker/_synology_configs/komodo-periphery:/mnt/configs/komodo/komodo-periphery
+    ## If periphery is being run remote from the core server, ports need
+    ## to be exposed on the host.
+    ports:
+     - 8120:8120
+    ## If you want to use a custom periphery config file, use command to pass it to periphery.
+    # command: periphery --config-path ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/periphery.config.toml
