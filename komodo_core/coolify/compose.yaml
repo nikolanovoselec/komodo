@@ -45,4 +45,4 @@ services:
 
 networks:
   coolify:
-    driver: host
+    driver: bridge
