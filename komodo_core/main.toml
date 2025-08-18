@@ -1197,46 +1197,6 @@ executions = [
 ##
 
 [[action]]
-name = "periphery_update"
-tags = ["sync"]
-[action.config]
-schedule_format = "Cron"
-schedule = "0 0 5 * * *"
-schedule_timezone = "Europe/Berlin"
-webhook_enabled = false
-file_contents = """
-const servers = await komodo.read("ListServers", {
-  query: { tags: ["auto-update"] },
-});
-
-for (const server of servers) {
-  console.log();
-  console.log("------------------");
-  console.log("Updating Komodo Periphery on", server.name);
-  await komodo.write("CreateTerminal", {
-    server: server.name,
-    name: "periphery-update",
-    command: "bash",
-    recreate: Types.TerminalRecreateMode.DifferentCommand,
-  });
-  await komodo.execute_terminal(
-    {
-      server: server.name,
-      terminal: "periphery-update",
-      command:
-        "curl -sSL https://raw.githubusercontent.com/moghtech/komodo/main/scripts/setup-periphery.py | python3",
-    },
-    {
-      onLine: console.log,
-      onFinish: (code) => console.log("Finished", code),
-    },
-  );
-}
-"""
-
-##
-
-[[action]]
 name = "update_servers"
 tags = ["sync"]
 [action.config]
@@ -1299,7 +1259,7 @@ include_variables = true
 ##
 
 [[resource_sync]]
-name = "servers_and_stacks"
+name = "servers_stacks_configs"
 tags = ["sync"]
 [resource_sync.config]
 repo = "nikolanovoselec/komodo"
