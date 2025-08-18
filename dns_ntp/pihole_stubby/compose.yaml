@@ -1,7 +1,7 @@
 services:
     pihole:
       image: pihole/pihole:2025.07.1
-      container_name: dns_ntp_pihole_pihole
+      container_name: dns_ntp_pihole
       restart: unless-stopped
       ports:
         - 53:53/tcp
@@ -23,15 +23,15 @@ services:
         - CAP_SYS_TIME
         - CAP_SYS_NICE
       network_mode: host
-      depends_on:
-        stubby:
-          condition: service_healthy
+#      depends_on:
+#        stubby:
+#          condition: service_healthy
 
-    stubby:
-      image: mvance/stubby:latest
-      container_name: dns_ntp_pihole_stubby
-      restart: unless-stopped
-      network_mode: host
-      user: root
-      volumes:
-        - /mnt/configs/pihole_stubby/stubby.yml:/opt/stubby/etc/stubby/stubby.yml:ro
+#    stubby:
+#      image: mvance/stubby:latest
+#      container_name: dns_ntp_pihole_stubby
+#      restart: unless-stopped
+#      network_mode: host
+#      user: root
+#      volumes:
+#        - /mnt/configs/pihole_stubby/stubby.yml:/opt/stubby/etc/stubby/stubby.yml:ro
