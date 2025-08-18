@@ -1197,7 +1197,7 @@ executions = [
 ##
 
 [[action]]
-name = "perip"
+name = "periphery_update"
 tags = ["sync"]
 [action.config]
 schedule_format = "Cron"
