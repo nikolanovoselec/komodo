@@ -144,7 +144,7 @@ PIHOLE_API_KEY = [[PIHOLE_API_KEY]]
 ##
 
 [[stack]]
-name = "dns_ntp_pihole_stubby"
+name = "dns_ntp_pihole"
 template = true
 tags = ["sync"]
 [stack.config]
