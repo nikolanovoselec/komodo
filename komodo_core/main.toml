@@ -1244,7 +1244,7 @@ DATASOURCE_LOCAL_DIRECTORY="uploads"
 
 [[procedure]]
 name = "Check for Updates"
-tags = ["sync"]
+tags = ["sync", "system"]
 config.schedule = "Every hour"
 
 [[procedure.config.stage]]
