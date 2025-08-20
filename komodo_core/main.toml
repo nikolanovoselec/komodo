@@ -72,7 +72,7 @@ enabled = true
 
 [[stack]]
 name = "dns_ntp_backrest"
-tags = ["sync", "poll_for_updates"]
+tags = ["sync"]
 [stack.config]
 server = "dns_ntp"
 run_build = true
