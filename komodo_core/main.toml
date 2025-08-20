@@ -9,8 +9,9 @@ enabled = true
 
 [[server]]
 name = "komodo_core"
-tags = ["sync"]
+tags = ["sync", "auto-update"]
 [server.config]
+address = "https://komodo-core.local:8120"
 enabled = true
 
 ##
@@ -1244,7 +1245,7 @@ DATASOURCE_LOCAL_DIRECTORY="uploads"
 
 [[procedure]]
 name = "Check for Updates"
-tags = ["sync", "system"]
+tags = ["sync"]
 config.schedule = "Every hour"
 
 [[procedure.config.stage]]
