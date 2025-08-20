@@ -1257,12 +1257,13 @@ executions = [
 ##
 
 [[procedure]]
-name = "poll_for_updates"
-tags = ["sync"]
+name = "Global Auto Update"
+description = "Pulls and auto updates Stacks and Deployments using 'poll_for_updates' or 'auto_update'."
+tags = ["system"]
 config.schedule = "every hour"
 
 [[procedure.config.stage]]
-name = "Poll for Updates"
+name = "Stage 1"
 enabled = true
 executions = [
   { execution.type = "GlobalAutoUpdate", execution.params = {}, enabled = true }
