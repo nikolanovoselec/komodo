@@ -1259,7 +1259,7 @@ executions = [
 [[procedure]]
 name = "Global Auto Update"
 description = "Pulls and auto updates Stacks and Deployments using 'poll_for_updates' or 'auto_update'."
-tags = ["system"]
+tags = ["sync"]
 config.schedule = "every hour"
 
 [[procedure.config.stage]]
