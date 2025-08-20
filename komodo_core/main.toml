@@ -72,7 +72,7 @@ enabled = true
 
 [[stack]]
 name = "dns_ntp_backrest"
-tags = ["sync"]
+tags = ["sync", "poll_for_updates"]
 [stack.config]
 server = "dns_ntp"
 run_build = true
@@ -1252,6 +1252,20 @@ name = "Deploy Stacks If Changed"
 enabled = true
 executions = [
   { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "komodo_core*, middleware*, storage*, servarr*, media_servers*, tools*, ai_llm*, dns_ntp*", enabled = true }
+]
+
+##
+
+[[procedure]]
+name = "poll_for_updates"
+tags = ["sync"]
+config.schedule = "every hour"
+
+[[procedure.config.stage]]
+name = "Poll for Updates"
+enabled = true
+executions = [
+  { execution.type = "GlobalAutoUpdate", execution.params = {}, enabled = true }
 ]
 
 ##
