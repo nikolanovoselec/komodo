@@ -1272,7 +1272,7 @@ executions = [
 ##
 
 [[action]]
-name = "update_servers"
+name = "Update Servers"
 tags = ["sync"]
 [action.config]
 schedule_format = "Cron"
