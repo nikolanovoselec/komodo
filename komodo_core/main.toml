@@ -1243,7 +1243,21 @@ DATASOURCE_LOCAL_DIRECTORY="uploads"
 ##
 
 [[procedure]]
-name = "deploy_stacks_if_changed"
+name = "Check for Updates"
+tags = ["sync"]
+config.schedule = "Every hour"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [
+  { execution.type = "GlobalAutoUpdate", execution.params = {}, enabled = true }
+]
+
+##
+
+[[procedure]]
+name = "Deploy Stacks If Changed"
 tags = ["sync"]
 config.webhook_secret = "ceTXriBfjq!G4r_H_ZDbpn.@Qq_3FqjFh@zPPezFZsskcbdd7F-qYRZkT3kV"
 
