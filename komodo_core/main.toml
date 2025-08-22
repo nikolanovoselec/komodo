@@ -2,25 +2,25 @@
 name = "dns_ntp"
 tags = ["sync", "auto-update"]
 [server.config]
-address = "https://pihole-master.local:8120"
+address = "https://pihole-master.lan:8120"
 enabled = true
 
 ##
 
 [[server]]
-name = "komodo_core"
+name = "komodo"
 tags = ["sync", "auto-update"]
 [server.config]
-address = "https://komodo-core.local:8120"
+address = "https://komodo.lan:8120"
 enabled = true
 
 ##
 
 [[server]]
-name = "media_servers"
+name = "mediaservers"
 tags = ["sync", "auto-update"]
 [server.config]
-address = "https://mediaservers.local:8120"
+address = "https://mediaservers.lan:8120"
 enabled = true
 
 ##
@@ -29,7 +29,7 @@ enabled = true
 name = "middleware"
 tags = ["sync", "auto-update"]
 [server.config]
-address = "https://middleware.local:8120"
+address = "https://middleware.lan:8120"
 enabled = true
 
 ##
@@ -38,7 +38,7 @@ enabled = true
 name = "minecraft"
 tags = ["sync", "auto-update"]
 [server.config]
-address = "https://minecraft.local:8120"
+address = "https://minecraft.lan:8120"
 enabled = true
 
 ##
@@ -47,7 +47,7 @@ enabled = true
 name = "servarr"
 tags = ["sync", "auto-update"]
 [server.config]
-address = "https://servarr.local:8120"
+address = "https://servarr.lan:8120"
 enabled = true
 
 ##
@@ -56,7 +56,7 @@ enabled = true
 name = "storage"
 tags = ["sync"]
 [server.config]
-address = "https://nas.local:8120"
+address = "https://nas.lan:8120"
 enabled = true
 disk_warning = 90.0
 
@@ -66,7 +66,7 @@ disk_warning = 90.0
 name = "tools"
 tags = ["sync", "auto-update"]
 [server.config]
-address = "https://tools.local:8120"
+address = "https://tools.lan:8120"
 enabled = true
 
 ##
@@ -182,7 +182,7 @@ run_directory = "dns_ntp/portainer_agent"
 name = "komodo_core_backrest"
 tags = ["sync"]
 [stack.config]
-server = "komodo_core"
+server = "komodo"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -198,7 +198,7 @@ run_directory = "komodo_core/backrest"
 name = "komodo_core_beszel_agent"
 tags = ["sync"]
 [stack.config]
-server = "komodo_core"
+server = "komodo"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -217,7 +217,7 @@ BESZEL_KEY = [[BESZEL_KEY]]
 name = "komodo_core_cloudflared"
 tags = ["sync"]
 [stack.config]
-server = "komodo_core"
+server = "komodo"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -236,7 +236,7 @@ environment = """
 name = "komodo_core_dozzle_agent"
 tags = ["sync"]
 [stack.config]
-server = "komodo_core"
+server = "komodo"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -253,7 +253,7 @@ name = "komodo_core_portainer_agent"
 template = true
 tags = ["sync"]
 [stack.config]
-server = "komodo_core"
+server = "komodo"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -268,7 +268,7 @@ run_directory = "komodo_core/portainer_agent"
 name = "media_servers_backrest"
 tags = ["sync"]
 [stack.config]
-server = "media_servers"
+server = "mediaservers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -284,7 +284,7 @@ run_directory = "media_servers/backrest"
 name = "media_servers_beszel_agent"
 tags = ["sync"]
 [stack.config]
-server = "media_servers"
+server = "mediaservers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -303,7 +303,7 @@ BESZEL_KEY = [[BESZEL_KEY]]
 name = "media_servers_cloudflared"
 tags = ["sync"]
 [stack.config]
-server = "media_servers"
+server = "mediaservers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -322,7 +322,7 @@ CFD_TOKEN_MEDIASERVERS = [[CFD_TOKEN_MEDIASERVERS]]
 name = "media_servers_dozzle_agent"
 tags = ["sync"]
 [stack.config]
-server = "media_servers"
+server = "mediaservers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -338,7 +338,7 @@ run_directory = "media_servers/dozzle_agent"
 name = "media_servers_emby"
 tags = ["sync"]
 [stack.config]
-server = "media_servers"
+server = "mediaservers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -354,7 +354,7 @@ run_directory = "media_servers/emby"
 name = "media_servers_jellyfin"
 tags = ["sync"]
 [stack.config]
-server = "media_servers"
+server = "mediaservers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -370,7 +370,7 @@ run_directory = "media_servers/jellyfin"
 name = "media_servers_plex"
 tags = ["sync"]
 [stack.config]
-server = "media_servers"
+server = "mediaservers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -386,7 +386,7 @@ run_directory = "media_servers/plex"
 name = "media_servers_portainer_agent"
 tags = ["sync"]
 [stack.config]
-server = "media_servers"
+server = "mediaservers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -401,7 +401,7 @@ run_directory = "media_servers/portainer_agent"
 name = "media_servers_tautulli"
 tags = ["sync"]
 [stack.config]
-server = "media_servers"
+server = "mediaservers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -417,7 +417,7 @@ run_directory = "media_servers/tautulli"
 name = "media_servers_tdarr"
 tags = ["sync"]
 [stack.config]
-server = "media_servers"
+server = "mediaservers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -1316,7 +1316,7 @@ name = "local"
 tags = ["sync"]
 [builder.config]
 type = "Server"
-params.server_id = "komodo_core"
+params.server_id = "komodo"
 
 ##
 
