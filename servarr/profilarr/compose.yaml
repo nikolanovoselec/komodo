@@ -5,7 +5,7 @@ services:
         ports:
             - 6868:6868
         volumes:
-            - /mnt/configs/profilarr:/config # Replace with your actual path
+            - /docker/configs/profilarr:/config # Replace with your actual path
         environment:
             - TZ=Europe/Zurich # Set your timezone
         restart: unless-stopped
