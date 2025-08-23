@@ -445,7 +445,6 @@ run_directory = "middleware/authentik"
 environment = """
 AUTHENTIK_POSTGRESQL_PASSWORD = [[AUTHENTIK_POSTGRESQL_PASSWORD]]
 AUTHENTIK_SECRET_KEY = [[AUTHENTIK_SECRET_KEY]]
-VERSION = 2025.8.0
 """
 
 ##
