@@ -61,7 +61,7 @@ services:
         condition: service_healthy
       
   worker:
-    image: ghcr.io/goauthentik/server:${VERSION} #manual upgrade
+    image: ghcr.io/goauthentik/server:2025.08.0 #manual upgrade
     restart: unless-stopped
     container_name: middleware_authentik_worker
     networks:
