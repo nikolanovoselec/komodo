@@ -26,7 +26,7 @@ services:
       - .env
     environment:
       - DATABASE_URL=postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgresql:5432/${POSTGRESQL_DB}
-      - ZIPLINE_CORS_ORIGIN=https://firewaterburn.pages.dev,https://313e4749.firewaterburn.pages.dev
+      - ZIPLINE_CORS_ORIGIN=https://zipline.novoselec.ch,https://firewaterburn.pages.dev
     depends_on:
       - postgresql
     volumes:
