@@ -27,6 +27,9 @@ services:
     environment:
       - DATABASE_URL=postgres://${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@postgresql:5432/${POSTGRESQL_DB}
       - ZIPLINE_CORS_ORIGIN=https://zipline.novoselec.ch,https://firewaterburn.pages.dev
+      - ZIPLINE_CORS_METHODS=GET,POST,PUT,DELETE,OPTIONS
+      - ZIPLINE_CORS_ALLOWED_HEADERS=Content-Type,Authorization,X-CF-Access-Client-Id,X-CF-Access-Client-Secret
+      - ZIPLINE_CORS_CREDENTIALS=true
     depends_on:
       - postgresql
     volumes:
