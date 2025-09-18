@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":disableRateLimiting"
+  ],
+  "schedule": ["every hour"],
+  "timezone": "Europe/Zurich",
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dashboard",
+  "assignees": ["nikolanovoselec"],
+  "labels": ["renovate"],
+  "prHourlyLimit": 0,
+  "automerge": false,
+  "platformAutomerge": false,
+  "docker-compose": {
+    "fileMatch": ["^tools/.*/compose\\.ya?ml$"]
+  }
+}
