@@ -2,9 +2,9 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    ":disableRateLimiting"
+    ":disableRateLimiting",
+    "schedule:hourly"
   ],
-  "schedule": ["every 1 hour"],
   "timezone": "Europe/Zurich",
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard",
