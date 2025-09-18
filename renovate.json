@@ -23,7 +23,15 @@
       "matchManagers": ["docker-compose"],
       "matchPaths": ["tools/**"],
       "enabled": true,
-      "prBodyNotes": ["Stack path: {{packageFile}}"]
+      "prBodyNotes": ["Stack path: {{packageFile}}"],
+      "packageRules": [
+        {
+          "matchDepNames": ["postgres"],
+          "matchPaths": ["tools/zipline/**"],
+          "matchDatasources": ["docker"],
+          "allowedVersions": "16"
+        }
+      ]
     }
   ]
 }
