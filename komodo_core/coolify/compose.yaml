@@ -24,7 +24,7 @@ services:
       - 192.168.2.29
 
   postgres:
-    image: postgres:17-alpine
+    image: postgres:15-alpine
     container_name: komodo_core_coolify_database
     restart: unless-stopped
     environment:
