@@ -13,7 +13,16 @@
   "prHourlyLimit": 0,
   "automerge": false,
   "platformAutomerge": false,
-  "docker-compose": {
-    "fileMatch": ["^tools/.*/compose\\.ya?ml$"]
-  }
+  "packageRules": [
+    {
+      "matchManagers": ["docker-compose"],
+      "matchPaths": ["**"],
+      "enabled": false
+    },
+    {
+      "matchManagers": ["docker-compose"],
+      "matchPaths": ["tools/**"],
+      "enabled": true
+    }
+  ]
 }
