@@ -22,7 +22,8 @@
     {
       "matchManagers": ["docker-compose"],
       "matchPaths": ["tools/**"],
-      "enabled": true
+      "enabled": true,
+      "prBodyNotes": ["Stack path: {{packageFile}}"]
     }
   ]
 }
