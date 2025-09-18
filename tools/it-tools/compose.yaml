@@ -1,6 +1,6 @@
 services:
   it-tools:
-    image: 'corentinth/it-tools:latest'
+    image: 'corentinth/it-tools:2024.10.22-7ca5933'
     ports:
       - '8081:80'
     restart: unless-stopped
