@@ -37,7 +37,7 @@ services:
       - coolify
 
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     container_name: komodo_core_coolify_redis
     restart: unless-stopped
     networks:
