@@ -4,7 +4,7 @@
     "config:recommended",
     ":disableRateLimiting"
   ],
-  "schedule": ["every hour"],
+  "schedule": ["every 1 hour"],
   "timezone": "Europe/Zurich",
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard",
