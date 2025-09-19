@@ -94,6 +94,18 @@
         "docker-compose"
       ],
       "matchFileNames": [
+        "media_servers/**"
+      ],
+      "enabled": true,
+      "prBodyNotes": [
+        "Stack path: {{packageFile}}"
+      ]
+    },
+    {
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
         "komodo_core/coolify/compose.yaml"
       ],
       "matchDepNames": [
