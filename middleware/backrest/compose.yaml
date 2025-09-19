@@ -1,6 +1,6 @@
 services:
   backrest:
-    image: garethgeorge/backrest:latest
+    image: garethgeorge/backrest:v1.9.2
     container_name: middleware_backrest
     hostname: backrest-middleware.local.graymatter.ch
     volumes:
