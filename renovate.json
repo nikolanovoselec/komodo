@@ -130,6 +130,18 @@
         "docker-compose"
       ],
       "matchFileNames": [
+        "ai_llm/**"
+      ],
+      "enabled": true,
+      "prBodyNotes": [
+        "Stack path: {{packageFile}}"
+      ]
+    },
+    {
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
         "middleware/authentik/compose.yaml"
       ],
       "matchDepNames": [

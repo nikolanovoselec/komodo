@@ -1,6 +1,6 @@
 services:
   agent-zero-run:
-    image: frdel/agent-zero-run:latest
+    image: frdel/agent-zero-run:v0.9.5.1
     container_name: ai_llm_agent_zero_app
     user: root
     environment:
@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
 
   ollama:
-    image: ollama/ollama:latest
+    image: ollama/ollama:v0.11.11
     user: root
     ports:
       - 11434:11434
@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
 
   open-webui:
-    image: ghcr.io/open-webui/open-webui:main
+    image: ghcr.io/open-webui/open-webui:v0.6.30
     container_name: ai_llm_agent_zero_ollama_webui
     user: root
     volumes:
