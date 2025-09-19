@@ -8,7 +8,7 @@ enabled = true
 ##
 
 [[server]]
-name = "komodo"
+name = "komodo_core"
 tags = ["sync", "auto-update"]
 [server.config]
 address = "https://komodo.lan:8120"
@@ -17,7 +17,7 @@ enabled = true
 ##
 
 [[server]]
-name = "mediaservers"
+name = "media_servers"
 tags = ["sync", "auto-update"]
 [server.config]
 address = "https://mediaservers.lan:8120"
@@ -182,7 +182,7 @@ run_directory = "dns_ntp/portainer_agent"
 name = "komodo_core_backrest"
 tags = ["sync"]
 [stack.config]
-server = "komodo"
+server = "komodo_core"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -198,7 +198,7 @@ run_directory = "komodo_core/backrest"
 name = "komodo_core_beszel_agent"
 tags = ["sync"]
 [stack.config]
-server = "komodo"
+server = "komodo_core"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -217,7 +217,7 @@ BESZEL_KEY = [[BESZEL_KEY]]
 name = "komodo_core_cloudflared"
 tags = ["sync"]
 [stack.config]
-server = "komodo"
+server = "komodo_core"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -233,28 +233,10 @@ environment = """
 ##
 
 [[stack]]
-name = "komodo_core_coolify"
-tags = ["sync"]
-[stack.config]
-server = "komodo"
-run_build = true
-poll_for_updates = true
-auto_update_all_services = true
-destroy_before_deploy = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-run_directory = "komodo_core/coolify"
-environment = """
-COOLIFY_SECRET_KEY = [[COOLIFY_SECRET_KEY]]
-"""
-
-##
-
-[[stack]]
 name = "komodo_core_dozzle_agent"
 tags = ["sync"]
 [stack.config]
-server = "komodo"
+server = "komodo_core"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -271,7 +253,7 @@ name = "komodo_core_portainer_agent"
 template = true
 tags = ["sync"]
 [stack.config]
-server = "komodo"
+server = "komodo_core"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -286,7 +268,7 @@ run_directory = "komodo_core/portainer_agent"
 name = "media_servers_backrest"
 tags = ["sync"]
 [stack.config]
-server = "mediaservers"
+server = "media_servers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -302,7 +284,7 @@ run_directory = "media_servers/backrest"
 name = "media_servers_beszel_agent"
 tags = ["sync"]
 [stack.config]
-server = "mediaservers"
+server = "media_servers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -321,7 +303,7 @@ BESZEL_KEY = [[BESZEL_KEY]]
 name = "media_servers_cloudflared"
 tags = ["sync"]
 [stack.config]
-server = "mediaservers"
+server = "media_servers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -340,7 +322,7 @@ CFD_TOKEN_MEDIASERVERS = [[CFD_TOKEN_MEDIASERVERS]]
 name = "media_servers_dozzle_agent"
 tags = ["sync"]
 [stack.config]
-server = "mediaservers"
+server = "media_servers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -356,7 +338,7 @@ run_directory = "media_servers/dozzle_agent"
 name = "media_servers_emby"
 tags = ["sync"]
 [stack.config]
-server = "mediaservers"
+server = "media_servers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -372,7 +354,7 @@ run_directory = "media_servers/emby"
 name = "media_servers_jellyfin"
 tags = ["sync"]
 [stack.config]
-server = "mediaservers"
+server = "media_servers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -388,7 +370,7 @@ run_directory = "media_servers/jellyfin"
 name = "media_servers_plex"
 tags = ["sync"]
 [stack.config]
-server = "mediaservers"
+server = "media_servers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -404,7 +386,7 @@ run_directory = "media_servers/plex"
 name = "media_servers_portainer_agent"
 tags = ["sync"]
 [stack.config]
-server = "mediaservers"
+server = "media_servers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -419,7 +401,7 @@ run_directory = "media_servers/portainer_agent"
 name = "media_servers_tautulli"
 tags = ["sync"]
 [stack.config]
-server = "mediaservers"
+server = "media_servers"
 run_build = true
 poll_for_updates = true
 auto_update_all_services = true
@@ -428,22 +410,6 @@ git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "media_servers/tautulli"
-
-##
-
-[[stack]]
-name = "media_servers_tdarr"
-tags = ["sync"]
-[stack.config]
-server = "mediaservers"
-run_build = true
-poll_for_updates = true
-auto_update_all_services = true
-destroy_before_deploy = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-webhook_force_deploy = true
-run_directory = "media_servers/tdarr"
 
 ##
 
@@ -1172,26 +1138,6 @@ run_directory = "tools/dozzle_agent"
 ##
 
 [[stack]]
-name = "tools_grafana"
-tags = ["sync"]
-[stack.config]
-server = "tools"
-run_build = true
-poll_for_updates = true
-auto_update_all_services = true
-destroy_before_deploy = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-webhook_force_deploy = true
-run_directory = "tools/grafana"
-environment = """
-GF_SECURITY_ADMIN_PASSWORD=[[GRAFANA_ADMIN_PASSWORD]]
-GF_USERS_ALLOW_SIGN_UP=false
-"""
-
-##
-
-[[stack]]
 name = "tools_it-tools"
 tags = ["sync"]
 [stack.config]
@@ -1334,7 +1280,7 @@ name = "local"
 tags = ["sync"]
 [builder.config]
 type = "Server"
-params.server_id = "komodo"
+params.server_id = "komodo_core"
 
 ##
 
