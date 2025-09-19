@@ -102,7 +102,7 @@
       "matchDatasources": [
         "docker"
       ],
-      "enabled": false
+      "allowedVersions": "15-alpine"
     },
     {
       "matchManagers": [
@@ -117,7 +117,7 @@
       "matchDatasources": [
         "docker"
       ],
-      "enabled": false
+      "allowedVersions": "7-alpine"
     },
     {
       "matchManagers": [
