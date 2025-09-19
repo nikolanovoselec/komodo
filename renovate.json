@@ -82,6 +82,18 @@
         "docker-compose"
       ],
       "matchFileNames": [
+        "komodo_core/**"
+      ],
+      "enabled": true,
+      "prBodyNotes": [
+        "Stack path: {{packageFile}}"
+      ]
+    },
+    {
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
         "komodo_core/coolify/compose.yaml"
       ],
       "matchDepNames": [
