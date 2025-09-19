@@ -118,6 +118,18 @@
         "docker-compose"
       ],
       "matchFileNames": [
+        "storage/**"
+      ],
+      "enabled": true,
+      "prBodyNotes": [
+        "Stack path: {{packageFile}}"
+      ]
+    },
+    {
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
         "middleware/authentik/compose.yaml"
       ],
       "matchDepNames": [
