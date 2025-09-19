@@ -1,6 +1,6 @@
 services:
   plex:
-    image: lscr.io/linuxserver/plex:latest
+    image: lscr.io/linuxserver/plex:1.42.1.10060-4e8b05daf-ls279
     container_name: media_servers_plex
     network_mode: host #host for local/remote stream discovery
     environment:
