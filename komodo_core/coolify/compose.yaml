@@ -1,6 +1,6 @@
 services:
   coolify:
-    image: ghcr.io/coollabsio/coolify:v4.0.0-beta.428
+    image: ghcr.io/coollabsio/coolify:4.0.0-beta.428
     container_name: komodo_core_coolify
     ports:
       - "8080:8080"
