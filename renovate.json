@@ -4,34 +4,49 @@
     "config:recommended",
     ":disableRateLimiting"
   ],
-  "schedule": ["* */1 * * *"],
+  "schedule": [
+    "* */1 * * *"
+  ],
   "timezone": "Europe/Zurich",
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard",
-  "assignees": ["nikolanovoselec"],
-  "labels": ["renovate"],
+  "assignees": [
+    "nikolanovoselec"
+  ],
+  "labels": [
+    "renovate"
+  ],
   "prHourlyLimit": 0,
   "automerge": false,
   "platformAutomerge": false,
   "packageRules": [
     {
-      "matchManagers": ["docker-compose"],
-      "matchPaths": ["**"],
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "**"
+      ],
       "enabled": false
     },
     {
-      "matchManagers": ["docker-compose"],
-      "matchPaths": ["tools/**"],
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "tools/zipline/**"
+      ],
       "enabled": true,
-      "prBodyNotes": ["Stack path: {{packageFile}}"],
-      "packageRules": [
-        {
-          "matchDepNames": ["postgres"],
-          "matchPaths": ["tools/zipline/**"],
-          "matchDatasources": ["docker"],
-          "allowedVersions": "16"
-        }
-      ]
+      "prBodyNotes": [
+        "Stack path: {{packageFile}}"
+      ],
+      "matchDepNames": [
+        "postgres"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "allowedVersions": "16"
     }
   ]
 }
