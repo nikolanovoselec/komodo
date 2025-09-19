@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
 
   qbittorrent:
-    image: linuxserver/qbittorrent:latest
+    image: linuxserver/qbittorrent:5.1.2-r2-ls415
     container_name: storage_qbittorrent_client
     environment:
       - PUID=1026
