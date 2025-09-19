@@ -233,6 +233,24 @@ environment = """
 ##
 
 [[stack]]
+name = "komodo_core_coolify"
+tags = ["sync"]
+[stack.config]
+server = "komodo"
+run_build = true
+poll_for_updates = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+run_directory = "komodo_core/coolify"
+environment = """
+COOLIFY_SECRET_KEY = [[COOLIFY_SECRET_KEY]]
+"""
+
+##
+
+[[stack]]
 name = "komodo_core_dozzle_agent"
 tags = ["sync"]
 [stack.config]
