@@ -34,11 +34,19 @@
         "docker-compose"
       ],
       "matchFileNames": [
-        "tools/zipline/**"
+        "tools/**"
       ],
       "enabled": true,
       "prBodyNotes": [
         "Stack path: {{packageFile}}"
+      ]
+    },
+    {
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "tools/zipline/**"
       ],
       "matchDepNames": [
         "postgres"
