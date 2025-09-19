@@ -82,6 +82,21 @@
         "docker-compose"
       ],
       "matchFileNames": [
+        "komodo_core/coolify/compose.yaml"
+      ],
+      "matchDepNames": [
+        "postgres"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "enabled": false
+    },
+    {
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
         "servarr/flaresolver/compose.yaml"
       ],
       "matchDepNames": [
