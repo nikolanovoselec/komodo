@@ -70,6 +70,18 @@
         "docker-compose"
       ],
       "matchFileNames": [
+        "dns_ntp/**"
+      ],
+      "enabled": true,
+      "prBodyNotes": [
+        "Stack path: {{packageFile}}"
+      ]
+    },
+    {
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
         "servarr/flaresolver/compose.yaml"
       ],
       "matchDepNames": [
