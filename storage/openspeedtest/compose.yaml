@@ -4,4 +4,4 @@ services:
         container_name: storage_openspeedtest
         ports:
             - 3636:3000 #port on DSM FW
-        image: openspeedtest/latest:latest
+        image: openspeedtest/latest:v2.0.6
