@@ -1,6 +1,6 @@
 services:
   unpackerr:
-    image: golift/unpackerr:latest
+    image: golift/unpackerr:0.14.5
     container_name: storage_unpackerr
     volumes:
       - /volume1/video/:/data
