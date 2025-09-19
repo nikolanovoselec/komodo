@@ -1,7 +1,7 @@
 services:
   autobrr:
     container_name: servarr_autobrr
-    image: ghcr.io/autobrr/autobrr:latest
+    image: ghcr.io/autobrr/autobrr:v1.66.1
     restart: unless-stopped
     logging:
       driver: local

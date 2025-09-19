@@ -1,6 +1,6 @@
 services:
   maintainerr:
-    image: ghcr.io/jorenn92/maintainerr:latest #or jorenn92/maintainerr:latest
+    image: ghcr.io/jorenn92/maintainerr:v2.19.0
     container_name: servarr_maintainerr
     volumes:
       - type: bind

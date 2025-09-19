@@ -46,6 +46,30 @@
         "docker-compose"
       ],
       "matchFileNames": [
+        "servarr/**"
+      ],
+      "enabled": true,
+      "prBodyNotes": [
+        "Stack path: {{packageFile}}"
+      ]
+    },
+    {
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "servarr/flaresolver/compose.yaml"
+      ],
+      "matchDepNames": [
+        "21hsmw/flaresolverr"
+      ],
+      "enabled": false
+    },
+    {
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
         "tools/zipline/**"
       ],
       "matchDepNames": [
