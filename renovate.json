@@ -118,6 +118,36 @@
         "docker-compose"
       ],
       "matchFileNames": [
+        "middleware/authentik/compose.yaml"
+      ],
+      "matchDepNames": [
+        "postgres"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "allowedVersions": "16-alpine"
+    },
+    {
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "middleware/authentik/compose.yaml"
+      ],
+      "matchDepNames": [
+        "redis"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "allowedVersions": "alpine"
+    },
+    {
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
         "komodo_core/coolify/compose.yaml"
       ],
       "matchDepNames": [
