@@ -51,7 +51,7 @@ services:
       retries: 3
 
 #  cloudflared:
-#    image: cloudflare/cloudflared:latest
+#    image: cloudflare/cloudflared:2025.9.0
 #    restart: unless-stopped
 #    container_name: storage_qbittorrent_cloudflared
 #    network_mode: "service:gluetun"
