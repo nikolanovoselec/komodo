@@ -4,7 +4,6 @@ services:
     container_name: tools_flame
     volumes:
       - /docker/configs/flame:/app/data
-      - /var/run/docker.sock:/var/run/docker.sock # optional but required for Docker integration
     ports:
       - 5005:5005
     environment:
