@@ -1,6 +1,6 @@
 services:
   flame:
-    image: pawelmalak/flame:v2.3.1
+    image: pawelmalak/flame:2.3.1
     container_name: tools_flame
     volumes:
       - /docker/configs/flame:/app/data
