@@ -1,16 +1,12 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  flame:
+    image: pawelmalak/flame:v2.3.1
+    container_name: tools_flame
+    volumes:
+      - /docker/configs/flame:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock # optional but required for Docker integration
+    ports:
+      - 5005:5005
+    environment:
+      - PASSWORD=${FLAME_PASSWORD}
+    restart: unless-stopped
