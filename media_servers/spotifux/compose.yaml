@@ -22,6 +22,7 @@ services:
     command: sh -c 'redis-server --requirepass "${SPOTIFUX_REDIS_PASSWORD}" --appendonly yes'
   spotifux-auth:
     image: ghcr.io/spotizerr/spotizerr-auth:1.1.1
+    restart: unless-stopped
     container_name: media_servers_spotifux_auth
     profiles:
       - auth
