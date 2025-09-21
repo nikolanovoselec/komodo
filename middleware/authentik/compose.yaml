@@ -1,6 +1,6 @@
 services:
   postgresql:
-    image: docker.io/library/postgres:16-alpine
+    image: docker.io/library/postgres:17-alpine
     restart: unless-stopped
     container_name: middleware_authentik_postgres
     healthcheck:
