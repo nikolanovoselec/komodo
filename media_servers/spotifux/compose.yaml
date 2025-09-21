@@ -7,8 +7,6 @@ services:
       - /mnt/music/Spotifux:/app/downloads
       - /docker/configs/spotifux/logs:/app/logs
       - /docker/configs/spotifux/.cache:/app/.cache
-    ports:
-      - 7171:7171
     container_name: media_servers_spotifux
     restart: unless-stopped
     depends_on:
@@ -20,6 +18,7 @@ services:
     restart: unless-stopped
     ports:
       - 6379:6379
+      - 7171:7171
     volumes:
       - /docker/configs/spotifux/redis-data:/data
     command: sh -c 'redis-server --requirepass "${SPOTIFUX_REDIS_PASSWORD}" --appendonly yes'
