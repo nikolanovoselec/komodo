@@ -11,19 +11,15 @@ services:
       - 7171:7171
     container_name: spotifux
     restart: unless-stopped
-    env_file:
-      - .env
     depends_on:
       - redis
   redis:
     image: redis:alpine
     container_name: spotifux_redis
     restart: unless-stopped
-    env_file:
-      - .env
     volumes:
       - redis-data:/data
-    command: sh -c 'redis-server --requirepass "$REDIS_PASSWORD" --appendonly yes'
+    command: sh -c 'redis-server --requirepass "${SPOTIFUX_REDIS_PASSWORD}" --appendonly yes'
 volumes:
   redis-data:
     driver: local
