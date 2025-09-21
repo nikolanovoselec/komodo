@@ -20,14 +20,3 @@ services:
     volumes:
       - /docker/configs/spotifux/redis-data:/data
     command: sh -c 'redis-server --requirepass "${SPOTIFUX_REDIS_PASSWORD}" --appendonly yes'
-  spotifux-auth:
-    image: ghcr.io/spotizerr/spotifux-auth:1.1.1
-    restart: unless-stopped
-    container_name: media_servers_spotifux_auth
-    profiles:
-      - auth
-    network_mode: host
-    environment:
-      SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID}
-      SPOTIFY_CLIENT_SECRET: ${SPOTIFY_CLIENT_SECRET}
-      SPOTIFUX_BASE_URL: ${SPOTIFUX_BASE_URL}
