@@ -13,10 +13,13 @@ services:
     restart: unless-stopped
     depends_on:
       - redis
+    network_mode: "service:redis"
   redis:
     image: redis:alpine
     container_name: media_servers_spotifux_redis
     restart: unless-stopped
+    ports:
+      - 6379:6379
     volumes:
       - /docker/configs/spotifux/redis-data:/data
     command: sh -c 'redis-server --requirepass "${SPOTIFUX_REDIS_PASSWORD}" --appendonly yes'
