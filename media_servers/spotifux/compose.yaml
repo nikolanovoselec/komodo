@@ -1,6 +1,6 @@
 services:
   spotifux:
-    image: ghcr.io/nikolanovoselec/spotifux:v4.0.1
+    image: ghcr.io/nikolanovoselec/spotifux:v4.0.2
     user: "0:0"
     ports:
       - 7171:7171
