@@ -4,6 +4,13 @@
     "config:recommended",
     ":disableRateLimiting"
   ],
+  "hostRules": [
+    {
+      "matchHost": "ghcr.io",
+      "username": "nikolanovoselec",
+      "password": "{{ secrets.RENOVATE_GHCR_TOKEN }}"
+    }
+  ],
   "schedule": [
     "* */1 * * *"
   ],
@@ -145,7 +152,8 @@
         "middleware/authentik/compose.yaml"
       ],
       "matchDepNames": [
-        "postgres"
+        "postgres",
+        "docker.io/library/postgres"
       ],
       "matchDatasources": [
         "docker"
