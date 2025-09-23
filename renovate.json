@@ -214,8 +214,7 @@
       "matchPackageNames": [
         "/^(?:gh|ls)cr\\.io\\/linuxserver\\/[^\\s]+$/"
       ],
-      "versioning": "regex:^v?(?<major>\\d+)(?:\\.(?<minor>\\d+))?(?:\\.(?<patch>\\d+[A-Za-z0-9]*))?(?:\\.(?<micro>\\d+[A-Za-z0-9]*))?(?:-(?<prerelease>[^-]+))?(?:-ls(?<build>\\d+))?$",
-      "allowedVersions": "/-ls\\d+$/"
+      "versioning": "regex:^v?(?<major>\\d+)(?:\\.(?<minor>\\d+))?(?:\\.(?<patch>\\d+[A-Za-z0-9]*))?(?:\\.(?<micro>\\d+[A-Za-z0-9]*))?(?:-(?<prerelease>[^-]+))?-ls(?<build>\\d+)$"
     }
   ]
 }
