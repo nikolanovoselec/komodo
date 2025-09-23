@@ -211,11 +211,10 @@
       "matchDatasources": [
         "docker"
       ],
-      "matchPackagePatterns": [
-        "^lscr\\.io/linuxserver/"
+      "matchPackageNames": [
+        "/^(?:gh|ls)cr\\.io\\/linuxserver\\/[^\\s]+$/"
       ],
-      "versioning": "regex:^v?(?<major>\\d+)(?:\\.(?<minor>\\d+))?(?:\\.(?<patch>\\d+[A-Za-z0-9]*))?(?:\\.(?<micro>\\d+[A-Za-z0-9]*))?(?:-(?<prerelease>[^-]+))?-ls(?<build>\\d+)$",
-      "minimumReleaseAge": null
+      "versioning": "regex:^v?(?<major>\\d+)(?:\\.(?<minor>\\d+))?(?:\\.(?<patch>\\d+[A-Za-z0-9]*))?(?:\\.(?<micro>\\d+[A-Za-z0-9]*))?(?:-(?<prerelease>[^-]+))?-ls(?<build>\\d+)$"
     }
   ]
 }
