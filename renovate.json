@@ -214,7 +214,8 @@
       "matchPackagePatterns": [
         "^lscr\\.io/linuxserver/"
       ],
-      "versioning": "regex:^v?(?<major>\\d+)(?:\\.(?<minor>\\d+))?(?:\\.(?<patch>\\d+[A-Za-z0-9]*))?(?:\\.(?<micro>\\d+[A-Za-z0-9]*))?(?:-(?<prerelease>[^-]+))?-ls(?<build>\\d+)$"
+      "versioning": "regex:^v?(?<major>\\d+)(?:\\.(?<minor>\\d+))?(?:\\.(?<patch>\\d+[A-Za-z0-9]*))?(?:\\.(?<micro>\\d+[A-Za-z0-9]*))?(?:-(?<prerelease>[^-]+))?-ls(?<build>\\d+)$",
+      "minimumReleaseAge": "0 days"
     }
   ]
 }
