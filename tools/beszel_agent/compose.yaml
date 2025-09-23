@@ -1,6 +1,6 @@
 services:
   beszel-agent:
-    image: henrygd/beszel-agent:0.12.9
+    image: henrygd/beszel-agent:0.12.10
     container_name: tools_beszel_agent
     restart: unless-stopped
     network_mode: host
