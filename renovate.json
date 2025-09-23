@@ -12,7 +12,7 @@
     }
   ],
   "schedule": [
-    "* */1 * * *"
+    "0 * * * *"
   ],
   "timezone": "Europe/Zurich",
   "dependencyDashboard": true,
@@ -23,6 +23,8 @@
   "labels": [
     "renovate"
   ],
+  "prHeader": "",
+  "prBodyTemplate": "{{#if deps}}### Updated stacks\\n{{#deps}}- `{{packageName}}` → `{{newVersion}}` (`{{packageFile}}`)\\n{{/deps}}\\n{{/if}}\\n\\n{{{body}}}\\n\\n{{{notes}}}\\n\\n{{{schedule}}}\\n\\n{{{configWarnings}}}\\n\\n{{{footer}}}",
   "prHourlyLimit": 0,
   "automerge": false,
   "platformAutomerge": false,
@@ -43,10 +45,7 @@
       "matchFileNames": [
         "tools/**"
       ],
-      "enabled": true,
-      "prBodyNotes": [
-        "Stack path: {{packageFile}}"
-      ]
+      "enabled": true
     },
     {
       "matchManagers": [
@@ -55,10 +54,7 @@
       "matchFileNames": [
         "servarr/**"
       ],
-      "enabled": true,
-      "prBodyNotes": [
-        "Stack path: {{packageFile}}"
-      ]
+      "enabled": true
     },
     {
       "matchManagers": [
@@ -67,10 +63,7 @@
       "matchFileNames": [
         "minecraft/**"
       ],
-      "enabled": true,
-      "prBodyNotes": [
-        "Stack path: {{packageFile}}"
-      ]
+      "enabled": true
     },
     {
       "matchManagers": [
@@ -79,10 +72,7 @@
       "matchFileNames": [
         "dns_ntp/**"
       ],
-      "enabled": true,
-      "prBodyNotes": [
-        "Stack path: {{packageFile}}"
-      ]
+      "enabled": true
     },
     {
       "matchManagers": [
@@ -91,10 +81,7 @@
       "matchFileNames": [
         "komodo_core/**"
       ],
-      "enabled": true,
-      "prBodyNotes": [
-        "Stack path: {{packageFile}}"
-      ]
+      "enabled": true
     },
     {
       "matchManagers": [
@@ -103,10 +90,7 @@
       "matchFileNames": [
         "media_servers/**"
       ],
-      "enabled": true,
-      "prBodyNotes": [
-        "Stack path: {{packageFile}}"
-      ]
+      "enabled": true
     },
     {
       "matchManagers": [
@@ -115,10 +99,7 @@
       "matchFileNames": [
         "middleware/**"
       ],
-      "enabled": true,
-      "prBodyNotes": [
-        "Stack path: {{packageFile}}"
-      ]
+      "enabled": true
     },
     {
       "matchManagers": [
@@ -127,10 +108,7 @@
       "matchFileNames": [
         "storage/**"
       ],
-      "enabled": true,
-      "prBodyNotes": [
-        "Stack path: {{packageFile}}"
-      ]
+      "enabled": true
     },
     {
       "matchManagers": [
@@ -139,10 +117,7 @@
       "matchFileNames": [
         "ai_llm/**"
       ],
-      "enabled": true,
-      "prBodyNotes": [
-        "Stack path: {{packageFile}}"
-      ]
+      "enabled": true
     },
     {
       "matchManagers": [
@@ -231,6 +206,16 @@
         "docker"
       ],
       "allowedVersions": "16"
+    }
+    },
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackagePatterns": [
+        "^lscr\\.io/linuxserver/"
+      ],
+      "versioning": "regex:^v?(?<major>\\d+)(?:\\.(?<minor>\\d+))?(?:\\.(?<patch>\\d+[A-Za-z0-9]*))?(?:\\.(?<micro>\\d+[A-Za-z0-9]*))?(?:-(?<prerelease>[^-]+))?-ls(?<build>\\d+)$"
     }
   ]
 }
