@@ -24,7 +24,7 @@
     "renovate"
   ],
   "prHeader": "",
-  "prBodyTemplate": "{{#if deps}}### Updated stacks\\n{{#deps}}- `{{packageName}}` → `{{newVersion}}` (`{{packageFile}}`)\\n{{/deps}}\\n{{/if}}\\n\\n{{{body}}}\\n\\n{{{notes}}}\\n\\n{{{schedule}}}\\n\\n{{{configWarnings}}}\\n\\n{{{footer}}}",
+  "prBodyTemplate": "{{{header}}}\n{{#if upgrades}}### Updated stacks\\n{{#each upgrades}}- `{{packageName}}` → `{{newVersion}}` (`{{packageFile}}`)\\n{{/each}}\\n\\n{{/if}}{{{table}}}{{{warnings}}}{{{notes}}}{{{changelogs}}}{{{configDescription}}}{{{controls}}}{{{footer}}}",
   "prHourlyLimit": 0,
   "automerge": false,
   "platformAutomerge": false,
