@@ -1,6 +1,6 @@
 services:
   plex:
-    image: lscr.io/linuxserver/plex:1.42.1.10060-4e8b05daf-ls279
+    image: lscr.io/linuxserver/plex:1.42.2.10156-f737b826c-ls280
     container_name: storage_plex
     network_mode: host
     environment:
