@@ -1,6 +1,6 @@
 services:
     portainer-ce:
-        image: 'portainer/portainer-ce:2.33.1'
+        image: 'portainer/portainer-ce:2.34.0'
         volumes:
             - '/docker/configs/portainer:/data'
             - '/var/run/docker.sock:/var/run/docker.sock'
