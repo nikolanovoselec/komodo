@@ -1,6 +1,6 @@
 services:
   beszel:
-    image: henrygd/beszel:0.12.11
+    image: henrygd/beszel:0.12.12
     container_name: middleware_beszel
     restart: unless-stopped
 #    network_mode: host
