@@ -1,6 +1,6 @@
 services:
   sonarr:
-    image: lscr.io/linuxserver/sonarr:4.0.15.2941-ls292
+    image: lscr.io/linuxserver/sonarr:4.0.15.2941-ls293
     container_name: servarr_sonarr
     environment:
       - TZ=Europe/Zurich
