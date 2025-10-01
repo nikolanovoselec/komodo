@@ -6,7 +6,7 @@ services:
       - 7171:7171
     volumes:
       - /docker/configs/spotifux/data:/app/data
-      - /mnt/music/Spotifux:/app/downloads
+      - /mnt/music/Spotifux_Downloads:/app/downloads
       - /docker/configs/spotifux/logs:/app/logs
       - /docker/configs/spotifux/.cache:/app/.cache
     container_name: media_servers_spotifux
