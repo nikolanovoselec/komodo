@@ -9,7 +9,7 @@ services:
       - /mnt/music/Spotifux_Downloads:/app/downloads
       - /docker/configs/spotifux/logs:/app/logs
       - /docker/configs/spotifux/.cache:/app/.cache
-    container_name: media_servers_spotifuxx
+    container_name: media_servers_spotifux
     restart: unless-stopped
     env_file:
       - .env
