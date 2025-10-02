@@ -1,6 +1,6 @@
 services:
   dozzle-agent:
-    image: amir20/dozzle:v8.14.3
+    image: amir20/dozzle:v8.14.4
     container_name: minecraft_dozzle_agent
     command: agent
     volumes:
