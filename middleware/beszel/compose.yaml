@@ -12,7 +12,7 @@ services:
     network_mode: bridge
     
   beszel-agent:
-    image: henrygd/beszel-agent:0.12.12
+    image: henrygd/beszel-agent:0.13.0
     container_name: middleware_beszel_agent
     restart: unless-stopped
     network_mode: host
