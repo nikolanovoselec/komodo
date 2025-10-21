@@ -557,6 +557,21 @@ run_directory = "middleware/portainer"
 ##
 
 [[stack]]
+name = "middleware_termix"
+tags = ["sync"]
+[stack.config]
+server = "middleware"
+run_build = true
+poll_for_updates = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+run_directory = "middleware/termix"
+
+##
+
+[[stack]]
 name = "middleware_uptime_kuma"
 tags = ["sync"]
 [stack.config]
