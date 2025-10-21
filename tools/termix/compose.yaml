@@ -1,16 +1,11 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  termix:
+    image: ghcr.io/lukegus/termix:release-1.7.3
+    container_name: termix
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - /docker/configs/termix:/app/data
+    environment:
+      PORT: "8080"
