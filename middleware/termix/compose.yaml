@@ -1,6 +1,6 @@
 services:
   termix:
-    image: ghcr.io/nikolanovoselec/termix:feature-oidc-import
+    image: ghcr.io/nikolanovoselec/termix:feature-oidc-import@sha256:5e855c68d313e02eac9a9fb4b2f0349fae8e480cbe6994ff5a03e6fc9b9fa9f5
     container_name: middleware_termix
     restart: unless-stopped
     ports:
