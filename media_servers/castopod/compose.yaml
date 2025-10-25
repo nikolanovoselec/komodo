@@ -13,6 +13,7 @@ services:
       CP_CACHE_HANDLER: redis
       CP_REDIS_HOST: redis
       CP_REDIS_PASSWORD: ${CASTOPOD_PASSWORD}
+    user: root
     networks:
       - castopod
       - castopod-db
