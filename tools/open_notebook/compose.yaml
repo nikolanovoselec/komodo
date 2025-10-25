@@ -4,6 +4,7 @@ services:
     ports:
       - "8502:8502"  # Web UI
       - "5055:5055"  # API (required!)
+    container_name: tools_open_notebook
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - API_URL=https://opennotebook.novoselec.ch:5055
