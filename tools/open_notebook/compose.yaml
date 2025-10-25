@@ -7,7 +7,7 @@ services:
     container_name: tools_open_notebook
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - API_URL=http://localhost:5055
+      - API_URL=http://192.168.2.72:5055
       # Database connection (required for single-container)
       - SURREAL_URL=ws://localhost:8000/rpc
       - SURREAL_USER=root
