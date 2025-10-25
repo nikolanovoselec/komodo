@@ -1,16 +1,48 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  castopod:
+    image: castopod/castopod:latest
+    container_name: "media_servers_castopod"
+    volumes:
+      - /docker/configs/castopod/media:/var/www/castopod/public/media
+    environment:
+      MYSQL_DATABASE: castopod
+      MYSQL_USER: castopod
+      MYSQL_PASSWORD: ${CASTOPOD_PASSWORD}
+      CP_BASEURL: "https://podcasts.novoselec.ch"
+      CP_ANALYTICS_SALT: ${CASTOPOD_PASSWORD}
+      CP_CACHE_HANDLER: redis
+      CP_REDIS_HOST: redis
+      CP_REDIS_PASSWORD: ${CASTOPOD_PASSWORD}
+    networks:
+      - castopod
+      - castopod-db
+    ports:
+      - 8000:8000
+    restart: unless-stopped
 
-# networks:
-#   default: {}
+  mariadb:
+    image: mariadb:11.2
+    container_name: "media_servers_castopod_db"
+    networks:
+      - castopod-db
+    volumes:
+      - /docker/configs/castopod/db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${CASTOPOD_PASSWORD}
+      MYSQL_DATABASE: castopod
+      MYSQL_USER: castopod
+      MYSQL_PASSWORD: ${CASTOPOD_PASSWORD}
+    restart: unless-stopped
 
-# volumes:
-#   data:
+  redis:
+    image: redis:7.2-alpine
+    container_name: "media_servers_castopod_redis"
+    command: --requirepass ${CASTOPOD_PASSWORD}
+    volumes:
+      - /docker/configs/castopod/cache:/data
+    networks:
+      - castopod
+
+networks:
+  castopod:
+  castopod-db:
