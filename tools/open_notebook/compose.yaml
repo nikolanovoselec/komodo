@@ -7,7 +7,7 @@ services:
     container_name: tools_open_notebook
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - API_URL=https://opennotebook.novoselec.ch/api
+      - API_URL=https://opennotebook.novoselec.ch
       # Database connection (required for single-container)
       - SURREAL_URL=ws://localhost:8000/rpc
       - SURREAL_USER=root
