@@ -1,6 +1,6 @@
 services:
   castopod:
-    image: castopod/castopod:latest
+    image: castopod/castopod:1.13.5
     container_name: "media_servers_castopod"
     volumes:
       - /docker/configs/castopod/media:/var/www/castopod/public/media
@@ -8,7 +8,7 @@ services:
       MYSQL_DATABASE: castopod
       MYSQL_USER: castopod
       MYSQL_PASSWORD: ${CASTOPOD_PASSWORD}
-      CP_BASEURL: "https://podcasts.novoselec.ch"
+      CP_BASEURL: "https://podcast.novoselec.ch"
       CP_ANALYTICS_SALT: ${CASTOPOD_PASSWORD}
       CP_CACHE_HANDLER: redis
       CP_REDIS_HOST: redis
