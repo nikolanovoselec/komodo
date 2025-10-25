@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
 
   mariadb:
-    image: mariadb:11.2
+    image: mariadb:11.8
     container_name: "media_servers_castopod_db"
     networks:
       - castopod-db
