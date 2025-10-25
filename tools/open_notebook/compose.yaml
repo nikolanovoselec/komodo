@@ -1,16 +1,19 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  open_notebook:
+    image: ghcr.io/lfnovo/open-notebook:1.1.1-single
+    ports:
+      - "8502:8502"  # Web UI
+      - "5055:5055"  # API (required!)
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - API_URL=https://opennotebook.novoselec.ch:5055
+      # Database connection (required for single-container)
+      - SURREAL_URL=ws://localhost:8000/rpc
+      - SURREAL_USER=root
+      - SURREAL_PASSWORD=${OPEN_NOTEBOOK_SURREAL_PASSWORD}
+      - SURREAL_NAMESPACE=open_notebook
+      - SURREAL_DATABASE=production
+    volumes:
+      - /docker/configs/open_notebook/notebook_data:/app/data
+      - /docker/configs/open_notebook/surreal_data:/mydata
+    restart: unless-stopped
