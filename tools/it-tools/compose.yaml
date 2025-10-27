@@ -4,5 +4,5 @@ services:
     ports:
       - '8081:80'
     restart: unless-stopped
-    container_name: tools_it-tools
+    container_name: tools_it_tools
     network_mode: bridge
