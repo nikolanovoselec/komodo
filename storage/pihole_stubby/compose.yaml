@@ -1,6 +1,6 @@
 services:
     pihole:
-      image: pihole/pihole:2025.10.2
+      image: pihole/pihole:2025.10.3
       container_name: storage_pihole
       restart: unless-stopped
       ports:
