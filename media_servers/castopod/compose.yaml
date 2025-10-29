@@ -20,6 +20,20 @@ services:
       - 8000:8000
     restart: unless-stopped
 
+  web:
+    image: nginx:alpine
+    container_name: media_servers_castopod_web
+    depends_on:
+      - castopod
+    volumes:
+      - /docker/configs/castopod/media:/var/www/html/media:ro
+      - /docker/configs/castopod/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - castopod
+    ports:
+      - 8000:80
+    restart: unless-stopped
+
   mariadb:
     image: mariadb:11.2
     container_name: "media_servers_castopod_db"
