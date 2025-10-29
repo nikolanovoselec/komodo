@@ -1,11 +1,9 @@
 services:
   castopod:
-    image: castopod/app:1.13.5
+    image: castopod/castopod:1.13.5
     container_name: "media_servers_castopod"
     volumes:
       - /docker/configs/castopod/media:/var/www/castopod/public/media
-      - /docker/configs/castopod/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
-      - /docker/configs/castopod/zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf:ro
     environment:
       MYSQL_DATABASE: castopod
       MYSQL_USER: castopod
@@ -18,8 +16,8 @@ services:
     networks:
       - castopod
       - castopod-db
-    expose:
-      - "8000"
+    ports:
+      - 127.0.0.1:9000:8000
     restart: unless-stopped
 
   web:
