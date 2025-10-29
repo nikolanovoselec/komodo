@@ -5,6 +5,7 @@ services:
     volumes:
       - /docker/configs/castopod/media:/var/www/castopod/public/media
       - /docker/configs/castopod/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
+      - /docker/configs/castopod/zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf:ro
     environment:
       MYSQL_DATABASE: castopod
       MYSQL_USER: castopod
