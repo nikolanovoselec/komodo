@@ -17,24 +17,7 @@ services:
       - castopod
       - castopod-db
     ports:
-      - 127.0.0.1:9000:8000
-    restart: unless-stopped
-
-  web:
-    image: castopod/web-server:1.13.5
-    container_name: media_servers_castopod_web
-    depends_on:
-      - castopod
-    volumes:
-      - /docker/configs/castopod/media:/var/www/html/media:ro
-    environment:
-      CP_APP_HOSTNAME: castopod
-      CP_MAX_BODY_SIZE: 512M
-      CP_TIMEOUT: 900
-    networks:
-      - castopod
-    ports:
-      - 8000:80
+      - 8000:8000
     restart: unless-stopped
 
   mariadb:
@@ -59,7 +42,6 @@ services:
       - /docker/configs/castopod/cache:/data
     networks:
       - castopod
-    restart: unless-stopped
 
 networks:
   castopod:
