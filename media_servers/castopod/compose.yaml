@@ -23,6 +23,7 @@ services:
   web:
     image: nginx:alpine
     container_name: media_servers_castopod_web
+    user: "33:33"                     # run as www-data
     depends_on:
       - castopod
     volumes:
