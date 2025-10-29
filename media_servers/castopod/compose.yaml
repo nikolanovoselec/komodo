@@ -21,9 +21,8 @@ services:
     restart: unless-stopped
 
   web:
-    image: nginx:alpine
+    image: castopod/web-server:1.13.5
     container_name: media_servers_castopod_web
-    user: "33:33"                     # run as www-data
     depends_on:
       - castopod
     volumes:
