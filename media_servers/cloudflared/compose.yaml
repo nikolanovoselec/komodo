@@ -1,6 +1,6 @@
 services:
   cloudflared:
-    image: cloudflare/cloudflared:2025.10.0
+    image: cloudflare/cloudflared:2025.10.1
     restart: unless-stopped
     container_name: media_servers_cloudflared
     network_mode: host
