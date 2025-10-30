@@ -28,10 +28,6 @@ services:
     volumes:
       - /docker/configs/castopod/media:/var/www/html/media:ro
       - /docker/configs/castopod/nginx.conf:/etc/nginx/nginx.conf:ro
-    environment:
-        CP_APP_HOSTNAME: castopod
-        CP_MAX_BODY_SIZE: 64M
-        CP_TIMEOUT: 900
     networks:
       - castopod
     ports:
