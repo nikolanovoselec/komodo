@@ -1,6 +1,6 @@
 services:
   tautulli:
-    image: lscr.io/linuxserver/tautulli:v2.16.0-ls206
+    image: lscr.io/linuxserver/tautulli:v2.16.0-ls207
     container_name: media_servers_tautulli
     environment:
       - TZ=Europe/Zurich
