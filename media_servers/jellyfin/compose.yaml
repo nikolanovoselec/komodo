@@ -1,6 +1,6 @@
 services:
   jellyfin:
-    image: lscr.io/linuxserver/jellyfin:10.11.1ubu2404-ls5
+    image: lscr.io/linuxserver/jellyfin:10.11.2ubu2404-ls6
     container_name: media_servers_jellyfin
     environment:
       - TZ=Europe/Zurich
