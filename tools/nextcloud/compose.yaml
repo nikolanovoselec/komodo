@@ -20,7 +20,7 @@ services:
       - redis
     volumes:
       - /docker/configs/nextcloud/config:/config
-      - /mnt/synology/nextcloud:/data
+      - /mnt/nextcloud:/data
     ports:
       - "8443:443"
     restart: unless-stopped
