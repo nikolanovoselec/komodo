@@ -10,7 +10,7 @@ services:
       MYSQL_DATABASE: nextcloud
       MYSQL_USER: nextcloud
       MYSQL_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
-      NEXTCLOUD_TRUSTED_DOMAINS: ${NEXTCLOUD_TRUSTED_DOMAINS}
+      NEXTCLOUD_TRUSTED_DOMAINS: nextcloud.novoselec.ch nextcloud.local.novoselec.ch tools.lan tools.lan:8443
       NEXTCLOUD_DATA_DIR: /data
       REDIS_HOST: redis
       REDIS_HOST_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
