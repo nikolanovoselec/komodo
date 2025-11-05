@@ -1,0 +1,69 @@
+services:
+  nextcloud:
+    image: lscr.io/linuxserver/nextcloud:30.0.1
+    container_name: tools_nextcloud
+    env_file:
+      - .env
+    environment:
+      PUID: "1026"
+      PGID: "100"
+      TZ: Europe/Zurich
+      MYSQL_HOST: database
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
+      NEXTCLOUD_TRUSTED_DOMAINS: cloud.novoselec.ch tools.lan
+      NEXTCLOUD_DATA_DIR: /data
+      REDIS_HOST: redis
+      REDIS_HOST_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
+      PHP_MEMORY_LIMIT: 1024M
+    depends_on:
+      - database
+      - redis
+    volumes:
+      - /docker/configs/nextcloud/config:/config
+      - /mnt/synology/nextcloud:/data
+    ports:
+      - "8443:443"
+    restart: unless-stopped
+
+  database:
+    image: mariadb:11.4
+    container_name: tools_nextcloud_db
+    env_file:
+      - .env
+    environment:
+      MARIADB_ROOT_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
+      MARIADB_DATABASE: nextcloud
+      MARIADB_USER: nextcloud
+      MARIADB_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
+      TZ: Europe/Zurich
+    command:
+      - --transaction-isolation=READ-COMMITTED
+      - --binlog-format=ROW
+      - --innodb-file-per-table=1
+      - --skip-name-resolve
+    volumes:
+      - /docker/configs/nextcloud/database:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: tools_nextcloud_redis
+    command:
+      - redis-server
+      - --requirepass
+      - ${NEXTCLOUD_DB_PASSWORD}
+    volumes:
+      - /docker/configs/nextcloud/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${NEXTCLOUD_DB_PASSWORD}", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
