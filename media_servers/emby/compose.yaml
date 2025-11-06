@@ -1,6 +1,6 @@
 services:
   emby:
-    image: lscr.io/linuxserver/emby:4.9.1.80-ls258
+    image: lscr.io/linuxserver/emby:4.9.1.80-ls259
     container_name: media_servers_emby
     network_mode: host #for local/remote stream discovery
     environment:
