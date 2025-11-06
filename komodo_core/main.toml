@@ -314,6 +314,7 @@ webhook_force_deploy = true
 run_directory = "media_servers/castopod"
 environment = """
 CASTOPOD_PASSWORD = [[CASTOPOD_PASSWORD]]
+CP_BASEURL = "https://podcast.novoselec.ch"
 """
 
 ##
