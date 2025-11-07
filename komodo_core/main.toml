@@ -18,7 +18,7 @@ enabled = true
 
 [[server]]
 name = "media_servers"
-tags = ["sync", "auto-update"]
+tags = ["sync"]
 [server.config]
 address = "https://mediaservers.lan:8120"
 enabled = true
@@ -36,7 +36,7 @@ enabled = true
 
 [[server]]
 name = "minecraft"
-tags = ["sync", "auto-update"]
+tags = ["sync"]
 [server.config]
 address = "https://minecraft.lan:8120"
 enabled = true
