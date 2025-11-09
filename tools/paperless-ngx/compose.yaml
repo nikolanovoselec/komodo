@@ -30,7 +30,7 @@ services:
       PAPERLESS_FILENAME_FORMAT: '{correspondent}/{created_year}/{created_year}.{created_month}.{created_day} - {title}'
       PAPERLESS_URL: ${PAPERLESS_URL}
 
-t  gotenberg:
+  gotenberg:
     image: docker.io/gotenberg/gotenberg:8.23.2
     restart: unless-stopped
     container_name: tools_paperless_gotenberg
