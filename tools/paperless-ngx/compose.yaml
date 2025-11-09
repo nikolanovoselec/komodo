@@ -31,7 +31,7 @@ services:
       PAPERLESS_URL: ${PAPERLESS_URL}
 
   gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.23.2
+    image: docker.io/gotenberg/gotenberg:8.24.0
     restart: unless-stopped
     container_name: tools_paperless_gotenberg
     command:
