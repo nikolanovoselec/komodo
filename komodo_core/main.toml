@@ -1288,10 +1288,9 @@ repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "tools/paperless-ngx"
 environment = """
-
 USERMAP_UID=1000
 USERMAP_GID=1000
-PAPERLESS_URL=https://paperless.graymatter.ch
+PAPERLESS_URL="https://paperless.graymatter.ch"
 PAPERLESS_SECRET_KEY=[[PAPERLESS_SECRET_KEY]]
 PAPERLESS_TIME_ZONE=Europe/Zurich
 PAPERLESS_OCR_LANGUAGE=eng
