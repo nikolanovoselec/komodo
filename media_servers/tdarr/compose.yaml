@@ -1,7 +1,7 @@
 services:
   tdarr:
     container_name: media_servers_tdarr_server
-    image: ghcr.io/haveagitgat/tdarr:2.52.01
+    image: ghcr.io/haveagitgat/tdarr:2.53.01
     restart: unless-stopped
     ports:
       - 8265:8265 #webUI port
