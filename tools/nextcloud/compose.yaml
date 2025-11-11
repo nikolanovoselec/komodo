@@ -92,7 +92,7 @@ services:
     restart: unless-stopped
 
   docker_socket_proxy:
-    image: tecnativa/docker-socket-proxy:0.1.1
+    image: tecnativa/docker-socket-proxy:v0.4.1
     container_name: tools_nextcloud_docker_proxy
     environment:
       CONTAINERS: 1
