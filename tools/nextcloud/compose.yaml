@@ -35,6 +35,8 @@ services:
       - "middleware.lan:192.168.5.148"
     ports:
       - "8443:443"
+    networks:
+      - nextcloud
     restart: unless-stopped
 
   database:
@@ -58,6 +60,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - nextcloud
     restart: unless-stopped
 
   redis:
@@ -74,12 +78,15 @@ services:
       interval: 30s
       timeout: 5s
       retries: 5
+    networks:
+      - nextcloud
     restart: unless-stopped
 
   docker_socket_proxy:
     image: tecnativa/docker-socket-proxy:0.1.1
     container_name: tools_nextcloud_docker_proxy
-    network_mode: host
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - nextcloud
     restart: unless-stopped
