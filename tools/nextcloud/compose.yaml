@@ -108,7 +108,6 @@ services:
       - nextcloud
       - appapi-daemon
       - whiteboard-realtime
-      - notify-push
     environment:
       NEXTCLOUD_DB_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
       NEXTCLOUD_APPAPI_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
