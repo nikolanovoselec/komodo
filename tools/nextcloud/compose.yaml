@@ -77,7 +77,7 @@ services:
     restart: unless-stopped
 
   appapi-daemon:
-    image: ghcr.io/nextcloud/appapi-daemon:main
+    image: ghcr.io/nextcloud/appapi-daemon:0.3.0
     container_name: tools_nextcloud_appapi
     environment:
       NEXTCLOUD_URL: https://nextcloud.novoselec.ch
@@ -90,7 +90,7 @@ services:
     restart: unless-stopped
 
   whiteboard-realtime:
-    image: ghcr.io/nextcloud/whiteboard-collaboration-server:main
+    image: ghcr.io/nextcloud/whiteboard-collaboration-server:0.1.2
     container_name: tools_nextcloud_whiteboard
     environment:
       PORT: 3000
@@ -102,7 +102,7 @@ services:
     restart: unless-stopped
 
   notify-push:
-    image: ghcr.io/nextcloud/notify_push:latest
+    image: ghcr.io/nextcloud/notify_push:0.6.7
     container_name: tools_nextcloud_notify_push
     command:
       - /notify_push
