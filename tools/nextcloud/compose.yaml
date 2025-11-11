@@ -104,30 +104,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
-  notify-push:
-    image: ghcr.io/nextcloud/notify_push:v0.6.7
-    container_name: tools_nextcloud_notify_push
-    command:
-      - /notify_push
-      - --bind
-      - 0.0.0.0:7867
-      - --nextcloud-url
-      - https://nextcloud.novoselec.ch
-      - --allow-self-signed
-    environment:
-      NEXTCLOUD_USERNAME: notify-push
-      NEXTCLOUD_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
-    depends_on:
-      - nextcloud
-    restart: unless-stopped
-
   nextcloud-init:
     image: lscr.io/linuxserver/nextcloud:32.0.1-ls402
     container_name: tools_nextcloud_init
     depends_on:
       - nextcloud
       - appapi-daemon
-      - notify-push
+      - docker_socket_proxy
     environment:
       NEXTCLOUD_DB_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
       NEXTCLOUD_APPAPI_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
