@@ -127,7 +127,6 @@ services:
     depends_on:
       - nextcloud
       - appapi-daemon
-      - whiteboard-realtime
       - notify-push
     environment:
       NEXTCLOUD_DB_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
