@@ -1,6 +1,6 @@
 services:
   gluetun:
-    image: qmcgaw/gluetun:pr-2878
+    image: ghcr.io/qdm12/gluetun:pr-2523
     container_name: storage_qbittorrent_gluetun
     cap_add:
       - NET_ADMIN
