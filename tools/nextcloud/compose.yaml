@@ -122,10 +122,6 @@ services:
       cd /config/www
       occ () { sudo -u abc php occ "$$@"; }
       occ maintenance:mode --off || true
-      occ user:add --password-from-env --display-name="AppAPI Daemon" --group="admin" appapi || true
-      OC_PASS="$${NEXTCLOUD_APPAPI_PASSWORD}" occ user:resetpassword --password-from-env appapi || true
-      occ user:add --password-from-env --display-name="Notify Push" notify-push || true
-      OC_PASS="$${NEXTCLOUD_NOTIFY_PUSH_PASSWORD}" occ user:resetpassword --password-from-env notify-push || true
       occ config:system:set trusted_proxies 0 --value="172.67.0.0/16"
       occ config:system:set trusted_proxies 1 --value="192.168.5.148"
       occ config:system:set trusted_proxies 2 --value="192.168.2.0/24"
@@ -138,10 +134,6 @@ services:
       occ app:enable richdocuments richdocumentscode || true
       occ config:app:set richdocuments wopi_url --value="https://tools.lan:8443"
       occ config:app:set richdocuments wopi_allowlist --value="nextcloud.novoselec.ch,nextcloud.local.novoselec.ch,tools.lan"
-      occ app_api:daemon:register appapi-daemon http://appapi-daemon:4003 "$${NEXTCLOUD_APPAPI_SHARED_SECRET}" || true
-      occ whiteboard:settings --collab-server-url="http://whiteboard-realtime:3000"
-      occ notify_push:setup https://notify-push:7867 || true
-      occ notify_push:register https://notify-push:7867 || true
       occ maintenance:repair --include-expensive || true
       occ db:add-missing-indices || true
       touch "$${stamp}"
