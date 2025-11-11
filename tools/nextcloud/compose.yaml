@@ -76,21 +76,6 @@ services:
       retries: 5
     restart: unless-stopped
 
-  appapi-daemon:
-    image: ghcr.io/nextcloud/appapi-daemon:v0.3.0
-    container_name: tools_nextcloud_appapi
-    environment:
-      NEXTCLOUD_URL: https://nextcloud.novoselec.ch
-      NEXTCLOUD_USERNAME: appapi
-      NEXTCLOUD_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
-      DEPLOY_DAEMON_NAME: appapi-daemon
-      DEPLOY_DAEMON_SECRET: ${NEXTCLOUD_DB_PASSWORD}
-      DOCKER_HOST: tcp://docker_socket_proxy:2375
-    depends_on:
-      - docker_socket_proxy
-      - nextcloud
-    restart: unless-stopped
-
   docker_socket_proxy:
     image: tecnativa/docker-socket-proxy:0.1.1
     container_name: tools_nextcloud_docker_proxy
@@ -109,7 +94,6 @@ services:
     container_name: tools_nextcloud_init
     depends_on:
       - nextcloud
-      - appapi-daemon
       - docker_socket_proxy
     environment:
       NEXTCLOUD_DB_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
