@@ -85,8 +85,23 @@ services:
       NEXTCLOUD_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
       DEPLOY_DAEMON_NAME: appapi-daemon
       DEPLOY_DAEMON_SECRET: ${NEXTCLOUD_DB_PASSWORD}
+      DOCKER_HOST: tcp://docker_socket_proxy:2375
     depends_on:
+      - docker_socket_proxy
       - nextcloud
+    restart: unless-stopped
+
+  docker_socket_proxy:
+    image: tecnativa/docker-socket-proxy:0.1.1
+    container_name: tools_nextcloud_docker_proxy
+    environment:
+      CONTAINERS: 1
+      IMAGES: 1
+      NETWORKS: 1
+      VOLUMES: 1
+      POST: 1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
   whiteboard-realtime:
