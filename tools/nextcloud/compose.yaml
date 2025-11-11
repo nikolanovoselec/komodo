@@ -104,18 +104,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
-  whiteboard-realtime:
-    image: ghcr.io/nextcloud/whiteboard-collaboration-server:v0.1.2
-    container_name: tools_nextcloud_whiteboard
-    environment:
-      PORT: 3000
-      HOST: 0.0.0.0
-      APPAPI_DAEMON_URL: http://appapi-daemon:4003
-      APPAPI_DAEMON_SECRET: ${NEXTCLOUD_DB_PASSWORD}
-    depends_on:
-      - appapi-daemon
-    restart: unless-stopped
-
   notify-push:
     image: ghcr.io/nextcloud/notify_push:v0.6.7
     container_name: tools_nextcloud_notify_push
