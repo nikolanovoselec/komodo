@@ -1,6 +1,6 @@
 services:
   npm:
-    image: 'jc21/nginx-proxy-manager:2.13.2'
+    image: 'jc21/nginx-proxy-manager:2.13.3'
     restart: unless-stopped
     container_name: middleware_npm
     ports:
