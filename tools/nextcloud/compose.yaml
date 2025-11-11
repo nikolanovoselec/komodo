@@ -16,12 +16,23 @@ services:
       REDIS_HOST: redis
       REDIS_HOST_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
       PHP_MEMORY_LIMIT: 1024M
+      NEXTCLOUD__CONFIG__OVERWRITEHOST: nextcloud.novoselec.ch
+      NEXTCLOUD__CONFIG__OVERWRITEPROTOCOL: https
+      NEXTCLOUD__CONFIG__OVERWRITECLIURL: https://tools.lan:8443
+      NEXTCLOUD__CONFIG__ALLOW_LOCAL_REMOTE_SERVERS: "true"
+      NEXTCLOUD__CONFIG__MAINTENANCE_WINDOW_START: 3
+      NEXTCLOUD__CONFIG__DEFAULT_PHONE_REGION: CH
     depends_on:
       - database
       - redis
     volumes:
       - /docker/configs/nextcloud/config:/config
       - /mnt/nextcloud:/data
+    extra_hosts:
+      - "nextcloud.novoselec.ch:192.168.2.72"
+      - "nextcloud.local.novoselec.ch:192.168.2.72"
+      - "tools.lan:192.168.2.72"
+      - "middleware.lan:192.168.5.148"
     ports:
       - "8443:443"
     restart: unless-stopped
@@ -63,4 +74,108 @@ services:
       interval: 30s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+
+  appapi-daemon:
+    image: ghcr.io/nextcloud/appapi-daemon:latest
+    container_name: tools_nextcloud_appapi
+    environment:
+      NEXTCLOUD_URL: https://nextcloud.novoselec.ch
+      NEXTCLOUD_USERNAME: appapi
+      NEXTCLOUD_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
+      DEPLOY_DAEMON_NAME: appapi-daemon
+      DEPLOY_DAEMON_SECRET: ${NEXTCLOUD_DB_PASSWORD}
+    depends_on:
+      - nextcloud
+    restart: unless-stopped
+
+  whiteboard-realtime:
+    image: ghcr.io/nextcloud/whiteboard-collaboration-server:latest
+    container_name: tools_nextcloud_whiteboard
+    environment:
+      PORT: 3000
+      HOST: 0.0.0.0
+      APPAPI_DAEMON_URL: http://appapi-daemon:4003
+      APPAPI_DAEMON_SECRET: ${NEXTCLOUD_DB_PASSWORD}
+    depends_on:
+      - appapi-daemon
+    restart: unless-stopped
+
+  notify-push:
+    image: ghcr.io/nextcloud/notify_push:latest
+    container_name: tools_nextcloud_notify_push
+    command:
+      - /notify_push
+      - --bind
+      - 0.0.0.0:7867
+      - --nextcloud-url
+      - https://nextcloud.novoselec.ch
+      - --allow-self-signed
+    environment:
+      NEXTCLOUD_USERNAME: notify-push
+      NEXTCLOUD_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
+    depends_on:
+      - nextcloud
+    restart: unless-stopped
+
+  nextcloud-init:
+    image: lscr.io/linuxserver/nextcloud:32.0.1-ls402
+    container_name: tools_nextcloud_init
+    depends_on:
+      - nextcloud
+      - appapi-daemon
+      - whiteboard-realtime
+      - notify-push
+    environment:
+      NEXTCLOUD_DB_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
+      NEXTCLOUD_APPAPI_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
+      NEXTCLOUD_APPAPI_SHARED_SECRET: ${NEXTCLOUD_DB_PASSWORD}
+      NEXTCLOUD_NOTIFY_PUSH_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
+    volumes:
+      - /docker/configs/nextcloud/config:/config
+      - /mnt/nextcloud:/data
+    entrypoint: ["/bin/bash","-c"]
+    command: |
+      set -euo pipefail
+      stamp="/config/.postinstall.done"
+      if [ -f "${stamp}" ]; then
+        echo "Nextcloud init already run; sleeping forever"
+        tail -f /dev/null
+      fi
+      wait_for() {
+        local url="$1"
+        until curl -sk --max-time 5 "$url" >/dev/null; do
+          echo "Waiting for $url..."
+          sleep 5
+        done
+      }
+      wait_for https://tools.lan:8443/status.php
+      cd /config/www
+      occ () { sudo -u abc php occ "$@"; }
+      occ maintenance:mode --off || true
+      occ user:add --password-from-env --display-name="AppAPI Daemon" --group="admin" appapi || true
+      OC_PASS="${NEXTCLOUD_APPAPI_PASSWORD}" occ user:resetpassword --password-from-env appapi || true
+      occ user:add --password-from-env --display-name="Notify Push" notify-push || true
+      OC_PASS="${NEXTCLOUD_NOTIFY_PUSH_PASSWORD}" occ user:resetpassword --password-from-env notify-push || true
+      occ config:system:set trusted_proxies 0 --value="172.67.0.0/16"
+      occ config:system:set trusted_proxies 1 --value="192.168.5.148"
+      occ config:system:set trusted_proxies 2 --value="192.168.2.0/24"
+      occ config:system:set overwrite.cli.url --value="https://tools.lan:8443"
+      occ config:system:set allow_local_remote_servers --type=boolean --value=true
+      occ config:system:set maintenance_window_start --value=3
+      occ config:system:set default_phone_region --value="CH"
+      occ app:install richdocuments || true
+      occ app:install richdocumentscode || true
+      occ app:enable richdocuments richdocumentscode || true
+      occ config:app:set richdocuments wopi_url --value="https://tools.lan:8443"
+      occ config:app:set richdocuments wopi_allowlist --value="nextcloud.novoselec.ch,nextcloud.local.novoselec.ch,tools.lan"
+      occ app_api:daemon:register appapi-daemon http://appapi-daemon:4003 ${NEXTCLOUD_APPAPI_SHARED_SECRET} || true
+      occ whiteboard:settings --collab-server-url="http://whiteboard-realtime:3000"
+      occ notify_push:setup https://notify-push:7867 || true
+      occ notify_push:register https://notify-push:7867 || true
+      occ maintenance:repair --include-expensive || true
+      occ db:add-missing-indices || true
+      touch "${stamp}"
+      echo "Nextcloud init complete; sleeping forever"
+      tail -f /dev/null
     restart: unless-stopped
