@@ -1,6 +1,6 @@
 services:
   heimdall:
-    image: lscr.io/linuxserver/heimdall:v2.7.6-ls326
+    image: lscr.io/linuxserver/heimdall:v2.7.6-ls327
     container_name: servarr_heimdall
     environment:
       - TZ=Europe/Zurich
