@@ -40,7 +40,7 @@ services:
     restart: unless-stopped
 
   database:
-    image: mariadb:11.4
+    image: mariadb:11.8
     container_name: tools_nextcloud_db
     environment:
       MARIADB_ROOT_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
