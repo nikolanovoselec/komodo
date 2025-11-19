@@ -1,6 +1,6 @@
 services:
   lidarr:
-    image: lscr.io/linuxserver/lidarr:3.0.1.4866-ls10
+    image: lscr.io/linuxserver/lidarr:3.0.1.4866-ls11
     container_name: servarr_lidarr
     user: 911:911
     environment:
