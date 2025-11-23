@@ -7,7 +7,7 @@ services:
       - /docker/configs/paperless-ngx/redisdata:/data
 
   webserver:
-    image: ghcr.io/paperless-ngx/paperless-ngx:2.19.6
+    image: ghcr.io/paperless-ngx/paperless-ngx:2.20.0
     restart: unless-stopped
     container_name: tools_paperless_server    
     depends_on:
