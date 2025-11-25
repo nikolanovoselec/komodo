@@ -1,16 +1,13 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  dozzle-agent:
+    image: amir20/dozzle:v8.14.9
+    container_name: nextcloud_dozzle_agent
+    command: agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 7007:7007
+    restart: unless-stopped
+    environment:
+    - DOZZLE_HOSTNAME=nextcloud
+    network_mode: bridge
