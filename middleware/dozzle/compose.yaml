@@ -7,6 +7,6 @@ services:
     ports:
       - 8088:8080
     environment:
-      - DOZZLE_REMOTE_AGENT=servarr.lan:7007,nas.lan:7007,mediaservers.lan:7007,komodo.lan:7007,tools.lan:7007,pihole-master.lan:7007,minecraft.lan:7007 #,immich.local:7007,pihole-slave-i.local:7007,pihole-slave-ii.local:7007,pihole-slave-iii.local:7007
+      - DOZZLE_REMOTE_AGENT=servarr.lan:7007,nas.lan:7007,mediaservers.lan:7007,komodo.lan:7007,tools.lan:7007,pihole-master.lan:7007,minecraft.lan:7007,nextcloud.lan:7007 #,immich.local:7007,pihole-slave-i.local:7007,pihole-slave-ii.local:7007,pihole-slave-iii.local:7007
     restart: unless-stopped
     network_mode: bridge
