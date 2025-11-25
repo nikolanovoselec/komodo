@@ -36,9 +36,18 @@ enabled = true
 
 [[server]]
 name = "minecraft"
-tags = ["sync"]
+tags = ["sync", "auto-update"]
 [server.config]
 address = "https://minecraft.lan:8120"
+enabled = true
+
+##
+
+[[server]]
+name = "nextcloud"
+tags = ["sync", "auto-update"]
+[server.config]
+address = "https://nextcloud.lan:8120"
 enabled = true
 
 ##
@@ -642,6 +651,25 @@ run_directory = "minecraft/dozzle_agent"
 ##
 
 [[stack]]
+name = "nextcloud_nextcloud_aio"
+tags = ["sync"]
+[stack.config]
+server = "nextcloud"
+run_build = true
+poll_for_updates = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "nextcloud/nextcloud"
+environment = """
+
+"""
+
+##
+
+[[stack]]
 name = "servarr_autobrr"
 tags = ["sync"]
 [stack.config]
@@ -1233,25 +1261,6 @@ run_directory = "tools/it-tools"
 ##
 
 [[stack]]
-name = "tools_nextcloud"
-tags = ["sync"]
-[stack.config]
-server = "tools"
-run_build = true
-poll_for_updates = true
-auto_update_all_services = true
-destroy_before_deploy = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-webhook_force_deploy = true
-run_directory = "tools/nextcloud"
-environment = """
-
-"""
-
-##
-
-[[stack]]
 name = "tools_open_notebook"
 tags = ["sync"]
 [stack.config]
@@ -1346,7 +1355,7 @@ config.webhook_secret = "ceTXriBfjq!G4r_H_ZDbpn.@Qq_3FqjFh@zPPezFZsskcbdd7F-qYRZ
 name = "Deploy Stacks If Changed"
 enabled = true
 executions = [
-  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "komodo_core*, middleware*, storage*, servarr*, media_servers*, tools*, dns_ntp*, minecraft*", enabled = true }
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "komodo_core*, middleware*, storage*, servarr*, media_servers*, tools*, ai_llm*, dns_ntp*, nextcloud*", enabled = true }
 ]
 
 ##
