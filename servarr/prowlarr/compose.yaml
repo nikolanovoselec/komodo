@@ -1,6 +1,6 @@
 services:
   prowlarr:
-    image: lscr.io/linuxserver/prowlarr:2.3.0.5236-ls132
+    image: lscr.io/linuxserver/prowlarr:2.3.0.5236-ls133
     container_name: servarr_prowlarr
     environment:
       - TZ=Europe/Zurich
