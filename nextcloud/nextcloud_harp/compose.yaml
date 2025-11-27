@@ -1,7 +1,7 @@
 services:
   appapi-harp:
     image: ghcr.io/nextcloud/nextcloud-appapi-harp:release
-    container_name: nextcloud_nextcloud_harp
+    container_name: nextcloud-harp
     restart: unless-stopped
     init: true
     environment:
