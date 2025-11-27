@@ -1,16 +1,26 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
+  appapi-harp:
+    image: ghcr.io/nextcloud/nextcloud-appapi-harp:release
+    container_name: nextcloud-harp
+    restart: unless-stopped
+    init: true
+    environment:
+      - HP_SHARED_KEY={NEXTCLOUD_HP_SHARED_KEY}
+      # Using the standard public URL (resolved locally via Pi-hole)
+      - NC_INSTANCE_URL=https://nextcloud.novoselec.ch
+      - HP_EXAPPS_ADDRESS=0.0.0.0:8780
+      - HP_FRP_ADDRESS=0.0.0.0:8782
+      # Optional: Helpful logs during setup
+      # - HP_LOG_LEVEL=debug
+    ports:
+      # Expose to host so NPM (192.168.5.148) can reach them
+      - 8780:8780
+      - 8782:8782
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - nextcloud-aio
 
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+networks:
+  nextcloud-aio:
+    external: true
