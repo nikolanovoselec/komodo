@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     init: true
     environment:
-      - HP_SHARED_KEY={NEXTCLOUD_HP_SHARED_KEY}
+      - HP_SHARED_KEY=${NEXTCLOUD_HP_SHARED_KEY}
       # Using the standard public URL (resolved locally via Pi-hole)
       - NC_INSTANCE_URL=https://nextcloud.novoselec.ch
       - HP_EXAPPS_ADDRESS=0.0.0.0:8780
