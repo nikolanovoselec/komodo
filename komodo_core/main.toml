@@ -9,7 +9,7 @@ enabled = true
 
 [[server]]
 name = "komodo_core"
-tags = ["sync", "auto-update"]
+tags = ["sync"]
 [server.config]
 address = "https://komodo.lan:8120"
 enabled = true
