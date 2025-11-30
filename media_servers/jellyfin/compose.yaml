@@ -9,7 +9,7 @@ services:
       - /docker/configs/jellyfin:/config
       - /mnt/video/tv shows/:/data/tvshows
       - /mnt/video/movies/:/data/movies
-      - /mnt/music:/mnt/synology-music/
+      - /mnt/music:/data/music
     ports:
       - 8095:8096
 #      - 8920:8920 #optional
