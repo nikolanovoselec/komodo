@@ -8,5 +8,5 @@ services:
       - TZ=Europe/Zurich
     volumes:
       - /docker/configs/crosswatch:/config
-    network_mode: host
+    #network_mode: host
     restart: unless-stopped
