@@ -1,16 +1,11 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  crosswatch:
+    image: ghcr.io/cenodude/crosswatch:latest
+    container_name: media_servers_crosswatch
+    ports:
+      - "8787:8787"          # host:container
+    environment:
+      - TZ=Europe/Zurich
+    volumes:
+      - /docker/configs/crosswatch:/config
+    restart: unless-stopped
