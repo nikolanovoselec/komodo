@@ -349,7 +349,7 @@ CFD_TOKEN_MEDIASERVERS = [[CFD_TOKEN_MEDIASERVERS]]
 
 [[stack]]
 name = "media_servers_crosswatch"
-tags = ["auto-update", "sync"]
+tags = ["sync"]
 [stack.config]
 server = "media_servers"
 run_build = true
@@ -716,6 +716,25 @@ webhook_force_deploy = true
 run_directory = "nextcloud/nextcloud"
 environment = """
 
+"""
+
+##
+
+[[stack]]
+name = "nextcloud_nextcloud_harp"
+tags = ["sync"]
+[stack.config]
+server = "nextcloud"
+run_build = true
+poll_for_updates = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "nextcloud/nextcloud_harp"
+environment = """
+NEXTCLOUD_HP_SHARED_KEY = [[NEXTCLOUD_HP_SHARED_KEY]]
 """
 
 ##
