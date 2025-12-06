@@ -66,7 +66,7 @@ services:
 ###########
 
   deunhealth:
-    build: .
+    #build: .
     image: qmcgaw/deunhealth:latest
     container_name: storage_qbittorrent_deunhealth
     network_mode: "none"
