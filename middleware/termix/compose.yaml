@@ -1,6 +1,6 @@
 services:
   termix:
-    image: ghcr.io/nikolanovoselec/termix:feature-oidc-import
+    image: ghcr.io/lukegus/termix:release-1.9.0
     container_name: middleware_termix
     restart: unless-stopped
     ports:
