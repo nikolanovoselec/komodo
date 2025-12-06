@@ -65,15 +65,15 @@ services:
 
 ###########
 
-  deunhealth:
+  #deunhealth:
 #    build: .
-    image: qmcgaw/deunhealth:latest
-    container_name: storage_qbittorrent_deunhealth
-    network_mode: "none"
-    environment:
-      - LOG_LEVEL=info
-      - HEALTH_SERVER_ADDRESS=127.0.0.1:9999
-      - TZ=Europe/Zurich
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    #image: qmcgaw/deunhealth:latest
+   # container_name: storage_qbittorrent_deunhealth
+   # network_mode: "none"
+   # environment:
+   #   - LOG_LEVEL=info
+   #   - HEALTH_SERVER_ADDRESS=127.0.0.1:9999
+    #  - TZ=Europe/Zurich
+  #  restart: unless-stopped
+  #  volumes:
+   #   - /var/run/docker.sock:/var/run/docker.sock
