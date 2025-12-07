@@ -1315,7 +1315,7 @@ FLAME_PASSWORD = [[FLAME_PASSWORD]]
 ##
 
 [[stack]]
-name = "tools_it-tools"
+name = "tools_it_tools"
 tags = ["sync"]
 [stack.config]
 server = "tools"
@@ -1351,7 +1351,7 @@ OPEN_NOTEBOOK_SURREAL_PASSWORD = [[OPEN_NOTEBOOK_SURREAL_PASSWORD]]
 ##
 
 [[stack]]
-name = "tools_paperless-ngx"
+name = "tools_paperless_ngx"
 tags = ["sync"]
 [stack.config]
 server = "tools"
