@@ -2,6 +2,7 @@ services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:10.11.4ubu2404-ls10
     container_name: media_servers_jellyfin
+    network_mode: host #for local/remote stream discovery
     environment:
       - TZ=Europe/Zurich
       - JELLYFIN_PublishedServerUrl=https://jellyfin.novoselec.ch/ #optional
@@ -11,7 +12,7 @@ services:
       - /mnt/video/movies/:/data/movies
       - /mnt/music:/data/music
     ports:
-      - 8095:8096
+#      - 8095:8096
 #      - 8920:8920 #optional
 #      - 7359:7359/udp #optional
 #      - 1900:1900/udp #optional
