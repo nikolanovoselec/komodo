@@ -4,7 +4,7 @@ services:
     container_name: media_servers_jellyfin
     environment:
       - TZ=Europe/Zurich
-      - JELLYFIN_PublishedServerUrl=https://jellyfin.graymatter.ch/ #optional
+      - JELLYFIN_PublishedServerUrl=https://jellyfin.novoselec.ch/ #optional
     volumes:
       - /docker/configs/jellyfin:/config
       - /mnt/video/tv shows/:/data/tvshows
