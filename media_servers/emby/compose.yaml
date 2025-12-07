@@ -5,8 +5,6 @@ services:
     network_mode: host #for local/remote stream discovery
     environment:
       - TZ=Europe/Zurich
-      - PUID=1026
-      - PGID=100
     volumes:
       - /docker/configs/emby:/config
       - /mnt/video/tv shows/:/mnt/synology/tv shows/
