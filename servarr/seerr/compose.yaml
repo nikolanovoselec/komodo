@@ -1,16 +1,20 @@
-## Add your compose file here
 services:
-  hello_world:
-    image: hello-world
-    # networks:
-    #   - default
-    # ports:
-    #   - 3000:3000
-    # volumes:
-    #   - data:/data
-
-# networks:
-#   default: {}
-
-# volumes:
-#   data:
+  seerr:
+    image: seerr/seerr:latest
+    init: true
+    container_name: servarr_seerr
+    environment:
+      - LOG_LEVEL=info
+      - TZ=Europe/Zurich
+      - PORT=5054 #optional
+    ports:
+      - 5054:5054
+    volumes:
+      - /docker/configs/seerr:/config
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    restart: unless-stopped
