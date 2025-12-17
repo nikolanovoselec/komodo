@@ -5,7 +5,7 @@ services:
     ports:
       - 7171:7171
     environment:
-      - SPOTIFY_PROXY_TEST_MODE=1
+      - SPOTIFY_PROXY_TEST_MODE=0
     volumes:
       - /docker/configs/spotifux/data:/app/data
       - /mnt/music/Spotifux_Downloads:/app/downloads
