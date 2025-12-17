@@ -7,7 +7,7 @@ services:
         - TZ=Europe/Zurich
       volumes:
         - /docker/configs/lidarr:/config
-        - /mnt/music/Lidarr:/data
+        - /mnt/music/Lidarr:/music
       ports:
         - 8686:8686
       restart: unless-stopped
