@@ -31,6 +31,8 @@ services:
     zotify-frontend:
       image: xasiklas/zotifyfrontend:latest
       container_name: servarr_zotify_frontend
+      environment:
+        - BACKEND_URL=http://servarr.lan:1337
       ports:
         - 5173:5173
       depends_on:
