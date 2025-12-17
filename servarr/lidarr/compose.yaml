@@ -7,8 +7,20 @@ services:
       - TZ=Europe/Zurich
     volumes:
       - /docker/configs/lidarr:/config
-      - /mnt/synology:/data
+      - /mnt/music/Lidarr:/data
     ports:
       - 8686:8686
     restart: unless-stopped
     network_mode: bridge
+
+  zotify:
+    image: ghcr.io/googolplexed0/zotify:latest  # Use the maintained fork
+    container_name: servarr_zotify
+    environment:
+      - TZ=Europe/Zurich
+      - DOWNLOAD_REAL_TIME=true  # Safety: download at 1x speed
+      - DOWNLOAD_QUALITY=very_high  # 320kbps
+    volumes:
+      - /docker/configs/zotify:/config
+      - /mnt/music/Lidarr/Downloads:/music  # Where Lidarr can see it
+    restart: unless-stopped
