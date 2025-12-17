@@ -1,9 +1,11 @@
 services:
   spotifux:
-    image: ghcr.io/nikolanovoselec/spotifux:v4.0.2
+    image: ghcr.io/nikolanovoselec/spotifux:v4.0.3
     user: "0:0"
     ports:
       - 7171:7171
+    environment:
+      - SPOTIFY_PROXY_TEST_MODE=1
     volumes:
       - /docker/configs/spotifux/data:/app/data
       - /mnt/music/Spotifux_Downloads:/app/downloads
@@ -15,6 +17,7 @@ services:
       - .env
     depends_on:
       - redis
+  
   redis:
     image: redis:alpine
     container_name: media_servers_spotifux_redis
