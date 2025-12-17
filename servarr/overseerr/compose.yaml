@@ -1,6 +1,6 @@
 services:
   overseerr:
-    image: lscr.io/linuxserver/overseerr:v1.34.0-ls153
+    image: lscr.io/linuxserver/overseerr:v1.34.0-ls154
     container_name: servarr_overseerr
     environment:
       - TZ=Europe/Zurich
