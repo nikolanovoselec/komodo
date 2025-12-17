@@ -1,40 +1,24 @@
 services:
-    lidarr:
-      image: lscr.io/linuxserver/lidarr:3.1.0.4875-ls14
-      container_name: servarr_lidarr
-      environment:
-        - TZ=Europe/Zurich
-        - PUID=1026
-        - PGID=100
-      volumes:
-        - /docker/configs/lidarr:/config
-        - /mnt/music/Lidarr:/music
-      ports:
-        - 8686:8686
-      restart: unless-stopped
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:3.1.0.4875-ls14
+    container_name: servarr_lidarr
+    environment:
+      - TZ=Europe/Zurich
+      - PUID=1026
+      - PGID=100
+    volumes:
+      - /docker/configs/lidarr:/config
+      - /mnt/music/Lidarr:/music
+    ports:
+      - 8686:8686
+    restart: unless-stopped
 
-    zotify-backend:
-      image: xasiklas/zotifybackend:latest
-      container_name: servarr_zotify_backend
-      environment:
-        - TZ=Europe/Zurich
-        - SPOTIPY_CLIENT_ID=${SPOTIPY_CLIENT_ID}
-        - SPOTIPY_CLIENT_SECRET=${SPOTIPY_CLIENT_SECRET}
-        - SPOTIFY_USERNAME=${SPOTIFY_USERNAME}
-        - SPOTIFY_PASSWORD=${SPOTIFY_PASSWORD}
-      volumes:
-        - /mnt/music/Lidarr/Downloads:/app/downloads
-      ports:
-        - 1337:1337
-      restart: unless-stopped
-
-    zotify-frontend:
-      image: xasiklas/zotifyfrontend:latest
-      container_name: servarr_zotify_frontend
-      environment:
-        - BACKEND_URL=http://servarr.lan:1337
-      ports:
-        - 5173:5173
-      depends_on:
-        - zotify-backend
-      restart: unless-stopped
+  zotify:
+    build: https://github.com/zotify-dev/zotify.git
+    container_name: servarr_zotify
+    volumes:
+      - /docker/configs/zotify:/root/.config/zotify
+      - /mnt/music/Lidarr/Downloads:/root/Music
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
