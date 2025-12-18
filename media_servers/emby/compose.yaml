@@ -9,6 +9,7 @@ services:
       - /docker/configs/emby:/config
       - /mnt/video/tv shows/:/mnt/synology/tv shows/
       - /mnt/video/movies/:/mnt/synology/movies/
+      - /mnt/music:/music
       - /mnt/video/backup/:/mnt/synology/backup/
 #    ports:
 #      - 8093:8096 #not needed when running on host
