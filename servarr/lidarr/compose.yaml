@@ -1,6 +1,6 @@
 services:
   lidarr:
-    image: lscr.io/linuxserver/lidarr:3.1.0.4875-ls14
+    image: lscr.io/linuxserver/lidarr:3.1.0.4875-ls15
     container_name: servarr_lidarr
     environment:
       - TZ=Europe/Zurich
