@@ -1,6 +1,6 @@
 services:
   gluetun:
-    image: ghcr.io/qdm12/gluetun:v3.40.4
+    image: ghcr.io/qdm12/gluetun:v3.41.0
     container_name: storage_qbittorrent_gluetun
     cap_add:
       - NET_ADMIN
