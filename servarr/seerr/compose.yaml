@@ -7,6 +7,7 @@ services:
       - LOG_LEVEL=info
       - TZ=Europe/Zurich
       - PORT=5054 #optional
+    user: root
     ports:
       - 5054:5054
     volumes:
