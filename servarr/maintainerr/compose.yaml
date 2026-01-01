@@ -1,6 +1,6 @@
 services:
   maintainerr:
-    image: jorenn92/maintainerr:2.25.0
+    image: jorenn92/maintainerr:2.26.0
     container_name: servarr_maintainerr
     volumes:
       - type: bind
