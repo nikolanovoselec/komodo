@@ -1,6 +1,8 @@
 services:
   lidarr:
     image: ghcr.io/hotio/lidarr:pr-plugins-3.1.1.4901
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
     container_name: servarr_lidarr
     environment:
       - PUID=1026
