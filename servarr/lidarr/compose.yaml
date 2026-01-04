@@ -17,6 +17,9 @@ services:
       - lidarr
     depends_on:
       - bgutil-provider
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
 
   # Sidecar service to generate YouTube Proof of Origin (PO) Tokens
   # This bypasses the "Sign in to confirm you're not a bot" error
