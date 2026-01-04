@@ -1,24 +1,38 @@
 services:
   lidarr:
-    image: lscr.io/linuxserver/lidarr:3.1.0.4875-ls15
+    # CRITICAL: Tubifarry requires the 'pr-plugins' branch from Hotio
+    image: ghcr.io/hotio/lidarr:pr-plugins-3.1.1.4901
     container_name: servarr_lidarr
     environment:
-      - TZ=Europe/Zurich
       - PUID=1026
       - PGID=100
+      - TZ=Europe/Zurich
     volumes:
       - /docker/configs/lidarr:/config
-      - /mnt/music/Lidarr:/music
+      # Your music library
+      - /mnt/music/Lidarr/Library:/music
+      # Tubifarry needs a specific downloads path. 
+      # Mapping your existing downloads folder to /downloads
+      - /mnt/music/Lidarr/Downloads:/downloads
     ports:
       - 8686:8686
     restart: unless-stopped
+    networks:
+      - lidarr
+    depends_on:
+      - bgutil-provider
 
-  zotify:
-    build: https://github.com/zotify-dev/zotify.git
-    container_name: servarr_zotify
-    volumes:
-      - /docker/configs/zotify:/root/.config/zotify
-      - /mnt/music/Lidarr/Downloads:/root/Music
-    stdin_open: true
-    tty: true
+  # Sidecar service to generate YouTube Proof of Origin (PO) Tokens
+  # This bypasses the "Sign in to confirm you're not a bot" error
+  bgutil-provider:
+    image: brainicism/bgutil-ytdlp-pot-provider:1.2.2
+    container_name: servarr_lidarr_bgutil_provider
     restart: unless-stopped
+    expose:
+        - "4416"  # Internal only - not exposed to host
+    networks:
+      - lidarr
+
+networks:
+  lidarr:
+    driver: bridge
