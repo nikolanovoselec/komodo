@@ -1,6 +1,5 @@
 services:
   lidarr:
-    # CRITICAL: Tubifarry requires the 'pr-plugins' branch from Hotio
     image: ghcr.io/hotio/lidarr:pr-plugins-3.1.1.4901
     container_name: servarr_lidarr
     environment:
@@ -9,10 +8,7 @@ services:
       - TZ=Europe/Zurich
     volumes:
       - /docker/configs/lidarr:/config
-      # Your music library
       - /mnt/music/Lidarr/Library:/music
-      # Tubifarry needs a specific downloads path. 
-      # Mapping your existing downloads folder to /downloads
       - /mnt/music/Lidarr/Downloads:/downloads
     ports:
       - 8686:8686
