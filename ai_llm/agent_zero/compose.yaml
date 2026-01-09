@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
 
   open-webui:
-    image: ghcr.io/open-webui/open-webui:0.7.0
+    image: ghcr.io/open-webui/open-webui:0.7.1
     container_name: ai_llm_agent_zero_ollama_webui
     user: root
     volumes:
