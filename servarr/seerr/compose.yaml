@@ -1,6 +1,6 @@
 services:
   seerr:
-    image: seerr/seerr:sha-adbcf80
+    image: seerr/seerr:latest
     #init: true
     container_name: servarr_seerr
     environment:
