@@ -1,6 +1,6 @@
 services:
   backrest:
-    image: garethgeorge/backrest:v1.10.1
+    image: garethgeorge/backrest:v1.11.1
     container_name: servarr_backrest
     hostname: backrest-servarr.local.graymatter.ch
     volumes:
