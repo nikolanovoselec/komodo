@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
 
   ollama:
-    image: ollama/ollama:0.14.1
+    image: ollama/ollama:0.14.2
     user: root
     ports:
       - 11434:11434
