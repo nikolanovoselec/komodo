@@ -61,7 +61,7 @@ services:
         condition: service_healthy
       
   worker:
-    image: ghcr.io/goauthentik/server:2025.10.3 #manual upgrade
+    image: ghcr.io/goauthentik/server:2025.12.1 #manual upgrade
     restart: unless-stopped
     container_name: middleware_authentik_worker
     networks:
@@ -77,8 +77,8 @@ services:
     user: root
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /docker/configs/authentik/media:/media
-      - /docker/configs/authentik/certs:/certs
+      - /docker/configs/authentik/data:/data
+#      - /docker/configs/authentik/certs:/certs #not needed after 2025.12.0
       - /docker/configs/authentik/custom-templates:/templates
     depends_on:
       postgresql:
