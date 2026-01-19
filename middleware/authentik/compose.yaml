@@ -35,7 +35,7 @@ services:
       - /docker/configs/authentik/redis:/data
       
   server:
-    image: ghcr.io/goauthentik/server:2025.10.3 #manual upgrade
+    image: ghcr.io/goauthentik/server:2025.12.1 #manual upgrade
     restart: unless-stopped
     container_name: middleware_authentik_server
     networks:
@@ -49,7 +49,7 @@ services:
       AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_POSTGRESQL_PASSWORD}
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
     volumes:
-      - /docker/configs/authentik/media:/media
+      - /docker/configs/authentik/data:/data
       - /docker/configs/authentik/custom-templates:/templates
     ports:
       - 7080:9000
