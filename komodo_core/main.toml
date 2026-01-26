@@ -662,6 +662,7 @@ auto_update_all_services = true
 destroy_before_deploy = true
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
 run_directory = "minecraft/dozzle_agent"
 
 ##
@@ -1409,7 +1410,7 @@ config.webhook_secret = "ceTXriBfjq!G4r_H_ZDbpn.@Qq_3FqjFh@zPPezFZsskcbdd7F-qYRZ
 name = "Deploy Stacks If Changed"
 enabled = true
 executions = [
-  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "komodo_core*, middleware*, storage*, servarr*, media_servers*, tools*, ai_llm*, dns_ntp*, nextcloud*", enabled = true }
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "komodo_core*, middleware*, storage*, servarr*, media_servers*, tools*, ai_llm*, dns_ntp*, nextcloud*, minecraft*", enabled = true }
 ]
 
 ##

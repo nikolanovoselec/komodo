@@ -124,6 +124,15 @@
         "docker-compose"
       ],
       "matchFileNames": [
+        "nextcloud/**"
+      ],
+      "enabled": true
+    },
+    {
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
         "middleware/authentik/compose.yaml"
       ],
       "matchDepNames": [
