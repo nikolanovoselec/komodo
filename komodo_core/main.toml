@@ -1518,16 +1518,17 @@ const stacks = await komodo.read("ListStacks", {
 console.log(`Found ${stacks.length} stacks with "stopped" tag`);
 
 for (const stack of stacks) {
-  if (stack.info.state === "Running") {
-    console.log(`Stopping: ${stack.name}`);
+  const runningStates = ["running", "unhealthy", "restarting"];
+  if (runningStates.includes(stack.info.state)) {
+    console.log(`Stopping: ${stack.name} (state: ${stack.info.state})`);
     try {
-      await komodo.execute("StopStack", { stack: stack.name });
+      await komodo.execute_and_poll("StopStack", { stack: stack.name });
       console.log(`SUCCESS: ${stack.name} stopped`);
     } catch (error) {
       console.error(`FAILED: ${stack.name} - ${error}`);
     }
   } else {
-    console.log(`Already stopped: ${stack.name}`);
+    console.log(`Already stopped: ${stack.name} (state: ${stack.info.state})`);
   }
 }
 """
