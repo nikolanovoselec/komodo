@@ -405,7 +405,7 @@ run_directory = "media_servers/dozzle_agent"
 
 [[stack]]
 name = "media_servers_emby"
-tags = ["sync"]
+tags = ["sync", "stopped"]
 [stack.config]
 server = "media_servers"
 run_build = true
