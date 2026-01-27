@@ -397,7 +397,7 @@ run_directory = "media_servers/emby"
 
 [[stack]]
 name = "media_servers_jellyfin"
-tags = ["sync"]
+tags = ["sync", "stopped"]
 [stack.config]
 server = "media_servers"
 run_build = true
