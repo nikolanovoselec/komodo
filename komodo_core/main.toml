@@ -1,6 +1,6 @@
 [[server]]
 name = "dns_ntp"
-tags = ["sync", "auto-update"]
+tags = ["sync", "auto-update", "auto-cleanup"]
 [server.config]
 address = "https://pihole-master.lan:8120"
 enabled = true
@@ -9,7 +9,7 @@ enabled = true
 
 [[server]]
 name = "komodo_core"
-tags = ["sync"]
+tags = ["sync", "auto-cleanup"]
 [server.config]
 address = "https://komodo.lan:8120"
 enabled = true
@@ -18,7 +18,7 @@ enabled = true
 
 [[server]]
 name = "media_servers"
-tags = ["sync"]
+tags = ["sync", "auto-cleanup"]
 [server.config]
 address = "https://mediaservers.lan:8120"
 enabled = true
@@ -27,7 +27,7 @@ enabled = true
 
 [[server]]
 name = "middleware"
-tags = ["sync", "auto-update"]
+tags = ["sync", "auto-update", "auto-cleanup"]
 [server.config]
 address = "https://middleware.lan:8120"
 enabled = true
@@ -36,7 +36,7 @@ enabled = true
 
 [[server]]
 name = "minecraft"
-tags = ["sync", "auto-update"]
+tags = ["sync", "auto-update", "auto-cleanup"]
 [server.config]
 address = "https://minecraft.lan:8120"
 enabled = true
@@ -45,7 +45,7 @@ enabled = true
 
 [[server]]
 name = "nextcloud"
-tags = ["sync", "auto-update"]
+tags = ["sync", "auto-update", "auto-cleanup"]
 [server.config]
 address = "https://nextcloud.lan:8120"
 enabled = true
@@ -54,7 +54,7 @@ enabled = true
 
 [[server]]
 name = "servarr"
-tags = ["sync", "auto-update"]
+tags = ["sync", "auto-update", "auto-cleanup"]
 [server.config]
 address = "https://servarr.lan:8120"
 enabled = true
@@ -63,7 +63,7 @@ enabled = true
 
 [[server]]
 name = "storage"
-tags = ["sync"]
+tags = ["sync", "auto-cleanup"]
 [server.config]
 address = "https://nas.lan:8120"
 enabled = true
@@ -73,7 +73,7 @@ disk_warning = 90.0
 
 [[server]]
 name = "tools"
-tags = ["sync", "auto-update"]
+tags = ["sync", "auto-update", "auto-cleanup"]
 [server.config]
 address = "https://tools.lan:8120"
 enabled = true
@@ -1487,3 +1487,86 @@ resource_path = ["komodo_core/main.toml"]
 managed = true
 match_tags = ["sync"]
 include_user_groups = true
+
+##
+
+[[action]]
+name = "Docker Cleanup"
+tags = ["sync", "maintenance"]
+[action.config]
+schedule_format = "Cron"
+schedule = "0 30 12 * * *"
+schedule_timezone = "Europe/Berlin"
+schedule_enabled = true
+schedule_alert = true
+failure_alert = true
+webhook_enabled = false
+file_contents = """
+// Docker Cleanup - Prunes images, networks, and volumes on servers tagged "auto-cleanup"
+
+const servers = await komodo.read("ListServers", {
+  query: { tags: ["auto-cleanup"] },
+});
+
+console.log(`Found ${servers.length} servers to clean`);
+
+for (const server of servers) {
+  console.log();
+  console.log("==================");
+  console.log(`Cleaning: ${server.name}`);
+  console.log("==================");
+
+  try {
+    console.log("Pruning images...");
+    await komodo.execute_and_poll("PruneImages", { server: server.name });
+
+    console.log("Pruning networks...");
+    await komodo.execute_and_poll("PruneNetworks", { server: server.name });
+
+    console.log("Pruning volumes...");
+    await komodo.execute_and_poll("PruneVolumes", { server: server.name });
+
+    console.log(`SUCCESS: ${server.name} cleaned`);
+  } catch (error) {
+    console.error(`FAILED: ${server.name} - ${error}`);
+  }
+}
+
+console.log();
+console.log("Cleanup complete!");
+"""
+
+##
+
+[[action]]
+name = "Stop Disabled Stacks"
+tags = ["sync", "maintenance"]
+[action.config]
+schedule_format = "Cron"
+schedule = "0 0 * * * *"
+schedule_timezone = "Europe/Berlin"
+schedule_enabled = true
+webhook_enabled = false
+file_contents = """
+// Stops all stacks tagged "stopped" - runs hourly
+
+const stacks = await komodo.read("ListStacks", {
+  query: { tags: ["stopped"] },
+});
+
+console.log(`Found ${stacks.length} stacks with "stopped" tag`);
+
+for (const stack of stacks) {
+  if (stack.info.state === "Running") {
+    console.log(`Stopping: ${stack.name}`);
+    try {
+      await komodo.execute("StopStack", { stack: stack.name });
+      console.log(`SUCCESS: ${stack.name} stopped`);
+    } catch (error) {
+      console.error(`FAILED: ${stack.name} - ${error}`);
+    }
+  } else {
+    console.log(`Already stopped: ${stack.name}`);
+  }
+}
+"""
