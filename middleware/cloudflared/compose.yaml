@@ -1,6 +1,6 @@
 services:
   cloudflared:
-    image: cloudflare/cloudflared:2026.1.1
+    image: cloudflare/cloudflared:2026.1.2
     container_name: middleware_cloudflared
     restart: unless-stopped
     network_mode: host
