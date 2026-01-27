@@ -334,7 +334,7 @@ BESZEL_KEY = [[BESZEL_KEY]]
 
 [[stack]]
 name = "media_servers_castopod"
-tags = ["sync", "stopped"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "media_servers"
 run_build = true
@@ -354,7 +354,7 @@ CP_BASEURL = "https://podcast.novoselec.ch"
 
 [[stack]]
 name = "media_servers_cloudflared"
-tags = ["sync", "stopped"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "media_servers"
 run_build = true
@@ -373,7 +373,7 @@ CFD_TOKEN_MEDIASERVERS = [[CFD_TOKEN_MEDIASERVERS]]
 
 [[stack]]
 name = "media_servers_crosswatch"
-tags = ["sync", "stopped"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "media_servers"
 run_build = true
@@ -405,7 +405,7 @@ run_directory = "media_servers/dozzle_agent"
 
 [[stack]]
 name = "media_servers_emby"
-tags = ["sync", "stopped"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "media_servers"
 run_build = true
@@ -421,7 +421,7 @@ run_directory = "media_servers/emby"
 
 [[stack]]
 name = "media_servers_jellyfin"
-tags = ["sync", "stopped"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "media_servers"
 run_build = true
@@ -468,7 +468,7 @@ run_directory = "media_servers/portainer_agent"
 
 [[stack]]
 name = "media_servers_spotifux"
-tags = ["sync", "stopped"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "media_servers"
 run_build = true
@@ -871,7 +871,7 @@ run_directory = "servarr/flaresolver"
 
 [[stack]]
 name = "servarr_heimdall"
-tags = ["sync", "stopped"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "servarr"
 run_build = true
@@ -902,7 +902,7 @@ run_directory = "servarr/huntarr"
 
 [[stack]]
 name = "servarr_lidarr"
-tags = ["sync", "stopped"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "servarr"
 run_build = true
@@ -965,7 +965,7 @@ run_directory = "servarr/portainer_agent"
 
 [[stack]]
 name = "servarr_profilarr"
-tags = ["sync", "stopped"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "servarr"
 run_build = true
@@ -1096,7 +1096,7 @@ BESZEL_KEY = [[BESZEL_KEY]]
 
 [[stack]]
 name = "storage_cloudflared"
-tags = ["sync", "stopped"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "storage"
 run_build = true
@@ -1131,7 +1131,7 @@ run_directory = "storage/dozzle_agent"
 
 [[stack]]
 name = "storage_emby"
-tags = ["sync", "stopped"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "storage"
 run_build = true
@@ -1181,7 +1181,7 @@ PIHOLE_API_KEY = [[PIHOLE_API_KEY]]
 
 [[stack]]
 name = "storage_plex"
-tags = ["sync", "stopped"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "storage"
 run_build = true
@@ -1230,7 +1230,7 @@ CFD_TOKEN_INGRESS = [[CFD_TOKEN_INGRESS]]
 
 [[stack]]
 name = "storage_transmission_openvpn"
-tags = ["sync", "stopped"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "storage"
 run_build = true
@@ -1357,7 +1357,7 @@ run_directory = "tools/it-tools"
 
 [[stack]]
 name = "tools_open_notebook"
-tags = ["sync", "stopped"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "tools"
 run_build = true
@@ -1509,13 +1509,13 @@ schedule = "0 0 * * * *"
 schedule_timezone = "Europe/Berlin"
 webhook_enabled = false
 file_contents = """
-// Stops all stacks tagged "stopped" - runs hourly
+// Stops all stacks tagged "disabled" - runs hourly
 
 const stacks = await komodo.read("ListStacks", {
-  query: { tags: ["stopped"] },
+  query: { tags: ["disabled"] },
 });
 
-console.log(`Found ${stacks.length} stacks with "stopped" tag`);
+console.log(`Found ${stacks.length} stacks with "disabled" tag`);
 
 for (const stack of stacks) {
   const runningStates = ["running", "unhealthy", "restarting"];
