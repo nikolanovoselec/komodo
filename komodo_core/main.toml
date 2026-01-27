@@ -354,7 +354,7 @@ CP_BASEURL = "https://podcast.novoselec.ch"
 
 [[stack]]
 name = "media_servers_cloudflared"
-tags = ["sync"]
+tags = ["sync", "stopped"]
 [stack.config]
 server = "media_servers"
 run_build = true
@@ -1096,7 +1096,7 @@ BESZEL_KEY = [[BESZEL_KEY]]
 
 [[stack]]
 name = "storage_cloudflared"
-tags = ["sync"]
+tags = ["sync", "stopped"]
 [stack.config]
 server = "storage"
 run_build = true
@@ -1460,7 +1460,7 @@ name = "Docker Cleanup"
 tags = ["sync"]
 [action.config]
 schedule_format = "Cron"
-schedule = "0 30 12 * * *"
+schedule = "0 30 * * * *"
 schedule_timezone = "Europe/Berlin"
 webhook_enabled = false
 file_contents = """
