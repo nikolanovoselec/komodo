@@ -7,5 +7,5 @@ services:
     volumes:
       - /docker/configs/uptime-kuma:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
-    image: louislam/uptime-kuma:2.0.2
+    image: louislam/uptime-kuma:1.23.17
     network_mode: bridge
