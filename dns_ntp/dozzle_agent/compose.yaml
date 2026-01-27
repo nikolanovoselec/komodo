@@ -1,6 +1,6 @@
 services:
   dozzle-agent:
-    image: amir20/dozzle:v9.0.2
+    image: amir20/dozzle:v9.0.3
     container_name: dns_ntp_dozzle_agent
     command: agent
     volumes:
