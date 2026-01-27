@@ -1492,7 +1492,7 @@ include_user_groups = true
 
 [[action]]
 name = "Docker Cleanup"
-tags = ["sync", "maintenance"]
+tags = ["sync"]
 [action.config]
 schedule_format = "Cron"
 schedule = "0 30 12 * * *"
@@ -1540,7 +1540,7 @@ console.log("Cleanup complete!");
 
 [[action]]
 name = "Stop Disabled Stacks"
-tags = ["sync", "maintenance"]
+tags = ["sync"]
 [action.config]
 schedule_format = "Cron"
 schedule = "0 0 * * * *"
