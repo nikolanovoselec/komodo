@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
 
   web:
-    image: castopod/web-server:1.14.0
+    image: castopod/web-server:1.14.1
     container_name: media_servers_castopod_web
     depends_on:
       - castopod
