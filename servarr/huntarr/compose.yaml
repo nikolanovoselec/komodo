@@ -1,6 +1,6 @@
 services:
   huntarr:
-    image: huntarr/huntarr:9.1.12
+    image: huntarr/huntarr:9.2.0
     container_name: servarr_huntarr
     restart: unless-stopped
     ports:
