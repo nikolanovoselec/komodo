@@ -7,8 +7,7 @@ services:
       - /docker/configs/github_runner/work:/tmp/runner
       - /docker/configs/github_runner/config:/etc/runner
     environment:
-      RUNNER_SCOPE: org
-      ORG_NAME: nikolanovoselec
+      REPO_URL: https://github.com/nikolanovoselec/claudeflare
       ACCESS_TOKEN: ${GH_RUNNER_ACCESS_TOKEN}
       RUNNER_NAME: komodo-runner
       RUNNER_WORKDIR: /tmp/runner
