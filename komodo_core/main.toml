@@ -1442,7 +1442,7 @@ repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "tools/github_runner"
 environment = """
-ACCESS_TOKEN = [[GH_RUNNER_ACCESS_TOKEN]]
+GH_RUNNER_ACCESS_TOKEN = [[GH_RUNNER_ACCESS_TOKEN]]
 """
 
 ##
