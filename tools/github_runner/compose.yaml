@@ -1,6 +1,6 @@
 services:
   github-runner:
-    image: myoung34/github-runner:2.331.0
+    image: myoung34/github-runner:ubuntu-jammy
     container_name: tools_github_runner
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
