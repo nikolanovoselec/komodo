@@ -38,10 +38,10 @@ services:
       AUTHENTIK_POSTGRESQL__CONN_MAX_AGE: 300
       AUTHENTIK_EMAIL__HOST: smtp.office365.com
       AUTHENTIK_EMAIL__PORT: "587"
-      AUTHENTIK_EMAIL__USERNAME: nikola@novoselec.ch
+      AUTHENTIK_EMAIL__USERNAME: ${AUTHENTIK_EMAIL}
       AUTHENTIK_EMAIL__PASSWORD: ${AUTHENTIK_EMAIL_PASSWORD}
       AUTHENTIK_EMAIL__USE_TLS: "true"
-      AUTHENTIK_EMAIL__FROM: nikola@novoselec.ch
+      AUTHENTIK_EMAIL__FROM: ${AUTHENTIK_EMAIL}
     volumes:
       - /docker/configs/authentik/data:/data
       - /docker/configs/authentik/custom-templates:/templates
