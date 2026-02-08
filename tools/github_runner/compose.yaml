@@ -5,7 +5,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      REPO_URL: https://github.com/nikolanovoselec/claudeflare
+      ORG_NAME: nikolanovoselec
       ACCESS_TOKEN: ${ACCESS_TOKEN}
       RUNNER_NAME: komodo-runner
       RUNNER_WORKDIR: /tmp/runner
