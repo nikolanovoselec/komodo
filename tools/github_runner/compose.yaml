@@ -1,0 +1,15 @@
+services:
+  github-runner:
+    image: myoung34/github-runner:latest
+    container_name: tools_github_runner
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      REPO_URL: https://github.com/nikolanovoselec/claudeflare
+      ACCESS_TOKEN: ${ACCESS_TOKEN}
+      RUNNER_NAME: komodo-runner
+      RUNNER_WORKDIR: /tmp/runner
+      LABELS: self-hosted,linux,docker
+      DISABLE_AUTO_UPDATE: 'true'
+    restart: unless-stopped
+    network_mode: bridge

@@ -1428,6 +1428,26 @@ FLAME_PASSWORD = [[FLAME_PASSWORD]]
 ##
 
 [[stack]]
+name = "tools_github_runner"
+tags = ["sync"]
+[stack.config]
+server = "tools"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "tools/github_runner"
+environment = """
+ACCESS_TOKEN = [[GH_RUNNER_ACCESS_TOKEN]]
+"""
+
+##
+
+[[stack]]
 name = "tools_it_tools"
 tags = ["sync"]
 [stack.config]
