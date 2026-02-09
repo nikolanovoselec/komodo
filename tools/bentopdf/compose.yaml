@@ -1,6 +1,6 @@
 services:
   bentopdf:
-    image: 'ghcr.io/alam00000/bentopdf:2.1.0'
+    image: 'ghcr.io/alam00000/bentopdf:2.2.0'
     container_name: tools_bentopdf
     ports:
       - '8082:8080'
