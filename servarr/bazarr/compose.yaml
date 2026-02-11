@@ -1,6 +1,6 @@
 services:
   bazarr:
-    image: lscr.io/linuxserver/bazarr:v1.5.5-ls336
+    image: lscr.io/linuxserver/bazarr:v1.5.5-ls337
     container_name: servarr_bazarr
     environment:
       - TZ=Europe/Zurich
