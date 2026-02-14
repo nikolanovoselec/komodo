@@ -1,6 +1,6 @@
 services:
   seerr:
-    image: seerr/seerr:develop
+    image: seerr/seerr:3.0.1
     #init: true
     container_name: servarr_seerr
     environment:
