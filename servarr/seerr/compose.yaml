@@ -1,6 +1,6 @@
 services:
   seerr:
-    image: ghcr.io/seerr-team/seerr:v3.0.0
+    image: ghcr.io/seerr-team/seerr:v3.0.1
     #init: true
     container_name: servarr_seerr
     environment:
