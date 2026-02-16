@@ -1,6 +1,6 @@
 services:
   open_notebook:
-    image: ghcr.io/lfnovo/open-notebook:1.7.1-single
+    image: ghcr.io/lfnovo/open-notebook:1.7.2-single
     ports:
       - "8502:8502"  # Web UI
       - "5055:5055"  # API (required!)
