@@ -1,6 +1,6 @@
 services:
   castopod:
-    image: castopod/castopod:1.15.0
+    image: castopod/castopod:1.15.1
     container_name: "media_servers_castopod"
     volumes:
       - /docker/configs/castopod/media:/var/www/castopod/public/media
