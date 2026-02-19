@@ -1,6 +1,6 @@
 services:
   crosswatch:
-    image: ghcr.io/cenodude/crosswatch:0.9.5
+    image: ghcr.io/cenodude/crosswatch:0.9.6
     container_name: media_servers_crosswatch
     ports:
       - "8787:8787"          # host:container
