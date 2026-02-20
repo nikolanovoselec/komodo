@@ -8,7 +8,7 @@ services:
       - /docker/configs/github_runner/codeflare/work:/tmp/runner
       - /docker/configs/github_runner/codeflare/config:/etc/runner
     environment:
-      REPO_URL: https://github.com/nikolanovoselec/coddeflare
+      REPO_URL: https://github.com/nikolanovoselec/codeflare
       ACCESS_TOKEN: ${GH_RUNNER_ACCESS_TOKEN}
       RUNNER_NAME: tools_github_runner
       RUNNER_WORKDIR: /tmp/runner
