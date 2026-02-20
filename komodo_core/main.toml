@@ -1569,21 +1569,6 @@ executions = [
 
 ##
 
-[[procedure]]
-name = "Prune Docker Build Cache"
-description = "Nightly cleanup of Docker build cache on tools server (GitHub runner builds)."
-tags = ["sync"]
-config.schedule = "Every day at 03:00"
-
-[[procedure.config.stage]]
-name = "Stage 1"
-enabled = true
-executions = [
-  { execution.type = "PruneDockerBuilders", execution.params.server = "tools", enabled = true }
-]
-
-##
-
 [[action]]
 name = "Docker Cleanup"
 tags = ["sync"]
@@ -1593,7 +1578,8 @@ schedule = "0 30 * * * *"
 schedule_timezone = "Europe/Berlin"
 webhook_enabled = false
 file_contents = """
-// Docker Cleanup - Prunes images, networks, and volumes on servers tagged "auto-cleanup"
+// Docker Cleanup - Prunes images, networks, volumes, and build cache
+// on servers tagged "auto-cleanup"
 
 const servers = await komodo.read("ListServers", {
   query: { tags: ["auto-cleanup"] },
@@ -1616,6 +1602,9 @@ for (const server of servers) {
 
     console.log("Pruning volumes...");
     await komodo.execute_and_poll("PruneVolumes", { server: server.name });
+
+    console.log("Pruning build cache...");
+    await komodo.execute_and_poll("PruneDockerBuilders", { server: server.name });
 
     console.log(`SUCCESS: ${server.name} cleaned`);
   } catch (error) {
