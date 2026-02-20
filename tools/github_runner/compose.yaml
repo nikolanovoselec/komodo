@@ -1,31 +1,14 @@
 services:
 
-  github-runner:
-    image: myoung34/github-runner:2.331.0-ubuntu-jammy
-    container_name: tools_github_runner_claudeflare
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /docker/configs/github_runner/work:/tmp/runner
-      - /docker/configs/github_runner/config:/etc/runner
-    environment:
-      REPO_URL: https://github.com/nikolanovoselec/claudeflare
-      ACCESS_TOKEN: ${GH_RUNNER_ACCESS_TOKEN}
-      RUNNER_NAME: tools_github_runner
-      RUNNER_WORKDIR: /tmp/runner
-      LABELS: tools_github_runner
-      DISABLE_AUTO_UPDATE: 'true'
-    restart: unless-stopped
-    network_mode: bridge
-
   github-runner-codeflare:
     image: myoung34/github-runner:2.331.0-ubuntu-jammy
     container_name: tools_github_runner_codeflare
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /docker/configs/github_runner/work:/tmp/runner
-      - /docker/configs/github_runner/config:/etc/runner
+      - /docker/configs/github_runner/codeflare/work:/tmp/runner
+      - /docker/configs/github_runner/codeflare/config:/etc/runner
     environment:
-      REPO_URL: https://github.com/nikolanovoselec/codeflare
+      REPO_URL: https://github.com/nikolanovoselec/coddeflare
       ACCESS_TOKEN: ${GH_RUNNER_ACCESS_TOKEN}
       RUNNER_NAME: tools_github_runner
       RUNNER_WORKDIR: /tmp/runner
