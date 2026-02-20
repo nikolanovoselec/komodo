@@ -1593,8 +1593,7 @@ schedule = "0 30 * * * *"
 schedule_timezone = "Europe/Berlin"
 webhook_enabled = false
 file_contents = """
-// Docker Cleanup - Prunes images, networks, volumes, journal logs, and apt cache
-// on servers tagged "auto-cleanup"
+// Docker Cleanup - Prunes images, networks, and volumes on servers tagged "auto-cleanup"
 
 const servers = await komodo.read("ListServers", {
   query: { tags: ["auto-cleanup"] },
@@ -1617,25 +1616,6 @@ for (const server of servers) {
 
     console.log("Pruning volumes...");
     await komodo.execute_and_poll("PruneVolumes", { server: server.name });
-
-    console.log("Cleaning journal logs...");
-    await komodo.write("CreateTerminal", {
-      server: server.name,
-      name: "cleanup",
-      command: "bash",
-      recreate: Types.TerminalRecreateMode.DifferentCommand,
-    });
-    await komodo.execute_terminal(
-      {
-        server: server.name,
-        terminal: "cleanup",
-        command: "journalctl --vacuum-time=7d && apt clean",
-      },
-      {
-        onLine: console.log,
-        onFinish: (code) => console.log("Finished", code),
-      },
-    );
 
     console.log(`SUCCESS: ${server.name} cleaned`);
   } catch (error) {
@@ -1685,7 +1665,7 @@ for (const stack of stacks) {
 ##
 
 [[action]]
-name = "Update Servers"
+name = "Update & Clean Servers"
 tags = ["sync"]
 [action.config]
 schedule_format = "Cron"
@@ -1712,7 +1692,7 @@ for (const server of servers) {
       server: server.name,
       terminal: "apt-upgrade",
       command:
-        "apt update && apt upgrade -y && apt autoremove -y",
+        "apt update && apt upgrade -y && apt autoremove -y && apt clean && journalctl --vacuum-time=7d",
     },
     {
       onLine: console.log,
