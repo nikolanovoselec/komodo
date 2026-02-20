@@ -1569,6 +1569,21 @@ executions = [
 
 ##
 
+[[procedure]]
+name = "Prune Docker Build Cache"
+description = "Nightly cleanup of Docker build cache on tools server (GitHub runner builds)."
+tags = ["sync"]
+config.schedule = "Every day at 03:00"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [
+  { execution.type = "PruneDockerBuilders", execution.params.server = "tools", enabled = true }
+]
+
+##
+
 [[action]]
 name = "Docker Cleanup"
 tags = ["sync"]
