@@ -1574,7 +1574,7 @@ name = "Docker Cleanup"
 tags = ["sync"]
 [action.config]
 schedule_format = "Cron"
-schedule = "0 30 * * * *"
+schedule = "0 40 4 * * *"
 schedule_timezone = "Europe/Berlin"
 webhook_enabled = false
 file_contents = """
