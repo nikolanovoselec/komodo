@@ -10,9 +10,9 @@ services:
     environment:
       REPO_URL: https://github.com/nikolanovoselec/codeflare
       ACCESS_TOKEN: ${GH_RUNNER_ACCESS_TOKEN}
-      RUNNER_NAME: tools_github_runner
+      RUNNER_NAME: tools_github_runner_codeflare
       RUNNER_WORKDIR: /tmp/runner
-      LABELS: tools_github_runner
+      LABELS: tools_github_runner_codeflare
       DISABLE_AUTO_UPDATE: 'true'
     restart: unless-stopped
     network_mode: bridge
