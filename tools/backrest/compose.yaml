@@ -1,6 +1,6 @@
 services:
   backrest:
-    image: garethgeorge/backrest:v1.11.2
+    image: garethgeorge/backrest:v1.12.0
     container_name: tools_backrest
     hostname: backrest-tools.local.graymatter.ch
     volumes:
