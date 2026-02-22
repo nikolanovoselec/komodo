@@ -1,6 +1,6 @@
 services:
   ombi:
-    image: lscr.io/linuxserver/ombi:v4.53.4-ls243
+    image: lscr.io/linuxserver/ombi:v4.53.4-ls244
     container_name: servarr_ombi
     environment:
       - TZ=Europe/Zurich
