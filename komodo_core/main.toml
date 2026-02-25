@@ -1734,7 +1734,7 @@ await komodo.execute_terminal(
   {
     server: tools.name,
     terminal: "renovate",
-    command: `docker run --rm -e RENOVATE_TOKEN=${tokenVar.value} -e LOG_LEVEL=info renovate/renovate nikolanovoselec/komodo`,
+    command: `docker run --rm -e RENOVATE_TOKEN=${tokenVar.value} -e RENOVATE_SECRETS='{"RENOVATE_GHCR_TOKEN":"${tokenVar.value}"}' -e LOG_LEVEL=info renovate/renovate nikolanovoselec/komodo`,
   },
   {
     onLine: (line) => console.log(line),
