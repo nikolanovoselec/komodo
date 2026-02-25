@@ -1693,6 +1693,65 @@ for (const server of servers) {
 
 ##
 
+[[action]]
+name = "Renovate"
+tags = ["sync"]
+[action.config]
+schedule_format = "Cron"
+schedule = "0 0 */4 * * *"
+schedule_timezone = "Europe/Berlin"
+webhook_enabled = false
+file_contents = """
+// Renovate - Self-hosted dependency update bot
+// Runs on the tools server via ephemeral Docker container
+// Token read from Komodo variable RENOVATE_PAT
+
+const variables = (await komodo.read("ListVariables", {})).variables;
+const tokenVar = variables.find(v => v.name === "RENOVATE_PAT");
+
+if (!tokenVar || !tokenVar.value) {
+  console.error("ERROR: RENOVATE_PAT variable not found in Komodo secrets");
+  return;
+}
+
+const servers = (await komodo.read("ListServers", {})).servers;
+const tools = servers.find(s => s.name === "tools");
+
+if (!tools) {
+  console.error("ERROR: tools server not found");
+  return;
+}
+
+console.log("Starting Renovate on tools server...");
+
+await komodo.write("CreateTerminal", {
+  server: tools.name,
+  name: "renovate",
+  command: "bash",
+  recreate: Types.TerminalRecreateMode.DifferentCommand,
+});
+
+await komodo.execute_terminal(
+  {
+    server: tools.name,
+    terminal: "renovate",
+    command: `docker run --rm -e RENOVATE_TOKEN=${tokenVar.value} -e LOG_LEVEL=info renovate/renovate:39 nikolanovoselec/komodo`,
+  },
+  {
+    onLine: (line) => console.log(line),
+    onFinish: (code) => {
+      if (code === 0) {
+        console.log("Renovate completed successfully");
+      } else {
+        console.error("Renovate exited with code " + code);
+      }
+    },
+  },
+);
+"""
+
+##
+
 [[builder]]
 name = "local"
 tags = ["sync"]
