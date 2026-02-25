@@ -1713,7 +1713,7 @@ if (!tokenVar || !tokenVar.value) {
   return;
 }
 
-const servers = (await komodo.read("ListServers", {})).servers;
+const servers = await komodo.read("ListServers", {});
 const tools = servers.find(s => s.name === "tools");
 
 if (!tools) {
