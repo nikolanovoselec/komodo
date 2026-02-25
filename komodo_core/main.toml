@@ -1725,6 +1725,7 @@ console.log("Starting Renovate on tools server...");
 
 const envContent = [
   "RENOVATE_TOKEN=" + tokenVar.value,
+  "RENOVATE_GIT_AUTHOR=Renovate Bot <nikolanovoselec@users.noreply.github.com>",
   "LOG_LEVEL=info",
   "RENOVATE_SECRETS=" + JSON.stringify({RENOVATE_GHCR_TOKEN: tokenVar.value}),
 ].join("\n");
