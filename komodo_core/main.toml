@@ -1698,7 +1698,7 @@ name = "Renovate"
 tags = ["sync"]
 [action.config]
 schedule_format = "Cron"
-schedule = "0 0 */4 * * *"
+schedule = "0 0 * * * *"
 schedule_timezone = "Europe/Berlin"
 webhook_enabled = false
 file_contents = """
