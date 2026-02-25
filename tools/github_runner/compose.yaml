@@ -5,8 +5,8 @@ services:
     container_name: tools_github_runner_codeflare_i
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /docker/configs/github_runner/codeflare/work:/tmp/runner
-      - /docker/configs/github_runner/codeflare/config:/etc/runner
+      - /docker/configs/github_runner/codeflare_i/work:/tmp/runner
+      - /docker/configs/github_runner/codeflare_i/config:/etc/runner
     environment:
       REPO_URL: https://github.com/nikolanovoselec/codeflare
       ACCESS_TOKEN: ${GH_RUNNER_ACCESS_TOKEN}
@@ -22,8 +22,8 @@ services:
     container_name: tools_github_runner_codeflare_ii
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /docker/configs/github_runner/codeflare/work:/tmp/runner
-      - /docker/configs/github_runner/codeflare/config:/etc/runner
+      - /docker/configs/github_runner/codeflare_ii/work:/tmp/runner
+      - /docker/configs/github_runner/codeflare_ii/config:/etc/runner
     environment:
       REPO_URL: https://github.com/nikolanovoselec/codeflare
       ACCESS_TOKEN: ${GH_RUNNER_ACCESS_TOKEN}
@@ -39,8 +39,8 @@ services:
     container_name: tools_github_runner_codeflare_iii
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /docker/configs/github_runner/codeflare/work:/tmp/runner
-      - /docker/configs/github_runner/codeflare/config:/etc/runner
+      - /docker/configs/github_runner/codeflare_iii/work:/tmp/runner
+      - /docker/configs/github_runner/codeflare_iii/config:/etc/runner
     environment:
       REPO_URL: https://github.com/nikolanovoselec/codeflare
       ACCESS_TOKEN: ${GH_RUNNER_ACCESS_TOKEN}
