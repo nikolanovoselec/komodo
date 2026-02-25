@@ -1706,8 +1706,7 @@ file_contents = """
 // Runs on the tools server via ephemeral Docker container
 // Token read from Komodo variable RENOVATE_PAT
 
-const variables = (await komodo.read("ListVariables", {})).variables;
-const tokenVar = variables.find(v => v.name === "RENOVATE_PAT");
+const tokenVar = await komodo.read("GetVariable", { name: "RENOVATE_PAT" });
 
 if (!tokenVar || !tokenVar.value) {
   console.error("ERROR: RENOVATE_PAT variable not found in Komodo secrets");
