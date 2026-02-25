@@ -1723,6 +1723,13 @@ if (!tools) {
 
 console.log("Starting Renovate on tools server...");
 
+const envContent = [
+  "RENOVATE_TOKEN=" + tokenVar.value,
+  "LOG_LEVEL=info",
+  "RENOVATE_SECRETS=" + JSON.stringify({RENOVATE_GHCR_TOKEN: tokenVar.value}),
+].join("\n");
+const b64 = btoa(envContent);
+
 await komodo.write("CreateTerminal", {
   server: tools.name,
   name: "renovate",
@@ -1734,7 +1741,7 @@ await komodo.execute_terminal(
   {
     server: tools.name,
     terminal: "renovate",
-    command: `docker run --rm -e RENOVATE_TOKEN=${tokenVar.value} -e RENOVATE_SECRETS='{"RENOVATE_GHCR_TOKEN":"${tokenVar.value}"}' -e LOG_LEVEL=info renovate/renovate nikolanovoselec/komodo`,
+    command: "echo " + b64 + " | base64 -d > /tmp/renovate.env && docker run --rm --env-file /tmp/renovate.env renovate/renovate nikolanovoselec/komodo && rm -f /tmp/renovate.env",
   },
   {
     onLine: (line) => console.log(line),
