@@ -1,5 +1,4 @@
 services:
-
   github-runner-codeflare_i:
     image: myoung34/github-runner:2.331.0-ubuntu-jammy
     container_name: tools_github_runner_codeflare_i
@@ -11,40 +10,6 @@ services:
       REPO_URL: https://github.com/nikolanovoselec/codeflare
       ACCESS_TOKEN: ${GH_RUNNER_ACCESS_TOKEN}
       RUNNER_NAME: tools_github_runner_codeflare_i
-      RUNNER_WORKDIR: /tmp/runner
-      LABELS: tools_github_runner_codeflare
-      DISABLE_AUTO_UPDATE: 'true'
-    restart: unless-stopped
-    network_mode: bridge
-
-  github-runner-codeflare_ii:
-    image: myoung34/github-runner:2.331.0-ubuntu-jammy
-    container_name: tools_github_runner_codeflare_ii
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /docker/configs/github_runner/codeflare_ii/work:/tmp/runner
-      - /docker/configs/github_runner/codeflare_ii/config:/etc/runner
-    environment:
-      REPO_URL: https://github.com/nikolanovoselec/codeflare
-      ACCESS_TOKEN: ${GH_RUNNER_ACCESS_TOKEN}
-      RUNNER_NAME: tools_github_runner_codeflare_ii
-      RUNNER_WORKDIR: /tmp/runner
-      LABELS: tools_github_runner_codeflare
-      DISABLE_AUTO_UPDATE: 'true'
-    restart: unless-stopped
-    network_mode: bridge
-
-  github-runner-codeflare_iii:
-    image: myoung34/github-runner:2.331.0-ubuntu-jammy
-    container_name: tools_github_runner_codeflare_iii
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /docker/configs/github_runner/codeflare_iii/work:/tmp/runner
-      - /docker/configs/github_runner/codeflare_iii/config:/etc/runner
-    environment:
-      REPO_URL: https://github.com/nikolanovoselec/codeflare
-      ACCESS_TOKEN: ${GH_RUNNER_ACCESS_TOKEN}
-      RUNNER_NAME: tools_github_runner_codeflare_iii
       RUNNER_WORKDIR: /tmp/runner
       LABELS: tools_github_runner_codeflare
       DISABLE_AUTO_UPDATE: 'true'
