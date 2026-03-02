@@ -1697,9 +1697,9 @@ for (const server of servers) {
 name = "Renovate"
 tags = ["sync"]
 [action.config]
-enabled = false
 schedule_format = "Cron"
 schedule = "0 0 * * * *"
+schedule_enabled = false
 schedule_timezone = "Europe/Berlin"
 webhook_enabled = false
 file_contents = """
