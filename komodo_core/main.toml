@@ -1704,12 +1704,19 @@ webhook_enabled = false
 file_contents = """
 // Renovate - Self-hosted dependency update bot
 // Runs on the tools server via ephemeral Docker container
-// Token read from Komodo variable RENOVATE_PAT
+// Token read from Komodo variables RENOVATE_PAT and DOCKERHUB_TOKEN
 
 const tokenVar = await komodo.read("GetVariable", { name: "RENOVATE_PAT" });
 
 if (!tokenVar || !tokenVar.value) {
   console.error("ERROR: RENOVATE_PAT variable not found in Komodo secrets");
+  return;
+}
+
+const dockerhubVar = await komodo.read("GetVariable", { name: "DOCKERHUB_TOKEN" });
+
+if (!dockerhubVar || !dockerhubVar.value) {
+  console.error("ERROR: DOCKERHUB_TOKEN variable not found in Komodo secrets");
   return;
 }
 
@@ -1727,7 +1734,7 @@ const envContent = [
   "RENOVATE_TOKEN=" + tokenVar.value,
   "RENOVATE_GIT_AUTHOR=Nikola Novoselec <nikolanovoselec@users.noreply.github.com>",
   "LOG_LEVEL=info",
-  "RENOVATE_SECRETS=" + JSON.stringify({RENOVATE_GHCR_TOKEN: tokenVar.value}),
+  "RENOVATE_SECRETS=" + JSON.stringify({RENOVATE_GHCR_TOKEN: tokenVar.value, RENOVATE_DOCKERHUB_TOKEN: dockerhubVar.value}),
 ].join("\n");
 const b64 = btoa(envContent);
 

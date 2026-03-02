@@ -9,6 +9,11 @@
       "matchHost": "ghcr.io",
       "username": "nikolanovoselec",
       "password": "{{ secrets.RENOVATE_GHCR_TOKEN }}"
+    },
+    {
+      "matchHost": "docker.io",
+      "username": "m4f1j0z0",
+      "password": "{{ secrets.RENOVATE_DOCKERHUB_TOKEN }}"
     }
   ],
   "schedule": [
