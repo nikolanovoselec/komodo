@@ -23,7 +23,7 @@ services:
   # Sidecar service to generate YouTube Proof of Origin (PO) Tokens
   # This bypasses the "Sign in to confirm you're not a bot" error
   bgutil-provider:
-    image: brainicism/bgutil-ytdlp-pot-provider:1.2.2
+    image: brainicism/bgutil-ytdlp-pot-provider:1.3.0
     container_name: servarr_lidarr_bgutil_provider
     restart: unless-stopped
     expose:
