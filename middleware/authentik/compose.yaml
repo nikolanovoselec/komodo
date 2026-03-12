@@ -19,7 +19,7 @@ services:
       POSTGRES_DB: authentik
 
   server:
-    image: ghcr.io/goauthentik/server:2025.12.3 #manual upgrade
+    image: ghcr.io/goauthentik/server:2025.12.4 #manual upgrade
     restart: unless-stopped
     container_name: middleware_authentik_server
     networks:
@@ -53,7 +53,7 @@ services:
         condition: service_healthy
 
   worker:
-    image: ghcr.io/goauthentik/server:2025.12.3 #manual upgrade
+    image: ghcr.io/goauthentik/server:2025.12.4 #manual upgrade
     restart: unless-stopped
     container_name: middleware_authentik_worker
     networks:
