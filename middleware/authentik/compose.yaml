@@ -19,9 +19,10 @@ services:
       POSTGRES_DB: authentik
 
   server:
-    image: ghcr.io/goauthentik/server:2025.12.4 #manual upgrade
+    image: ghcr.io/goauthentik/server:2026.2.1 #manual upgrade
     restart: unless-stopped
     container_name: middleware_authentik_server
+    shm_size: 512mb
     networks:
       - authentik
     command: server
@@ -53,9 +54,10 @@ services:
         condition: service_healthy
 
   worker:
-    image: ghcr.io/goauthentik/server:2025.12.4 #manual upgrade
+    image: ghcr.io/goauthentik/server:2026.2.1 #manual upgrade
     restart: unless-stopped
     container_name: middleware_authentik_worker
+    shm_size: 512mb
     networks:
       - authentik
     command: worker
