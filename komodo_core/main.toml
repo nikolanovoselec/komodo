@@ -1619,81 +1619,6 @@ console.log("Cleanup complete!");
 ##
 
 [[action]]
-name = "Stop Disabled Stacks"
-tags = ["sync"]
-[action.config]
-schedule_format = "Cron"
-schedule = "0 0 * * * *"
-schedule_timezone = "Europe/Berlin"
-webhook_enabled = false
-file_contents = """
-// Stops all stacks tagged "disabled" - runs hourly
-
-const stacks = await komodo.read("ListStacks", {
-  query: { tags: ["disabled"] },
-});
-
-console.log(`Found ${stacks.length} stacks with "disabled" tag`);
-
-for (const stack of stacks) {
-  const runningStates = ["running", "unhealthy", "restarting"];
-  if (runningStates.includes(stack.info.state)) {
-    console.log(`Stopping: ${stack.name} (state: ${stack.info.state})`);
-    try {
-      await komodo.execute_and_poll("StopStack", { stack: stack.name });
-      console.log(`SUCCESS: ${stack.name} stopped`);
-    } catch (error) {
-      console.error(`FAILED: ${stack.name} - ${error}`);
-    }
-  } else {
-    console.log(`Already stopped: ${stack.name} (state: ${stack.info.state})`);
-  }
-}
-"""
-
-##
-
-[[action]]
-name = "Update & Clean Servers"
-tags = ["sync"]
-[action.config]
-schedule_format = "Cron"
-schedule = "0 0 6 * * *"
-schedule_timezone = "Europe/Berlin"
-webhook_enabled = false
-file_contents = """
-const servers = await komodo.read("ListServers", {
-  query: { tags: ["auto-update"] },
-});
-
-for (const server of servers) {
-  console.log();
-  console.log("------------------");
-  console.log("Updating", server.name);
-  await komodo.write("CreateTerminal", {
-    server: server.name,
-    name: "apt-upgrade",
-    command: "bash",
-    recreate: Types.TerminalRecreateMode.DifferentCommand,
-  });
-  await komodo.execute_terminal(
-    {
-      server: server.name,
-      terminal: "apt-upgrade",
-      command:
-        "export DEBIAN_FRONTEND=noninteractive && apt update && apt upgrade -y -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef' && apt autoremove -y && apt clean && journalctl --vacuum-time=7d",
-    },
-    {
-      onLine: console.log,
-      onFinish: (code) => console.log("Finished", code),
-    },
-  );
-}
-"""
-
-##
-
-[[action]]
 name = "Renovate"
 tags = ["sync"]
 [action.config]
@@ -1763,6 +1688,81 @@ await komodo.execute_terminal(
     },
   },
 );
+"""
+
+##
+
+[[action]]
+name = "Stop Disabled Stacks"
+tags = ["sync"]
+[action.config]
+schedule_format = "Cron"
+schedule = "0 0 * * * *"
+schedule_timezone = "Europe/Berlin"
+webhook_enabled = false
+file_contents = """
+// Stops all stacks tagged "disabled" - runs hourly
+
+const stacks = await komodo.read("ListStacks", {
+  query: { tags: ["disabled"] },
+});
+
+console.log(`Found ${stacks.length} stacks with "disabled" tag`);
+
+for (const stack of stacks) {
+  const runningStates = ["running", "unhealthy", "restarting"];
+  if (runningStates.includes(stack.info.state)) {
+    console.log(`Stopping: ${stack.name} (state: ${stack.info.state})`);
+    try {
+      await komodo.execute_and_poll("StopStack", { stack: stack.name });
+      console.log(`SUCCESS: ${stack.name} stopped`);
+    } catch (error) {
+      console.error(`FAILED: ${stack.name} - ${error}`);
+    }
+  } else {
+    console.log(`Already stopped: ${stack.name} (state: ${stack.info.state})`);
+  }
+}
+"""
+
+##
+
+[[action]]
+name = "Update & Clean Servers"
+tags = ["sync"]
+[action.config]
+schedule_format = "Cron"
+schedule = "0 0 6 * * *"
+schedule_timezone = "Europe/Berlin"
+webhook_enabled = false
+file_contents = """
+const servers = await komodo.read("ListServers", {
+  query: { tags: ["auto-update"] },
+});
+
+for (const server of servers) {
+  console.log();
+  console.log("------------------");
+  console.log("Updating", server.name);
+  await komodo.write("CreateTerminal", {
+    server: server.name,
+    name: "apt-upgrade",
+    command: "bash",
+    recreate: Types.TerminalRecreateMode.DifferentCommand,
+  });
+  await komodo.execute_terminal(
+    {
+      server: server.name,
+      terminal: "apt-upgrade",
+      command:
+        "export DEBIAN_FRONTEND=noninteractive && apt update && apt upgrade -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" && apt autoremove -y && apt clean && journalctl --vacuum-time=7d",
+    },
+    {
+      onLine: console.log,
+      onFinish: (code) => console.log("Finished", code),
+    },
+  );
+}
 """
 
 ##
