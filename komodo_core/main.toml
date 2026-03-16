@@ -1681,7 +1681,7 @@ for (const server of servers) {
       server: server.name,
       terminal: "apt-upgrade",
       command:
-        "apt update && apt upgrade -y && apt autoremove -y && apt clean && journalctl --vacuum-time=7d",
+        "export DEBIAN_FRONTEND=noninteractive && apt update && apt upgrade -y -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef' && apt autoremove -y && apt clean && journalctl --vacuum-time=7d",
     },
     {
       onLine: console.log,
