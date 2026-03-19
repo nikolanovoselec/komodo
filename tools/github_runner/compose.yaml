@@ -1,6 +1,6 @@
 services:
   github-runner-codeflare_i:
-    image: myoung34/github-runner:2.332.0-ubuntu-jammy
+    image: myoung34/github-runner:2.333.0-ubuntu-jammy
     container_name: tools_github_runner_codeflare_i
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
