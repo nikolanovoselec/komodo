@@ -362,7 +362,7 @@ repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "komodo_core/ziti_router"
 environment = """
-ZITI_ENROLL_TOKEN = [[OPENZITI_KOMODO_ENROLL_TOKEN]]
+REG_KEY = [[OPENZITI_KOMODO_REG_KEY]]
 """
 
 ##
@@ -763,7 +763,7 @@ repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "middleware/ziti_router"
 environment = """
-ZITI_ENROLL_TOKEN = [[OPENZITI_MIDDLEWARE_ENROLL_TOKEN]]
+REG_KEY = [[OPENZITI_MIDDLEWARE_REG_KEY]]
 """
 
 ##
@@ -897,7 +897,7 @@ repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "openziti-i/fabric_router"
 environment = """
-ZITI_ENROLL_TOKEN = [[OPENZITI_FABRIC_I_ENROLL_TOKEN]]
+REG_KEY = [[OPENZITI_FABRIC_I_REG_KEY]]
 """
 
 ##
@@ -917,7 +917,7 @@ repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "openziti-ii/fabric_router"
 environment = """
-ZITI_ENROLL_TOKEN = [[OPENZITI_FABRIC_II_ENROLL_TOKEN]]
+REG_KEY = [[OPENZITI_FABRIC_II_REG_KEY]]
 """
 
 ##
@@ -937,7 +937,7 @@ repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "openziti-iii/fabric_router"
 environment = """
-ZITI_ENROLL_TOKEN = [[OPENZITI_FABRIC_III_ENROLL_TOKEN]]
+REG_KEY = [[OPENZITI_FABRIC_III_REG_KEY]]
 """
 
 ##
@@ -1270,7 +1270,7 @@ repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "servarr/ziti_router"
 environment = """
-ZITI_ENROLL_TOKEN = [[OPENZITI_SERVARR_ENROLL_TOKEN]]
+REG_KEY = [[OPENZITI_SERVARR_REG_KEY]]
 """
 
 ##

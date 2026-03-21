@@ -1,18 +1,13 @@
 services:
   ziti-router:
-    image: openziti/ziti-router:1.6.14
+    image: netfoundry/autonomous-router:latest
     container_name: servarr_ziti_router
     restart: unless-stopped
     network_mode: host
     cap_add:
       - NET_ADMIN
-    security_opt:
-      - seccomp:unconfined
     environment:
-      - ZITI_ENROLL_TOKEN=${ZITI_ENROLL_TOKEN}
-      - ZITI_CTRL_ADVERTISED_ADDRESS=swisspost.cloudziti.io
-      - ZITI_ROUTER_ADVERTISED_ADDRESS=servarr.lan
-      - ZITI_ROUTER_PORT=3022
-      - ZITI_ROUTER_MODE=tproxy
+      - REG_KEY=${REG_KEY}
+      - TUNNEL_MODE=auto
     volumes:
-      - /docker/configs/ziti-router:/ziti-router
+      - /docker/configs/netfoundry:/etc/netfoundry
