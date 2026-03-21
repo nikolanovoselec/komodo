@@ -19,6 +19,7 @@ services:
     restart: "no"
     network_mode: host
     pid: host
+    privileged: true
     entrypoint: ["/bin/bash", "-c", "sleep 45; nsenter -t 1 -m -- resolvectl dns eth0 192.168.5.148 192.168.5.162 192.168.5.92; nsenter -t 1 -m -- resolvectl domain eth0 '~.'; echo 'DNS registered'"]
     volumes: []
     depends_on:
