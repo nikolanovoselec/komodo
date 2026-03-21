@@ -69,6 +69,45 @@ enabled = true
 ##
 
 [[server]]
+name = "openziti-i"
+tags = [
+  "auto-cleanup",
+  "auto-update",
+  "sync"
+]
+[server.config]
+address = "https://openziti-i.lan:8120"
+enabled = true
+
+##
+
+[[server]]
+name = "openziti-ii"
+tags = [
+  "auto-cleanup",
+  "auto-update",
+  "sync"
+]
+[server.config]
+address = "https://openziti-ii.lan:8120"
+enabled = true
+
+##
+
+[[server]]
+name = "openziti-iii"
+tags = [
+  "auto-cleanup",
+  "auto-update",
+  "sync"
+]
+[server.config]
+address = "https://openziti-iii.lan:8120"
+enabled = true
+
+##
+
+[[server]]
 name = "servarr"
 tags = [
   "sync",
