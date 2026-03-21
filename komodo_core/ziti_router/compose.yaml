@@ -11,3 +11,7 @@ services:
       - TUNNEL_MODE=auto
     volumes:
       - /docker/configs/netfoundry:/etc/netfoundry
+      - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
+      - /usr/bin/resolvectl:/usr/bin/resolvectl:ro
+      - /usr/lib/x86_64-linux-gnu/systemd:/usr/lib/x86_64-linux-gnu/systemd:ro
+      - /lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu:ro
