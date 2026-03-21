@@ -1,0 +1,11 @@
+services:
+  ziti-host:
+    image: openziti/ziti-host:1.11.2
+    container_name: komodo_core_ziti_tunneler
+    restart: unless-stopped
+    dns:
+      - 192.168.5.162
+    environment:
+      - ZITI_ENROLL_TOKEN=${ZITI_ENROLL_TOKEN}
+    volumes:
+      - /docker/configs/ziti-host:/ziti-edge-tunnel

@@ -348,6 +348,26 @@ run_directory = "komodo_core/portainer_agent"
 ##
 
 [[stack]]
+name = "komodo_core_ziti_tunneler"
+tags = ["sync"]
+[stack.config]
+server = "komodo_core"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "komodo_core/ziti_tunneler"
+environment = """
+ZITI_ENROLL_TOKEN = [[OPENZITI_KOMODO_ENROLL_TOKEN]]
+"""
+
+##
+
+[[stack]]
 name = "media_servers_backrest"
 tags = ["sync"]
 [stack.config]
