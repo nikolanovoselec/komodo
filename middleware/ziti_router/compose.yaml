@@ -19,9 +19,8 @@ services:
     restart: "no"
     network_mode: host
     pid: host
-    entrypoint: ["/bin/bash", "-c", "apt-get update -qq && apt-get install -y -qq systemd-resolved >/dev/null 2>&1; sleep 45; resolvectl dns eth0 192.168.5.148 192.168.5.162 192.168.5.92; resolvectl domain eth0 '~.'; echo 'DNS registered'"]
-    volumes:
-      - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
+    entrypoint: ["/bin/bash", "-c", "sleep 45; nsenter -t 1 -m -- resolvectl dns eth0 192.168.5.148 192.168.5.162 192.168.5.92; nsenter -t 1 -m -- resolvectl domain eth0 '~.'; echo 'DNS registered'"]
+    volumes: []
     depends_on:
       ziti-router:
         condition: service_started
