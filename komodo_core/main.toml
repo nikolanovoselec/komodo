@@ -843,6 +843,66 @@ NEXTCLOUD_HP_SHARED_KEY = [[NEXTCLOUD_HP_SHARED_KEY]]
 ##
 
 [[stack]]
+name = "openziti_i_fabric_router"
+tags = ["sync"]
+[stack.config]
+server = "openziti-i"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "openziti-i/fabric_router"
+environment = """
+ZITI_ENROLL_TOKEN = [[OPENZITI_I_ENROLL_TOKEN]]
+"""
+
+##
+
+[[stack]]
+name = "openziti_ii_fabric_router"
+tags = ["sync"]
+[stack.config]
+server = "openziti-ii"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "openziti-ii/fabric_router"
+environment = """
+ZITI_ENROLL_TOKEN = [[OPENZITI_II_ENROLL_TOKEN]]
+"""
+
+##
+
+[[stack]]
+name = "openziti_iii_fabric_router"
+tags = ["sync"]
+[stack.config]
+server = "openziti-iii"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "openziti-iii/fabric_router"
+environment = """
+ZITI_ENROLL_TOKEN = [[OPENZITI_III_ENROLL_TOKEN]]
+"""
+
+##
+
+[[stack]]
 name = "servarr_autobrr"
 tags = ["sync"]
 [stack.config]
@@ -1580,66 +1640,6 @@ DATASOURCE_LOCAL_DIRECTORY="uploads"
 
 ##
 
-[[stack]]
-name = "openziti_i_fabric_router"
-tags = ["sync"]
-[stack.config]
-server = "openziti-i"
-run_build = true
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
-destroy_before_deploy = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-webhook_force_deploy = true
-run_directory = "openziti-i/fabric_router"
-environment = """
-ZITI_ENROLL_TOKEN = [[OPENZITI_I_ENROLL_TOKEN]]
-"""
-
-##
-
-[[stack]]
-name = "openziti_ii_fabric_router"
-tags = ["sync"]
-[stack.config]
-server = "openziti-ii"
-run_build = true
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
-destroy_before_deploy = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-webhook_force_deploy = true
-run_directory = "openziti-ii/fabric_router"
-environment = """
-ZITI_ENROLL_TOKEN = [[OPENZITI_II_ENROLL_TOKEN]]
-"""
-
-##
-
-[[stack]]
-name = "openziti_iii_fabric_router"
-tags = ["sync"]
-[stack.config]
-server = "openziti-iii"
-run_build = true
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
-destroy_before_deploy = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-webhook_force_deploy = true
-run_directory = "openziti-iii/fabric_router"
-environment = """
-ZITI_ENROLL_TOKEN = [[OPENZITI_III_ENROLL_TOKEN]]
-"""
-
-##
-
 [[procedure]]
 name = "Check for Updates"
 tags = ["sync"]
@@ -1663,7 +1663,7 @@ config.webhook_secret = "ceTXriBfjq!G4r_H_ZDbpn.@Qq_3FqjFh@zPPezFZsskcbdd7F-qYRZ
 name = "Deploy Stacks If Changed"
 enabled = true
 executions = [
-  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "komodo_core*, middleware*, storage*, servarr*, media_servers*, tools*, ai_llm*, dns_ntp*, nextcloud*, minecraft*", enabled = true }
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "komodo_core*, middleware*, storage*, servarr*, media_servers*, tools*, ai_llm*, dns_ntp*, nextcloud*, minecraft*, openziti*", enabled = true }
 ]
 
 ##
