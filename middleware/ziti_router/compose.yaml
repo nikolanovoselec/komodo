@@ -14,12 +14,12 @@ services:
       - /docker/configs/netfoundry:/etc/netfoundry
 
   dns-register:
-    image: alpine:latest
+    image: ubuntu:24.04
     container_name: middleware_ziti_dns_register
     restart: "no"
     network_mode: host
     pid: host
-    entrypoint: ["/bin/sh", "-c", "apk add --no-cache systemd-resolvectl >/dev/null 2>&1 || apk add --no-cache systemd >/dev/null 2>&1; sleep 45; resolvectl dns eth0 $$(hostname -i | awk '{print $$1}') 192.168.5.162 192.168.5.92; resolvectl domain eth0 '~.'; echo 'DNS registered'"]
+    entrypoint: ["/bin/bash", "-c", "apt-get update -qq && apt-get install -y -qq systemd-resolved >/dev/null 2>&1; sleep 45; resolvectl dns eth0 192.168.5.148 192.168.5.162 192.168.5.92; resolvectl domain eth0 '~.'; echo 'DNS registered'"]
     volumes:
       - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
     depends_on:
