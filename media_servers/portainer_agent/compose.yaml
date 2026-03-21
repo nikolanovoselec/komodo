@@ -1,6 +1,6 @@
 services:
     agent:
-        image: 'portainer/agent:2.39.0'
+        image: 'portainer/agent:2.39.1'
         volumes:
             - '/:/host'
             - '/var/lib/docker/volumes:/var/lib/docker/volumes'
