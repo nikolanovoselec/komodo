@@ -1,11 +1,18 @@
 services:
-  ziti-host:
-    image: openziti/ziti-host:1.11.2
-    container_name: komodo_core_ziti_tunneler
+  ziti-router:
+    image: openziti/ziti-router:1.6.14
+    container_name: komodo_core_ziti_router
     restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
     dns:
       - 192.168.5.162
     environment:
       - ZITI_ENROLL_TOKEN=${ZITI_ENROLL_TOKEN}
+      - ZITI_CTRL_ADVERTISED_ADDRESS=swisspost.cloudziti.io
+      - ZITI_ROUTER_ADVERTISED_ADDRESS=komodo.lan
+      - ZITI_ROUTER_PORT=3022
+      - ZITI_ROUTER_MODE=tproxy
     volumes:
-      - /docker/configs/ziti-host:/ziti-edge-tunnel
+      - /docker/configs/ziti-router:/ziti-router
