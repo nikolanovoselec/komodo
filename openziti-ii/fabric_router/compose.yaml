@@ -1,7 +1,7 @@
 services:
   ziti-router:
     image: openziti/ziti-router:1.6.14
-    container_name: openziti_ii_fabric_router_ziti_router
+    container_name: openziti_ii_fabric_router
     restart: unless-stopped
     network_mode: host
     environment:
