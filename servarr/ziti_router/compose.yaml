@@ -1,6 +1,6 @@
 services:
   ziti-router:
-    image: openziti/ziti-router:1.6.14
+    image: openziti/ziti-router:1.7.2
     container_name: servarr_ziti_router
     restart: unless-stopped
     network_mode: host
