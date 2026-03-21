@@ -8,6 +8,6 @@ services:
       - NET_ADMIN
     environment:
       - REG_KEY=${REG_KEY}
-      - TUNNEL_MODE=auto
+      - TUNNEL_MODE=none
     volumes:
       - /docker/configs/netfoundry:/etc/netfoundry
