@@ -9,5 +9,6 @@ services:
     environment:
       - REG_KEY=${REG_KEY}
       - TUNNEL_MODE=auto
+      - ADVERTISE_ADDRESS=middleware.lan:3443
     volumes:
       - /docker/configs/netfoundry:/etc/netfoundry
