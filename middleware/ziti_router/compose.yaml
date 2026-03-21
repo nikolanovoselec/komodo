@@ -4,14 +4,13 @@ services:
     container_name: middleware_ziti_router
     restart: unless-stopped
     network_mode: host
+    pid: host
     cap_add:
       - NET_ADMIN
+    entrypoint: ["/bin/sh", "-c", "apk add --no-cache systemd && exec /docker-entrypoint.sh run"]
     environment:
       - REG_KEY=${REG_KEY}
       - TUNNEL_MODE=auto
     volumes:
       - /docker/configs/netfoundry:/etc/netfoundry
       - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
-      - /usr/bin/resolvectl:/usr/bin/resolvectl:ro
-      - /usr/lib/x86_64-linux-gnu/systemd:/usr/lib/x86_64-linux-gnu/systemd:ro
-      - /lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu:ro
