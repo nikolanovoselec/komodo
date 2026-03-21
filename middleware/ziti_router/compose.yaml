@@ -7,7 +7,7 @@ services:
     pid: host
     cap_add:
       - NET_ADMIN
-    entrypoint: ["/bin/sh", "-c", "apk add --no-cache systemd && exec /docker-entrypoint.sh run"]
+    entrypoint: ["/bin/sh", "-c", "apk add --no-cache systemd >/dev/null 2>&1 && (sleep 30 && resolvectl dns eth0 $(hostname -i) $(resolvectl dns eth0 | tail -1 | sed 's/.*: //') && resolvectl domain eth0 '~.' &) && exec /docker-entrypoint.sh run"]
     environment:
       - REG_KEY=${REG_KEY}
       - TUNNEL_MODE=auto
