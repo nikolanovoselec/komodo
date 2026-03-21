@@ -4,8 +4,6 @@ services:
     container_name: openziti_iii_fabric_router
     restart: unless-stopped
     network_mode: host
-    dns:
-      - 192.168.5.162
     environment:
       - ZITI_ENROLL_TOKEN=${ZITI_ENROLL_TOKEN}
       - ZITI_CTRL_ADVERTISED_ADDRESS=swisspost.cloudziti.io

@@ -8,8 +8,6 @@ services:
       - NET_ADMIN
       - NET_RAW
       - SYS_ADMIN
-    dns:
-      - 192.168.5.162
     environment:
       - ZITI_ENROLL_TOKEN=${ZITI_ENROLL_TOKEN}
       - ZITI_CTRL_ADVERTISED_ADDRESS=swisspost.cloudziti.io
