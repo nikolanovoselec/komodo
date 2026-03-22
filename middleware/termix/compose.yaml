@@ -2,6 +2,11 @@ services:
   termix:
     image: ghcr.io/lukegus/termix:latest #release-1.10.0
     container_name: middleware_termix
+    dns:
+      - 100.64.0.2
+      - 192.168.5.162
+      - 192.168.5.92
+      - 192.168.2.29
     restart: unless-stopped
     ports:
       - "8079:8080"

@@ -3,6 +3,11 @@ services:
     image: docker.io/library/postgres:16-alpine
     restart: unless-stopped
     container_name: middleware_authentik_postgres
+    dns:
+      - 100.64.0.2
+      - 192.168.5.162
+      - 192.168.5.92
+      - 192.168.2.29
     command: postgres -c max_connections=500
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
@@ -23,6 +28,11 @@ services:
     image: ghcr.io/goauthentik/server:2026.2.1 #manual upgrade
     restart: unless-stopped
     container_name: middleware_authentik_server
+    dns:
+      - 100.64.0.2
+      - 192.168.5.162
+      - 192.168.5.92
+      - 192.168.2.29
     shm_size: 512mb
     networks:
       - authentik
@@ -57,6 +67,11 @@ services:
     image: ghcr.io/goauthentik/server:2026.2.1 #manual upgrade
     restart: unless-stopped
     container_name: middleware_authentik_worker
+    dns:
+      - 100.64.0.2
+      - 192.168.5.162
+      - 192.168.5.92
+      - 192.168.2.29
     shm_size: 512mb
     networks:
       - authentik
