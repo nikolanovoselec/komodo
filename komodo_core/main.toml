@@ -611,6 +611,26 @@ run_directory = "media_servers/tautulli"
 ##
 
 [[stack]]
+name = "media_servers_ziti_tunnel"
+tags = ["sync"]
+[stack.config]
+server = "media_servers"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "media_servers/ziti_tunnel"
+environment = """
+ZITI_ENROLL_TOKEN = [[OPENZITI_MEDIASERVERS]]
+"""
+
+##
+
+[[stack]]
 name = "middleware_authentik"
 tags = ["sync"]
 [stack.config]
