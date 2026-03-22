@@ -6,7 +6,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
-      - 7007:7007
+      - 7006:7007
     restart: unless-stopped
     environment:
     - DOZZLE_HOSTNAME=openziti_i
