@@ -1,6 +1,10 @@
 services:
   autobrr:
     container_name: servarr_autobrr
+    dns:
+      - 100.64.0.2
+      - 192.168.5.162
+      - 192.168.5.92
     image: ghcr.io/autobrr/autobrr:v1.74.0
     restart: unless-stopped
     logging:
