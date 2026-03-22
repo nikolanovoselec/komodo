@@ -8,7 +8,7 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     volumes:
-      - /docker/configs/ziti-edge-tunnel:/ziti-edge-tunnel
+      - /volume1/docker/_synology_configs/ziti-edge-tunnel:/ziti-edge-tunnel
       - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
     command: ["run", "--dns-upstream", "192.168.5.162"]
     environment:
