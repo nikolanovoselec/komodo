@@ -1,7 +1,7 @@
 services:
   ziti-router:
     image: netfoundry/autonomous-router:latest
-    container_name: openziti_i_fabric_router
+    container_name: openziti_fabric_i_router
     restart: unless-stopped
     network_mode: host
     cap_add:
