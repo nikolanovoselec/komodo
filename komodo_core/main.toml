@@ -69,40 +69,40 @@ enabled = true
 ##
 
 [[server]]
-name = "openziti-i"
+name = "openziti-fabric-i"
 tags = [
   "auto-cleanup",
   "auto-update",
   "sync"
 ]
 [server.config]
-address = "https://openziti-i.lan:8120"
+address = "https://openziti-fabric-i.lan:8120"
 enabled = true
 
 ##
 
 [[server]]
-name = "openziti-ii"
+name = "openziti-fabric-ii"
 tags = [
   "auto-cleanup",
   "auto-update",
   "sync"
 ]
 [server.config]
-address = "https://openziti-ii.lan:8120"
+address = "https://openziti-fabric-ii.lan:8120"
 enabled = true
 
 ##
 
 [[server]]
-name = "openziti-iii"
+name = "openziti-fabric-iii"
 tags = [
   "auto-cleanup",
   "auto-update",
   "sync"
 ]
 [server.config]
-address = "https://openziti-iii.lan:8120"
+address = "https://openziti-fabric-iii.lan:8120"
 enabled = true
 
 ##
@@ -926,7 +926,7 @@ NEXTCLOUD_HP_SHARED_KEY = [[NEXTCLOUD_HP_SHARED_KEY]]
 name = "openziti_i_fabric_router"
 tags = ["sync"]
 [stack.config]
-server = "openziti-i"
+server = "openziti-fabric-i"
 run_build = true
 poll_for_updates = true
 auto_update = true
@@ -946,7 +946,7 @@ REG_KEY = [[OPENZITI_FABRIC_I]]
 name = "openziti_ii_fabric_router"
 tags = ["sync"]
 [stack.config]
-server = "openziti-ii"
+server = "openziti-fabric-ii"
 run_build = true
 poll_for_updates = true
 auto_update = true
@@ -966,7 +966,7 @@ REG_KEY = [[OPENZITI_FABRIC_II]]
 name = "openziti_iii_fabric_router"
 tags = ["sync"]
 [stack.config]
-server = "openziti-iii"
+server = "openziti-fabric-iii"
 run_build = true
 poll_for_updates = true
 auto_update = true
