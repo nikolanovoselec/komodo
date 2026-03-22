@@ -3,6 +3,11 @@ services:
     image: postgres:16
     restart: unless-stopped
     container_name: tools_zipline_database
+    dns:
+      - 100.64.0.2
+      - 192.168.5.162
+      - 192.168.5.92
+      - 192.168.2.29
     env_file:
       - .env
     environment:
@@ -20,6 +25,11 @@ services:
   zipline:
     image: ghcr.io/diced/zipline:4.5.0
     container_name: tools_zipline_server
+    dns:
+      - 100.64.0.2
+      - 192.168.5.162
+      - 192.168.5.92
+      - 192.168.2.29
     ports:
       - '3000:3000'
     env_file:

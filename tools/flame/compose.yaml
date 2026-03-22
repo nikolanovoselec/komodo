@@ -2,6 +2,11 @@ services:
   flame:
     image: pawelmalak/flame:2.3.1
     container_name: tools_flame
+    dns:
+      - 100.64.0.2
+      - 192.168.5.162
+      - 192.168.5.92
+      - 192.168.2.29
     volumes:
       - /docker/configs/flame:/app/data
     ports:

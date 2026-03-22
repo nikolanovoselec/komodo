@@ -1763,6 +1763,26 @@ DATASOURCE_LOCAL_DIRECTORY="uploads"
 
 ##
 
+[[stack]]
+name = "tools_ziti_tunnel"
+tags = ["sync"]
+[stack.config]
+server = "tools"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "tools/ziti_tunnel"
+environment = """
+ZITI_ENROLL_TOKEN = [[OPENZITI_TOOLS]]
+"""
+
+##
+
 [[procedure]]
 name = "Check for Updates"
 tags = ["sync"]
