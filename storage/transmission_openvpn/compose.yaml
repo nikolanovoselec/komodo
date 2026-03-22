@@ -3,6 +3,11 @@ services:
         cap_add:
             - NET_ADMIN
         container_name: storage_transmission
+        dns:
+            - 100.64.0.2
+            - 192.168.5.162
+            - 192.168.5.92
+            - 192.168.2.29
         volumes:
             - /volume1/video/:/data
             - /volume1/docker/_synology_configs/transmission:/config

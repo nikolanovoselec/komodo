@@ -1,0 +1,15 @@
+services:
+  ziti-tunnel:
+    image: openziti/ziti-edge-tunnel:latest
+    container_name: storage_ziti_tunnel
+    restart: unless-stopped
+    network_mode: host
+    privileged: true
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      - /docker/configs/ziti-edge-tunnel:/ziti-edge-tunnel
+      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
+    command: ["run", "--dns-upstream", "192.168.5.162"]
+    environment:
+      - ZITI_ENROLL_TOKEN=${ZITI_ENROLL_TOKEN}

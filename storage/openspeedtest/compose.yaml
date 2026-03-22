@@ -2,6 +2,11 @@ services:
     speedtest:
         restart: unless-stopped
         container_name: storage_openspeedtest
+        dns:
+            - 100.64.0.2
+            - 192.168.5.162
+            - 192.168.5.92
+            - 192.168.2.29
         ports:
             - 3636:3000 #port on DSM FW
         image: openspeedtest/latest:v2.0.6
