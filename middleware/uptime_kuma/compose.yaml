@@ -4,8 +4,6 @@ services:
     container_name: middleware_uptime_kuma
     dns:
       - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
     ports:
       - 3001:3001
     volumes:
