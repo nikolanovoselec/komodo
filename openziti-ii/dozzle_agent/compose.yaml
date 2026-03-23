@@ -1,7 +1,7 @@
 services:
   dozzle-agent:
     image: amir20/dozzle:v10.1.2
-    container_name: openziti_i_dozzle_agent
+    container_name: openziti_ii_dozzle_agent
     command: agent
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
