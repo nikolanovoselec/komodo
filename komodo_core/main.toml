@@ -6,7 +6,7 @@ tags = [
   "auto-cleanup"
 ]
 [server.config]
-address = "https://pihole-master.lan:8120"
+address = "https://192.168.5.162:8120"
 enabled = true
 
 ##
@@ -24,7 +24,7 @@ enabled = true
 name = "media_servers"
 tags = ["sync", "auto-cleanup"]
 [server.config]
-address = "https://mediaservers.lan:8120"
+address = "https://192.168.2.205:8120"
 enabled = true
 
 ##
@@ -37,7 +37,7 @@ tags = [
   "auto-cleanup"
 ]
 [server.config]
-address = "https://middleware.lan:8120"
+address = "https://192.168.5.148:8120"
 enabled = true
 
 ##
@@ -50,7 +50,7 @@ tags = [
   "auto-cleanup"
 ]
 [server.config]
-address = "https://minecraft.lan:8120"
+address = "https://192.168.3.12:8120"
 enabled = true
 
 ##
@@ -63,7 +63,7 @@ tags = [
   "auto-cleanup"
 ]
 [server.config]
-address = "https://nextcloud.lan:8120"
+address = "https://192.168.2.122:8120"
 enabled = true
 
 ##
@@ -76,7 +76,7 @@ tags = [
   "sync"
 ]
 [server.config]
-address = "https://openziti-fabric-i.lan:8120"
+address = "https://192.168.99.226:8120"
 enabled = true
 
 ##
@@ -89,7 +89,7 @@ tags = [
   "sync"
 ]
 [server.config]
-address = "https://openziti-fabric-ii.lan:8120"
+address = "https://192.168.99.73:8120"
 enabled = true
 
 ##
@@ -102,7 +102,7 @@ tags = [
   "sync"
 ]
 [server.config]
-address = "https://openziti-fabric-iii.lan:8120"
+address = "https://192.168.99.68:8120"
 enabled = true
 
 ##
@@ -115,7 +115,7 @@ tags = [
   "auto-cleanup"
 ]
 [server.config]
-address = "https://servarr.lan:8120"
+address = "https://192.168.2.38:8120"
 enabled = true
 
 ##
@@ -124,7 +124,7 @@ enabled = true
 name = "storage"
 tags = ["sync", "auto-cleanup"]
 [server.config]
-address = "https://nas.lan:8120"
+address = "https://192.168.2.29:8120"
 enabled = true
 disk_warning = 90.0
 
@@ -138,7 +138,7 @@ tags = [
   "auto-cleanup"
 ]
 [server.config]
-address = "https://tools.lan:8120"
+address = "https://192.168.2.72:8120"
 enabled = true
 
 ##
