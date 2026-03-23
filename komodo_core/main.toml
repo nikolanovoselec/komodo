@@ -15,7 +15,7 @@ enabled = true
 name = "komodo_core"
 tags = ["sync", "auto-cleanup"]
 [server.config]
-address = "https://localhost:8120"
+address = "https://komodo.lan:8120"
 enabled = true
 
 ##
