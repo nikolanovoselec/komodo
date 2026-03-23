@@ -10,6 +10,7 @@ services:
     volumes:
       - /docker/configs/ziti-edge-tunnel:/ziti-edge-tunnel
       - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
+    entrypoint: []
     command:
       - bash
       - -c
