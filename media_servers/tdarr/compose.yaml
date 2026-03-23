@@ -5,7 +5,7 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-    image: ghcr.io/haveagitgat/tdarr:2.64.02
+    image: ghcr.io/haveagitgat/tdarr:2.65.01
     restart: unless-stopped
     ports:
       - 8265:8265 #webUI port
