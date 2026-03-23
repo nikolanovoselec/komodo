@@ -5,7 +5,7 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-    image: ghcr.io/autobrr/autobrr:v1.74.0
+    image: ghcr.io/autobrr/autobrr:v1.75.0
     restart: unless-stopped
     logging:
       driver: local
