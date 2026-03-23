@@ -5,7 +5,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
     image: ghcr.io/wizarrrr/wizarr:v2026.2.1
     ports:
       - 5690:5690

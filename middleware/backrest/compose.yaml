@@ -6,7 +6,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
     hostname: backrest-middleware.local.graymatter.ch
     volumes:
       - /docker/configs/backrest/data:/data

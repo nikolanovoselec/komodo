@@ -6,7 +6,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
     environment:
       - TZ=Europe/Zurich
       - PUID=1026

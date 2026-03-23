@@ -7,7 +7,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
     command: postgres -c max_connections=500
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
@@ -32,7 +31,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
     shm_size: 512mb
     networks:
       - authentik
@@ -71,7 +69,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
     shm_size: 512mb
     networks:
       - authentik

@@ -10,7 +10,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
     volumes:
       - /mnt/configs/grafana_prometheus/prometheus/:/etc/prometheus/
       - /mnt/configs/grafana_prometheus/prometheus:/prometheus
@@ -44,7 +43,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -72,7 +70,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
     ports:
       - 9093:9093
     volumes:
@@ -95,7 +92,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
@@ -117,7 +113,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
 #    user: "472"
     depends_on:
       - prometheus

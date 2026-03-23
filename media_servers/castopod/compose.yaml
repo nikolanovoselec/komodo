@@ -6,7 +6,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
     volumes:
       - /docker/configs/castopod/media:/var/www/castopod/public/media
     environment:
@@ -32,7 +31,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
     depends_on:
       - castopod
     volumes:
@@ -51,7 +49,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
     networks:
       - castopod-db
     volumes:
@@ -70,7 +67,6 @@ services:
       - 100.64.0.2
       - 192.168.5.162
       - 192.168.5.92
-      - 192.168.2.29
     command: --requirepass ${CASTOPOD_PASSWORD}
     volumes:
       - /docker/configs/castopod/cache:/data

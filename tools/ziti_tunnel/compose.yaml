@@ -1,6 +1,6 @@
 services:
   ziti-tunnel:
-    image: openziti/ziti-edge-tunnel:latest
+    image: openziti/ziti-edge-tunnel:v1.11.2
     container_name: tools_ziti_tunnel
     restart: unless-stopped
     network_mode: host
