@@ -10,6 +10,16 @@ services:
     volumes:
       - /docker/configs/ziti-edge-tunnel:/ziti-edge-tunnel
       - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
-    command: ["run", "--dns-upstream", "192.168.5.162"]
+    command:
+      - bash
+      - -c
+      - |
+        /docker-entrypoint.sh run --dns-upstream 192.168.5.162 &
+        PID=$$!
+        sleep 10
+        IFINDEX=$$(cat /sys/class/net/ziti0/ifindex)
+        gdbus call --system --dest org.freedesktop.resolve1 --object-path /org/freedesktop/resolve1 --method org.freedesktop.resolve1.Manager.SetLinkDomains $$IFINDEX "[(\".\", true)]"
+        echo "Routing domain ~. set on ziti0 (ifindex $$IFINDEX)"
+        wait $$PID
     environment:
       - ZITI_ENROLL_TOKEN=${ZITI_ENROLL_TOKEN}
