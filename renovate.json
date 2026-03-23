@@ -138,6 +138,17 @@
         "docker-compose"
       ],
       "matchFileNames": [
+        "openziti-i/**",
+        "openziti-ii/**",
+        "openziti-iii/**"
+      ],
+      "enabled": true
+    },
+    {
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
         "middleware/authentik/compose.yaml"
       ],
       "matchDepNames": [
