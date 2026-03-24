@@ -1,6 +1,6 @@
 services:
   bentopdf:
-    image: 'ghcr.io/alam00000/bentopdf:2.6.0'
+    image: 'ghcr.io/alam00000/bentopdf:2.7.0'
     container_name: tools_bentopdf
     dns:
       - 100.64.0.2
