@@ -52,7 +52,7 @@ services:
       - "--chromium-allow-list=file:///tmp/.*"
 
   tika:
-    image: docker.io/apache/tika:3.2.3.0-full
+    image: docker.io/apache/tika:3.3.0.0-full
     restart: unless-stopped
     container_name: tools_paperless_tika
     dns:
