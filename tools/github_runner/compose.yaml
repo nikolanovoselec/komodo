@@ -1,6 +1,6 @@
 services:
   github-runner-codeflare_i:
-    image: myoung34/github-runner:2.333.0-ubuntu-jammy
+    image: myoung34/github-runner:2.333.1-ubuntu-jammy
     container_name: tools_github_runner_codeflare_i
     dns:
       - 100.64.0.2
