@@ -7,10 +7,10 @@ services:
             - '/var/run/docker.sock:/var/run/docker.sock'
         restart: unless-stopped
         container_name: servarr_portainer_agent
-        dns:
-            - 100.64.0.2
-            - 192.168.5.162
-            - 192.168.5.92
+        #dns:
+        #    - 100.64.0.2
+        #    - 192.168.5.162
+        #    - 192.168.5.92
         ports:
             - '9001:9001'
         network_mode: bridge

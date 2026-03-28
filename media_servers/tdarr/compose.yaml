@@ -1,10 +1,10 @@
 services:
   tdarr:
     container_name: media_servers_tdarr_server
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     image: ghcr.io/haveagitgat/tdarr:2.66.01
     restart: unless-stopped
     ports:

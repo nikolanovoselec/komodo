@@ -2,10 +2,10 @@ services:
   backrest:
     image: garethgeorge/backrest:v1.12.1
     container_name: tools_backrest
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     hostname: backrest-tools.local.graymatter.ch
     volumes:
       - /docker/configs/backrest/data:/data

@@ -2,10 +2,10 @@ services:
   tautulli:
     image: lscr.io/linuxserver/tautulli:v2.17.0-ls222
     container_name: media_servers_tautulli
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     environment:
       - TZ=Europe/Zurich
     volumes:

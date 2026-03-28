@@ -1,10 +1,10 @@
 services:
   dozzle:
     container_name: middleware_dozzle
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     image: amir20/dozzle:v10.2.1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

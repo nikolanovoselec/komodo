@@ -18,18 +18,18 @@ services:
       APP_KEY: ${COOLIFY_SECRET_KEY}
     networks:
       - coolify
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
 
   postgres:
     image: postgres:15-alpine
     container_name: komodo_core_coolify_database
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     restart: unless-stopped
     environment:
       POSTGRES_USER: coolify
@@ -43,10 +43,10 @@ services:
   redis:
     image: redis:7-alpine
     container_name: komodo_core_coolify_redis
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     restart: unless-stopped
     networks:
       - coolify

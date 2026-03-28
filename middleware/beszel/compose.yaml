@@ -2,10 +2,10 @@ services:
   beszel:
     image: henrygd/beszel:0.18.5
     container_name: middleware_beszel
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     restart: unless-stopped
 #    network_mode: host
     ports:

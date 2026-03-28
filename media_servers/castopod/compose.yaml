@@ -2,10 +2,10 @@ services:
   castopod:
     image: castopod/castopod:1.15.5
     container_name: "media_servers_castopod"
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     volumes:
       - /docker/configs/castopod/media:/var/www/castopod/public/media
     environment:
@@ -27,10 +27,10 @@ services:
   web:
     image: castopod/web-server:1.14.1
     container_name: media_servers_castopod_web
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     depends_on:
       - castopod
     volumes:
@@ -45,10 +45,10 @@ services:
   mariadb:
     image: mariadb:11.2
     container_name: "media_servers_castopod_db"
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     networks:
       - castopod-db
     volumes:
@@ -63,10 +63,10 @@ services:
   redis:
     image: redis:7.2-alpine
     container_name: "media_servers_castopod_redis"
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     command: --requirepass ${CASTOPOD_PASSWORD}
     volumes:
       - /docker/configs/castopod/cache:/data

@@ -2,10 +2,10 @@ services:
   github-runner-codeflare_i:
     image: myoung34/github-runner:2.333.1-ubuntu-jammy
     container_name: tools_github_runner_codeflare_i
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /docker/configs/github_runner/codeflare_i/work:/tmp/runner

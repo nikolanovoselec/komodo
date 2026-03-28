@@ -2,10 +2,10 @@ services:
   gluetun:
     image: ghcr.io/qdm12/gluetun:v3.41.1
     container_name: storage_qbittorrent_gluetun
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     cap_add:
       - NET_ADMIN
     devices:

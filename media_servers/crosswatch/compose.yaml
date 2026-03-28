@@ -2,10 +2,10 @@ services:
   crosswatch:
     image: ghcr.io/cenodude/crosswatch:0.9.15
     container_name: media_servers_crosswatch
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     ports:
       - "8787:8787"          # host:container
     environment:

@@ -3,10 +3,10 @@ services:
     image: 'jc21/nginx-proxy-manager:2.14.0'
     restart: unless-stopped
     container_name: middleware_npm
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     ports:
       - '80:80' #Public HTTP Port
       - '443:443' #Public HTTPS Port

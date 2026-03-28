@@ -6,10 +6,10 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: tools_grafana_prometheus
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     volumes:
       - /mnt/configs/grafana_prometheus/prometheus/:/etc/prometheus/
       - /mnt/configs/grafana_prometheus/prometheus:/prometheus
@@ -39,10 +39,10 @@ services:
   node-exporter:
     image: quay.io/prometheus/node-exporter:latest
     container_name: tools_grafana_node-exporter
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -66,10 +66,10 @@ services:
   alertmanager:
     image: prom/alertmanager:latest
     container_name: tools_grafana_alertmanager
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     ports:
       - 9093:9093
     volumes:
@@ -88,10 +88,10 @@ services:
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: tools_grafana_cadvisor
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
@@ -109,10 +109,10 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: tools_grafana_server
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
 #    user: "472"
     depends_on:
       - prometheus

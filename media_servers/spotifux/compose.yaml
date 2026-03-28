@@ -12,10 +12,10 @@ services:
       - /docker/configs/spotifux/logs:/app/logs
       - /docker/configs/spotifux/.cache:/app/.cache
     container_name: media_servers_spotifux
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     restart: unless-stopped
     env_file:
       - .env
@@ -25,10 +25,10 @@ services:
   redis:
     image: redis:alpine
     container_name: media_servers_spotifux_redis
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     restart: unless-stopped
     env_file:
       - .env

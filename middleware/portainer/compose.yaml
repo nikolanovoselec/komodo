@@ -6,10 +6,10 @@ services:
             - '/var/run/docker.sock:/var/run/docker.sock'
         restart: always
         container_name: middleware_portainer
-        dns:
-            - 100.64.0.2
-            - 192.168.5.162
-            - 192.168.5.92
+        #dns:
+        #    - 100.64.0.2
+        #    - 192.168.5.162
+        #    - 192.168.5.92
         ports:
             - '9443:9443'
             - '8000:8000'

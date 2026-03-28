@@ -2,8 +2,8 @@ services:
   uptime-kuma:
     restart: unless-stopped
     container_name: middleware_uptime_kuma
-    dns:
-      - 100.64.0.2
+    #dns:
+    #  - 100.64.0.2
     ports:
       - 3001:3001
     volumes:

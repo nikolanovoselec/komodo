@@ -2,10 +2,10 @@ services:
   bentopdf:
     image: 'ghcr.io/alam00000/bentopdf:2.7.0'
     container_name: tools_bentopdf
-    dns:
-      - 100.64.0.2
-      - 192.168.5.162
-      - 192.168.5.92
+    #dns:
+    #  - 100.64.0.2
+    #  - 192.168.5.162
+    #  - 192.168.5.92
     ports:
       - '8082:8080'
     restart: unless-stopped
