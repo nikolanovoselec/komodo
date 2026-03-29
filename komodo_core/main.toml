@@ -73,7 +73,6 @@ name = "openziti-fabric-i"
 tags = ["sync"]
 [server.config]
 address = "https://192.168.99.226:8120"
-enabled = true
 
 ##
 
@@ -82,7 +81,6 @@ name = "openziti-fabric-ii"
 tags = ["sync"]
 [server.config]
 address = "https://192.168.99.73:8120"
-enabled = true
 
 ##
 
@@ -91,7 +89,6 @@ name = "openziti-fabric-iii"
 tags = ["sync"]
 [server.config]
 address = "https://192.168.99.68:8120"
-enabled = true
 
 ##
 
