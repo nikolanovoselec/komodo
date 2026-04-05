@@ -570,6 +570,28 @@ run_directory = "media_servers/tautulli"
 ##
 
 [[stack]]
+name = "media_servers_tracearr"
+tags = ["sync"]
+[stack.config]
+server = "media_servers"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "media_servers/tracearr"
+environment = """
+TRACEARR_DB_PASSWORD = [[TRACEARR_DB_PASSWORD]]
+TRACEARR_JWT_SECRET = [[TRACEARR_JWT_SECRET]]
+TRACEARR_COOKIE_SECRET = [[TRACEARR_COOKIE_SECRET]]
+TRACEARR_CORS_ORIGIN = [[TRACEARR_CORS_ORIGIN]]
+"""
+
+##
+
+[[stack]]
 name = "media_servers_ziti_tunnel"
 tags = ["sync", "disabled"]
 [stack.config]
