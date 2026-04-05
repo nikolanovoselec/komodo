@@ -10,10 +10,10 @@ services:
       - HOST=0.0.0.0
       - TZ=Europe/Zurich
       - DATABASE_URL=postgres://tracearr:${TRACEARR_DB_PASSWORD}@timescale:5432/tracearr
-      - REDIS_URL=redis://redis:6379
+      - REDIS_URL=redis://:${TRACEARR_REDIS_PASSWORD}@redis:6379
       - JWT_SECRET=${TRACEARR_JWT_SECRET}
       - COOKIE_SECRET=${TRACEARR_COOKIE_SECRET}
-      - CORS_ORIGIN=${TRACEARR_CORS_ORIGIN:-*}
+      - CORS_ORIGIN=${TRACEARR_CORS_ORIGIN}
       - LOG_LEVEL=info
     depends_on:
       timescale:
@@ -54,11 +54,11 @@ services:
   redis:
     image: redis:8-alpine
     container_name: media_servers_tracearr_redis
-    command: redis-server --appendonly yes
+    command: redis-server --requirepass "${TRACEARR_REDIS_PASSWORD}" --appendonly yes
     volumes:
       - /docker/configs/tracearr/redis:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${TRACEARR_REDIS_PASSWORD}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
