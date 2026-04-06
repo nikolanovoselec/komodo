@@ -1941,18 +1941,12 @@ const envContent = [
 ].join("\n");
 const b64 = btoa(envContent);
 
-await komodo.write("CreateTerminal", {
-  server: tools.name,
-  name: "renovate",
-  command: "bash",
-  recreate: Types.TerminalRecreateMode.DifferentCommand,
-});
-
-await komodo.execute_terminal(
+await komodo.execute_server_terminal(
   {
     server: tools.name,
     terminal: "renovate",
     command: "echo " + b64 + " | base64 -d > /tmp/renovate.env && docker run --rm --env-file /tmp/renovate.env renovate/renovate nikolanovoselec/komodo && rm -f /tmp/renovate.env",
+    init: { command: "bash", recreate: Types.TerminalRecreateMode.DifferentCommand },
   },
   {
     onLine: (line) => console.log(line),
@@ -2021,18 +2015,13 @@ for (const server of servers) {
   console.log();
   console.log("------------------");
   console.log("Updating", server.name);
-  await komodo.write("CreateTerminal", {
-    server: server.name,
-    name: "apt-upgrade",
-    command: "bash",
-    recreate: Types.TerminalRecreateMode.DifferentCommand,
-  });
-  await komodo.execute_terminal(
+  await komodo.execute_server_terminal(
     {
       server: server.name,
       terminal: "apt-upgrade",
       command:
         "export DEBIAN_FRONTEND=noninteractive && apt update && apt upgrade -y -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef' && apt autoremove -y && apt clean && journalctl --vacuum-time=7d",
+      init: { command: "bash", recreate: Types.TerminalRecreateMode.DifferentCommand },
     },
     {
       onLine: console.log,
