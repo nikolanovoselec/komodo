@@ -130,7 +130,7 @@ enabled = true
 
 [[stack]]
 name = "dns_ntp_backrest"
-tags = ["sync"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "dns_ntp"
 run_build = true
@@ -237,7 +237,7 @@ run_directory = "dns_ntp/portainer_agent"
 
 [[stack]]
 name = "komodo_core_backrest"
-tags = ["sync"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "komodo_core"
 run_build = true
@@ -360,7 +360,7 @@ ZITI_ENROLL_TOKEN = [[OPENZITI_KOMODO]]
 
 [[stack]]
 name = "media_servers_backrest"
-tags = ["sync"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "media_servers"
 run_build = true
@@ -634,7 +634,7 @@ AUTHENTIK_EMAIL = [[AUTHENTIK_EMAIL]]
 
 [[stack]]
 name = "middleware_backrest"
-tags = ["sync"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "middleware"
 run_build = true
@@ -1065,7 +1065,7 @@ REG_KEY = [[OPENZITI_FABRIC_III]]
 
 [[stack]]
 name = "servarr_autobrr"
-tags = ["sync"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "servarr"
 run_build = true
@@ -1087,7 +1087,7 @@ AUTOBRR__OIDC_REDIRECT_URL = [[AUTOBRR__OIDC_REDIRECT_URL]]
 
 [[stack]]
 name = "servarr_backrest"
-tags = ["sync"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "servarr"
 run_build = true
@@ -1264,7 +1264,7 @@ run_directory = "servarr/profilarr"
 
 [[stack]]
 name = "servarr_prowlarr"
-tags = ["sync"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "servarr"
 run_build = true
@@ -1381,7 +1381,7 @@ ZITI_ENROLL_TOKEN = [[OPENZITI_SERVARR]]
 
 [[stack]]
 name = "storage_backrest"
-tags = ["sync"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "storage"
 run_build = true
@@ -1610,7 +1610,7 @@ ZITI_ENROLL_TOKEN = [[OPENZITI_STORAGE]]
 
 [[stack]]
 name = "tools_backrest"
-tags = ["sync"]
+tags = ["sync", "disabled"]
 [stack.config]
 server = "tools"
 run_build = true
@@ -1827,7 +1827,7 @@ config.schedule = "Run every hour"
 name = "Stage 1"
 enabled = true
 executions = [
-  { execution.type = "GlobalAutoUpdate", execution.params = {}, enabled = true }
+  { execution.type = "GlobalAutoUpdate", execution.params.skip_auto_update = false, enabled = true }
 ]
 
 ##
