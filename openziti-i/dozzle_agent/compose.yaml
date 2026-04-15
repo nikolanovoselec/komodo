@@ -1,6 +1,6 @@
 services:
   dozzle-agent:
-    image: amir20/dozzle:v10.3.1
+    image: amir20/dozzle:v10.3.3
     container_name: openziti_i_dozzle_agent
     command: agent
     volumes:
