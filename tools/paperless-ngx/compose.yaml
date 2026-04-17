@@ -39,7 +39,7 @@ services:
       PAPERLESS_URL: ${PAPERLESS_URL}
 
   gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.30.1
+    image: docker.io/gotenberg/gotenberg:8.31.0
     restart: unless-stopped
     container_name: tools_paperless_gotenberg
     #dns:
