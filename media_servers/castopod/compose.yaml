@@ -43,7 +43,7 @@ services:
     restart: unless-stopped
 
   mariadb:
-    image: mariadb:11.2
+    image: mariadb:12.2
     container_name: "media_servers_castopod_db"
     #dns:
     #  - 100.64.0.2
