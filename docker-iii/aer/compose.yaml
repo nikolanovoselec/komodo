@@ -1,0 +1,16 @@
+services:
+  autonomous-router:
+    container_name: docker_iii_aer
+    image: ghcr.io/nicfragale/autonomous-router:latest
+    pull_policy: always
+    restart: unless-stopped
+    stop_grace_period: 30s
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - REG_KEY=${REG_KEY}
+      - TUNNEL_MODE=host
+      - ZITI_DNS_CONFIGURE=false
+    volumes:
+      - ./ziti_router:/etc/netfoundry

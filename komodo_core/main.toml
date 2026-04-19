@@ -128,6 +128,60 @@ enabled = true
 
 ##
 
+[[server]]
+name = "docker-i"
+tags = ["sync"]
+[server.config]
+address = "https://docker-i.lan:8120"
+enabled = true
+
+##
+
+[[server]]
+name = "docker-ii"
+tags = ["sync"]
+[server.config]
+address = "https://docker-ii.lan:8120"
+enabled = true
+
+##
+
+[[server]]
+name = "docker-iii"
+tags = ["sync"]
+[server.config]
+address = "https://docker-iii.lan:8120"
+enabled = true
+
+##
+
+[[server]]
+name = "docker-iv"
+tags = ["sync"]
+[server.config]
+address = "https://docker-iv.lan:8120"
+enabled = true
+
+##
+
+[[server]]
+name = "docker-v"
+tags = ["sync"]
+[server.config]
+address = "https://docker-v.lan:8120"
+enabled = true
+
+##
+
+[[server]]
+name = "docker-vi"
+tags = ["sync"]
+[server.config]
+address = "https://docker-vi.lan:8120"
+enabled = true
+
+##
+
 [[stack]]
 name = "dns_ntp_backrest"
 tags = ["sync", "disabled"]
@@ -1814,6 +1868,108 @@ webhook_force_deploy = true
 run_directory = "tools/ziti_tunnel"
 environment = """
 ZITI_ENROLL_TOKEN = [[OPENZITI_TOOLS]]
+"""
+
+##
+
+[[stack]]
+name = "docker_i_aer"
+tags = ["sync"]
+[stack.config]
+server = "docker-i"
+run_build = true
+poll_for_updates = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "docker-i/aer"
+environment = """
+REG_KEY = [[REG_KEY_DOCKER_I]]
+"""
+
+##
+
+[[stack]]
+name = "docker_ii_aer"
+tags = ["sync"]
+[stack.config]
+server = "docker-ii"
+run_build = true
+poll_for_updates = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "docker-ii/aer"
+environment = """
+REG_KEY = [[REG_KEY_DOCKER_II]]
+"""
+
+##
+
+[[stack]]
+name = "docker_iii_aer"
+tags = ["sync"]
+[stack.config]
+server = "docker-iii"
+run_build = true
+poll_for_updates = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "docker-iii/aer"
+environment = """
+REG_KEY = [[REG_KEY_DOCKER_III]]
+"""
+
+##
+
+[[stack]]
+name = "docker_iv_aer"
+tags = ["sync"]
+[stack.config]
+server = "docker-iv"
+run_build = true
+poll_for_updates = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "docker-iv/aer"
+environment = """
+REG_KEY = [[REG_KEY_DOCKER_IV]]
+"""
+
+##
+
+[[stack]]
+name = "docker_v_aer"
+tags = ["sync"]
+[stack.config]
+server = "docker-v"
+run_build = true
+poll_for_updates = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "docker-v/aer"
+environment = """
+REG_KEY = [[REG_KEY_DOCKER_V]]
+"""
+
+##
+
+[[stack]]
+name = "docker_vi_aer"
+tags = ["sync"]
+[stack.config]
+server = "docker-vi"
+run_build = true
+poll_for_updates = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "docker-vi/aer"
+environment = """
+REG_KEY = [[REG_KEY_DOCKER_VI]]
 """
 
 ##
