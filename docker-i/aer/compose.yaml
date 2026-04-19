@@ -15,6 +15,7 @@ services:
       - DISABLE_AUTO_UPDATE=true
       - ZITI_VERSION_OVERRIDE=v1.7.2
       - HOSTS_ENTRIES=docker-i.lan
+      - ZITI_DNS_UPSTREAM=udp://192.168.5.162:53
     volumes:
       - ./ziti_router:/etc/netfoundry
       - /etc/systemd:/etc/systemd
