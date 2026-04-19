@@ -16,6 +16,7 @@ services:
       - ZITI_VERSION_OVERRIDE=v1.7.2
       - HOSTS_ENTRIES=docker-ii.lan
       - ZITI_DNS_UPSTREAM=udp://192.168.5.162:53
+      - ZITI_DNS_MODE=all
     volumes:
       - ./ziti_router:/etc/netfoundry
       - /etc/systemd:/etc/systemd
