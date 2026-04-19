@@ -13,6 +13,7 @@ services:
       - REG_KEY=${REG_KEY}
       - DISABLE_AUTO_UPDATE=true
       - ZITI_VERSION_OVERRIDE=v1.7.2
+      - HOSTS_ENTRIES=docker-i.lan
     volumes:
       - ./ziti_router:/etc/netfoundry
       - /etc/systemd:/etc/systemd
