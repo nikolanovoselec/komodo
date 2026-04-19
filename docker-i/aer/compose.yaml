@@ -17,6 +17,7 @@ services:
       - HOSTS_ENTRIES=docker-i.lan
       - ZITI_DNS_UPSTREAM=udp://192.168.5.162:53
       - ZITI_DNS_MODE=all
+      - ZITI_DNS_IP=100.64.0.2
     volumes:
       - ./ziti_router:/etc/netfoundry
       - /etc/systemd:/etc/systemd
