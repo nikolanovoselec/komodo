@@ -11,6 +11,7 @@ services:
       - NET_ADMIN
     environment:
       - REG_KEY=${REG_KEY}
+      - TUNNEL_MODE=auto
       - DISABLE_AUTO_UPDATE=true
       - ZITI_VERSION_OVERRIDE=v1.7.2
       - HOSTS_ENTRIES=docker-ii.lan
