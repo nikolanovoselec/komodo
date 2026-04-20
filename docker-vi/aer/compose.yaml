@@ -14,7 +14,7 @@ services:
       - TUNNEL_MODE=auto
       - DISABLE_AUTO_UPDATE=true
       - ZITI_VERSION_OVERRIDE=v1.7.2
-
+      - HOSTS_ENTRIES=docker-vi.lan
       - ZITI_DNS_UPSTREAM=udp://192.168.5.162:53
       - ZITI_DNS_MODE=domains
       - ZITI_DNS_DOMAINS=lan
