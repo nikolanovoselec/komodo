@@ -1,6 +1,6 @@
 services:
   flame:
-    image: pawelmalak/flame:2.3.1
+    image: pawelmalak/flame:2.4.0
     container_name: tools_flame
     #dns:
     #  - 100.64.0.2
