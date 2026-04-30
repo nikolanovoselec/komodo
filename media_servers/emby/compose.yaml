@@ -7,10 +7,10 @@ services:
       - TZ=Europe/Zurich
     volumes:
       - /docker/configs/emby:/config
-      - /mnt/video/tv shows/:/mnt/synology/tv shows/
-      - /mnt/video/movies/:/mnt/synology/movies/
-      - /mnt/music:/music
-      - /mnt/video/backup/:/mnt/synology/backup/
+      - /mnt/unas/Shows/:/mnt/synology/tv shows/
+      - /mnt/unas/Movies/:/mnt/synology/movies/
+      - /mnt/unas/Music/Library:/music
+      - /mnt/video/Backup/Emby/:/mnt/synology/backup/
 #    ports:
 #      - 8093:8096 #not needed when running on host
     devices:
