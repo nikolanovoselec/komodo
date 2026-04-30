@@ -16,7 +16,6 @@ name = "docker-i"
 tags = ["sync"]
 [server.config]
 address = "https://docker-i.lan:8120"
-enabled = true
 
 ##
 
@@ -25,7 +24,6 @@ name = "docker-ii"
 tags = ["sync"]
 [server.config]
 address = "https://docker-ii.lan:8120"
-enabled = true
 
 ##
 
@@ -34,7 +32,6 @@ name = "docker-iii"
 tags = ["sync"]
 [server.config]
 address = "https://docker-iii.lan:8120"
-enabled = true
 
 ##
 
@@ -43,7 +40,6 @@ name = "docker-iv"
 tags = ["sync"]
 [server.config]
 address = "https://docker-iv.lan:8120"
-enabled = true
 
 ##
 
@@ -52,7 +48,6 @@ name = "docker-v"
 tags = ["sync"]
 [server.config]
 address = "https://docker-v.lan:8120"
-enabled = true
 
 ##
 
@@ -61,7 +56,6 @@ name = "docker-vi"
 tags = ["sync"]
 [server.config]
 address = "https://docker-vi.lan:8120"
-enabled = true
 
 ##
 
@@ -1687,7 +1681,7 @@ run_directory = "storage/portainer_agent"
 
 [[stack]]
 name = "storage_qbittorrent_gluetun"
-tags = ["sync", "disabled"]
+tags = ["sync"]
 [stack.config]
 server = "storage"
 run_build = true
