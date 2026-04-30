@@ -8,8 +8,6 @@ services:
     #  - 192.168.5.92
     environment:
       - TZ=Europe/Zurich
-      - PUID=1026
-      - PGID=100
     volumes:
       - /docker/configs/sonarr:/config
       - /mnt/unas:/data
