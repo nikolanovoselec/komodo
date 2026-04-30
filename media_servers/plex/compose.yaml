@@ -9,11 +9,11 @@ services:
 #      - PLEX_CLAIM= #only for initial start to claim the server
     volumes:
       - /docker/configs/plex/:/config
-      - /mnt/video/tv shows/:/mnt/synology/tv shows/
-      - /mnt/video/movies/:/mnt/synology/movies/
-      - /mnt/music:/mnt/synology-music/
-      - /mnt/photo/:/mnt/synology-photos/
-      - /mnt/video/backup/:/mnt/synology/backup/
+      - /mnt/unas/Shows/:/mnt/synology/tv shows/
+      - /mnt/unas/Movies/:/mnt/synology/movies/
+      - /mnt/unas/Music/Library:/mnt/synology-music/
+      - /mnt/unas/Pictures/:/mnt/synology-photos/
+      - /mnt/unas/Backup/Plex/:/mnt/synology/backup/
 #    ports:
 #      - 32397:32400 #not needed when running on host network
     devices:
