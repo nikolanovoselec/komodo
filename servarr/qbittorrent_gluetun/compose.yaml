@@ -30,7 +30,6 @@ services:
     image: linuxserver/qbittorrent:5.1.2-r2-ls415
     container_name: servarr_qbittorrent_client
     environment:
-      - user=root
       - TZ=Europe/Zurich
       - WEBUI_PORT=8080
       - TORRENTING_PORT=32323
