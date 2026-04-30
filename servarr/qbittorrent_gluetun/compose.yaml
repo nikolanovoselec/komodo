@@ -37,7 +37,7 @@ services:
       - WEBUI_PORT=8080
       - TORRENTING_PORT=32323
     volumes:
-      - /docker/configs/qbittorrent:/config
+      - /docker/configs/qBittorrent:/config
       - /mnt/unas/:/data
       #- /volume1/homes/nikola.novoselec/Drive/_OneDrive/Drive/Temp/qBittorrent:/watch
     network_mode: "service:gluetun"
