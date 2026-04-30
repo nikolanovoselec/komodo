@@ -30,6 +30,9 @@ services:
     image: linuxserver/qbittorrent:5.1.2-r2-ls415
     container_name: servarr_qbittorrent_client
     environment:
+      - PUID=977
+      - PGID=988
+      - UMASK=002
       - TZ=Europe/Zurich
       - WEBUI_PORT=8080
       - TORRENTING_PORT=32323
