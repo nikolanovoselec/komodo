@@ -1,6 +1,6 @@
 services:
   tautulli:
-    image: lscr.io/linuxserver/tautulli:v2.17.0-ls224
+    image: lscr.io/linuxserver/tautulli:v2.17.0-ls226
     container_name: media_servers_tautulli
     #dns:
     #  - 100.64.0.2
