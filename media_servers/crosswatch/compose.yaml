@@ -1,6 +1,6 @@
 services:
   crosswatch:
-    image: ghcr.io/cenodude/crosswatch:0.9.17
+    image: ghcr.io/cenodude/crosswatch:0.9.18
     container_name: media_servers_crosswatch
     #dns:
     #  - 100.64.0.2
