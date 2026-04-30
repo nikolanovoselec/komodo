@@ -35,7 +35,7 @@ services:
       - TORRENTING_PORT=32323
     volumes:
       - /mnt/unas/Docker/_synology_configs/qbittorrent:/config
-      - /mnt/unas/Downloads/qBitTorrent:/data
+      - /mnt/unas/:/data
       #- /volume1/homes/nikola.novoselec/Drive/_OneDrive/Drive/Temp/qBittorrent:/watch
     network_mode: "service:gluetun"
     depends_on:
