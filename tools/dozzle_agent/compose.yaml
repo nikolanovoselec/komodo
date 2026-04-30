@@ -1,6 +1,6 @@
 services:
   dozzle-agent:
-    image: amir20/dozzle:v10.3.3
+    image: amir20/dozzle:v10.5.1
     container_name: tools_dozzle_agent
     #dns:
     #  - 100.64.0.2
