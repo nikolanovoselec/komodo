@@ -12,7 +12,7 @@ services:
       - PGID=100
     volumes:
       - /docker/configs/sonarr:/config
-      - /mnt/synology:/data
+      - /mnt/unas:/data
     ports:
       - 8988:8989
     restart: unless-stopped
