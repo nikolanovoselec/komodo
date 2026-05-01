@@ -16,8 +16,6 @@ services:
       - VPN_TYPE=wireguard
       - FIREWALL_VPN_INPUT_PORTS=32323
       - FIREWALL_OUTBOUND_SUBNETS=192.168.2.0/24    # ← fixes the WebUI access
-      - HEALTH_VPN_DURATION_INITIAL=30s             # ← gives WG handshake time to land
-      - HEALTH_VPN_DURATION_ADDITION=10s
       - HEALTH_RESTART_VPN=off
     ports:
       - "8080:8080/tcp" # Qbittorrent WebUI
@@ -28,6 +26,11 @@ services:
       - /docker/configs/gluetun/10.conf:/gluetun/wireguard/wg0.conf:ro
 #    labels:
 #      deunhealth.restart.on.unhealthy: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "ip -o addr show tun0 | grep -q 'inet '"]
+      interval: 10s
+      start_period: 30s
+      retries: 5
     restart: unless-stopped
 
   qbittorrent:
@@ -45,17 +48,17 @@ services:
       - /mnt/unas/:/data
       #- /volume1/homes/nikola.novoselec/Drive/_OneDrive/Drive/Temp/qBittorrent:/watch
     network_mode: "service:gluetun"
-#    depends_on:
-#      gluetun:
-#        condition: service_healthy
-#    labels:
-#      deunhealth.restart.on.unhealthy: "true"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    labels:
+      deunhealth.restart.on.unhealthy: "true"
     restart: unless-stopped
-#    healthcheck: # https://github.com/qdm12/gluetun/issues/641#issuecomment-933856220
-#      test: "curl -sf https://google.com  || exit 1"
-#      interval: 1m
-#      timeout: 10s
-#      retries: 3
+    healthcheck: # https://github.com/qdm12/gluetun/issues/641#issuecomment-933856220
+      test: "curl -sf https://google.com  || exit 1"
+      interval: 1m
+      timeout: 10s
+      retries: 3
 
 ###########
 
