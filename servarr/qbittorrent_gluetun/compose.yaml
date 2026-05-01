@@ -25,7 +25,7 @@ services:
       - "32323:32323/udp"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /docker/configs/gluetun/wg0.conf:/gluetun/wireguard/wg0.conf:ro
+      - /docker/configs/gluetun/10.conf:/gluetun/wireguard/wg0.conf:ro
 #    labels:
 #      deunhealth.restart.on.unhealthy: "true"
     restart: unless-stopped
