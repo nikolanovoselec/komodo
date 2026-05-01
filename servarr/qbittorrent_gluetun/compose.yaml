@@ -45,9 +45,9 @@ services:
       - /mnt/unas/:/data
       #- /volume1/homes/nikola.novoselec/Drive/_OneDrive/Drive/Temp/qBittorrent:/watch
     network_mode: "service:gluetun"
-    depends_on:
-      gluetun:
-        condition: service_healthy
+#    depends_on:
+#      gluetun:
+#        condition: service_healthy
 #    labels:
 #      deunhealth.restart.on.unhealthy: "true"
     restart: unless-stopped
