@@ -48,27 +48,14 @@ services:
     depends_on:
       gluetun:
         condition: service_healthy
-    labels:
-      deunhealth.restart.on.unhealthy: "true"
-    restart: unless-stopped
-    healthcheck: # https://github.com/qdm12/gluetun/issues/641#issuecomment-933856220
-      test: "curl -sf https://google.com  || exit 1"
-      interval: 1m
-      timeout: 10s
-      retries: 3
-
-#  cloudflared:
-#    image: cloudflare/cloudflared:2025.9.0
-#    restart: unless-stopped
-#    container_name: storage_qbittorrent_cloudflared
-#    network_mode: "service:gluetun"
-#    depends_on:
-#      - gluetun
 #    labels:
-#      com.centurylinklabs.watchtower.enable: "true"
 #      deunhealth.restart.on.unhealthy: "true"
-#    command: tunnel --no-autoupdate run --token
-#      ${CFD_TOKEN_INGRESS}
+    restart: unless-stopped
+#    healthcheck: # https://github.com/qdm12/gluetun/issues/641#issuecomment-933856220
+#      test: "curl -sf https://google.com  || exit 1"
+#      interval: 1m
+#      timeout: 10s
+#      retries: 3
 
 ###########
 
