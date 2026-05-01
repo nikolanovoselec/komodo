@@ -15,6 +15,9 @@ services:
       - VPN_SERVICE_PROVIDER=custom
       - VPN_TYPE=wireguard
       - FIREWALL_VPN_INPUT_PORTS=32323
+      - FIREWALL_OUTBOUND_SUBNETS=192.168.2.0/24    # ← fixes the WebUI access
+      - HEALTH_VPN_DURATION_INITIAL=30s             # ← gives WG handshake time to land
+      - HEALTH_VPN_DURATION_ADDITION=10s
     ports:
       - "8080:8080/tcp" # Qbittorrent WebUI
       - "32323:32323/tcp"
@@ -22,8 +25,8 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /docker/configs/gluetun/wg0.conf:/gluetun/wireguard/wg0.conf:ro
-    labels:
-      deunhealth.restart.on.unhealthy: "true"
+#    labels:
+#      deunhealth.restart.on.unhealthy: "true"
     restart: unless-stopped
 
   qbittorrent:
