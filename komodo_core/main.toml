@@ -1215,7 +1215,7 @@ REG_KEY = [[OPENZITI_FABRIC_III]]
 
 [[stack]]
 name = "servarr_autobrr"
-tags = ["sync", "disabled"]
+tags = ["sync"]
 [stack.config]
 server = "servarr"
 run_build = true
@@ -1414,7 +1414,7 @@ run_directory = "servarr/profilarr"
 
 [[stack]]
 name = "servarr_prowlarr"
-tags = ["sync", "disabled"]
+tags = ["sync"]
 [stack.config]
 server = "servarr"
 run_build = true
@@ -1425,6 +1425,25 @@ git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "servarr/prowlarr"
+
+##
+
+[[stack]]
+name = "servarr_qbittorrent_gluetun"
+tags = ["sync"]
+[stack.config]
+server = "servarr"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "servarr/qbittorrent_gluetun"
+environment = """
+CFD_TOKEN_INGRESS = [[CFD_TOKEN_INGRESS]]
+"""
 
 ##
 
@@ -1676,25 +1695,6 @@ auto_update_all_services = true
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 run_directory = "storage/portainer_agent"
-
-##
-
-[[stack]]
-name = "storage_qbittorrent_gluetun"
-tags = ["sync"]
-[stack.config]
-server = "storage"
-run_build = true
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-webhook_force_deploy = true
-run_directory = "storage/qbittorrent_gluetun"
-environment = """
-CFD_TOKEN_INGRESS = [[CFD_TOKEN_INGRESS]]
-"""
 
 ##
 
