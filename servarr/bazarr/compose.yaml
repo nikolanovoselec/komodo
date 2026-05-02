@@ -7,12 +7,13 @@ services:
     #  - 192.168.5.162
     #  - 192.168.5.92
     environment:
+      - PUID=977
+      - PGID=988
+      - UMASK=002
       - TZ=Europe/Zurich
-      - PUID=1026
-      - PGID=100
     volumes:
       - /docker/configs/bazarr:/config
-      - /mnt/synology:/data
+      - /mnt/unas:/data
     ports:
       - 6767:6767
     restart: unless-stopped
