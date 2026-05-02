@@ -4,6 +4,9 @@ services:
     container_name: media_servers_plex
     network_mode: host #host for local/remote stream discovery
     environment:
+      - PUID=977
+      - PGID=988
+      - UMASK=002
       - TZ=Europe/Zurich
       - VERSION=docker
 #      - PLEX_CLAIM= #only for initial start to claim the server
