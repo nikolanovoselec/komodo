@@ -4,12 +4,12 @@ services:
     container_name: dns_ntp_backrest
     hostname: backrest-pihole-master.local.graymatter.ch
     volumes:
-      - /mnt/configs/backrest/data:/data
-      - /mnt/configs/backrest/config:/config
-      - /mnt/configs/backrest/cache:/cache
-      - /mnt/configs/backrest/tmp:/tmp
-      - /mnt/configs/:/userdata #Local mount to be backed up
-      - /mnt/docker/_restic_backup_repository/:/repos #NFS mount of the remote repository
+      - /docker/configs/backrest/data:/data
+      - /docker/configs/backrest/config:/config
+      - /docker/configs/backrest/cache:/cache
+      - /docker/configs/backrest/tmp:/tmp
+      - /docker/configs/:/userdata #Local mount to be backed up
+      - /mnt/unas/Backup/Restic:/repos #NFS mount of the UNAS restic repository
     environment:
       - BACKREST_DATA=/data
       - BACKREST_CONFIG=/config/config.json
