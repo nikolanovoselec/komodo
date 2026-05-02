@@ -8,7 +8,7 @@ services:
         - 53:53/udp
         - 80:80
       volumes:
-        - /mnt/configs/pihole_stubby:/etc/pihole
+        - /docker/configs/pihole_stubby:/etc/pihole
       environment:
         - TZ=Europe/Zurich
         - PIHOLE_UID=1000
