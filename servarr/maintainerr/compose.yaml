@@ -12,8 +12,9 @@ services:
         target: /opt/data
     environment:
       - TZ=Europe/Zurich
-      - PUID=1026
-      - PGID=100
+      - PUID=977
+      - PGID=988
+      - UMASK=002
     ports:
       - 6246:6246
     restart: unless-stopped
