@@ -4,6 +4,9 @@ services:
     container_name: media_servers_emby
     network_mode: host #for local/remote stream discovery
     environment:
+      - PUID=977
+      - PGID=988
+      - UMASK=002
       - TZ=Europe/Zurich
     volumes:
       - /docker/configs/emby:/config
