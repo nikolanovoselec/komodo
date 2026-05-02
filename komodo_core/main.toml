@@ -178,7 +178,7 @@ enabled = true
 
 [[stack]]
 name = "dns_ntp_backrest"
-tags = ["sync", "disabled"]
+tags = ["sync"]
 [stack.config]
 server = "dns_ntp"
 run_build = true
@@ -387,7 +387,7 @@ REG_KEY = [[REG_KEY_DOCKER_VI]]
 
 [[stack]]
 name = "komodo_core_backrest"
-tags = ["sync", "disabled"]
+tags = ["sync"]
 [stack.config]
 server = "komodo_core"
 run_build = true
@@ -510,7 +510,7 @@ ZITI_ENROLL_TOKEN = [[OPENZITI_KOMODO]]
 
 [[stack]]
 name = "media_servers_backrest"
-tags = ["sync", "disabled"]
+tags = ["sync"]
 [stack.config]
 server = "media_servers"
 run_build = true
@@ -784,7 +784,7 @@ AUTHENTIK_EMAIL = [[AUTHENTIK_EMAIL]]
 
 [[stack]]
 name = "middleware_backrest"
-tags = ["sync", "disabled"]
+tags = ["sync"]
 [stack.config]
 server = "middleware"
 run_build = true
@@ -1237,7 +1237,7 @@ AUTOBRR__OIDC_REDIRECT_URL = [[AUTOBRR__OIDC_REDIRECT_URL]]
 
 [[stack]]
 name = "servarr_backrest"
-tags = ["sync", "disabled"]
+tags = ["sync"]
 [stack.config]
 server = "servarr"
 run_build = true
@@ -1760,7 +1760,7 @@ ZITI_ENROLL_TOKEN = [[OPENZITI_STORAGE]]
 
 [[stack]]
 name = "tools_backrest"
-tags = ["sync", "disabled"]
+tags = ["sync"]
 [stack.config]
 server = "tools"
 run_build = true
