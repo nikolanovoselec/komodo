@@ -112,7 +112,6 @@ tags = [
 ]
 [server.config]
 address = "https://192.168.2.122:8120"
-enabled = true
 
 ##
 
