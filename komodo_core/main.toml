@@ -157,7 +157,6 @@ name = "storage"
 tags = ["sync", "auto-cleanup"]
 [server.config]
 address = "https://192.168.2.29:8120"
-enabled = true
 disk_warning = 90.0
 
 ##
