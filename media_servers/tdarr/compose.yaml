@@ -33,7 +33,7 @@ services:
 
   tdarr-node:
     container_name: media_servers_tdarr_node
-    image: ghcr.io/haveagitgat/tdarr_node:2.70.01
+    image: ghcr.io/haveagitgat/tdarr_node:2.71.01
     restart: unless-stopped
     network_mode: service:tdarr
     environment:
