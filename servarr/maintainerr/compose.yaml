@@ -1,6 +1,6 @@
 services:
   maintainerr:
-    image: jorenn92/maintainerr:3.10.0
+    image: jorenn92/maintainerr:3.10.1
     container_name: servarr_maintainerr
     #dns:
     #  - 100.64.0.2
