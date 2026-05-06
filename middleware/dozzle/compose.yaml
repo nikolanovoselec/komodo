@@ -5,7 +5,7 @@ services:
     #  - 100.64.0.2
     #  - 192.168.5.162
     #  - 192.168.5.92
-    image: amir20/dozzle:v10.5.1
+    image: amir20/dozzle:v10.5.2
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
