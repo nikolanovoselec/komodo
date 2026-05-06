@@ -14,7 +14,7 @@ services:
       - /docker/configs/netfoundry:/etc/netfoundry
 
   dns-register:
-    image: ubuntu:24.04
+    image: ubuntu:26.04
     container_name: middleware_ziti_dns_register
     restart: unless-stopped
     network_mode: host
