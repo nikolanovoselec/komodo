@@ -104,14 +104,6 @@ enabled = true
 ##
 
 [[server]]
-name = "nextcloud"
-tags = ["sync"]
-[server.config]
-address = "https://192.168.2.122:8120"
-
-##
-
-[[server]]
 name = "openziti-fabric-i"
 tags = ["sync"]
 [server.config]
@@ -979,7 +971,6 @@ run_directory = "minecraft/dozzle_agent"
 name = "nextcloud_beszel_agent"
 tags = ["sync"]
 [stack.config]
-server = "nextcloud"
 run_build = true
 poll_for_updates = true
 auto_update = true
@@ -998,7 +989,6 @@ BESZEL_KEY = [[BESZEL_KEY]]
 name = "nextcloud_dozzle_agent"
 tags = ["sync"]
 [stack.config]
-server = "nextcloud"
 run_build = true
 poll_for_updates = true
 auto_update = true
@@ -1014,7 +1004,6 @@ run_directory = "nextcloud/dozzle_agent"
 name = "nextcloud_nextcloud_aio"
 tags = ["sync"]
 [stack.config]
-server = "nextcloud"
 run_build = true
 poll_for_updates = true
 auto_update = true
@@ -1033,7 +1022,6 @@ environment = """
 name = "nextcloud_nextcloud_harp"
 tags = ["sync"]
 [stack.config]
-server = "nextcloud"
 run_build = true
 poll_for_updates = true
 auto_update = true
@@ -1985,7 +1973,7 @@ config.webhook_secret = "ceTXriBfjq!G4r_H_ZDbpn.@Qq_3FqjFh@zPPezFZsskcbdd7F-qYRZ
 name = "Deploy Stacks If Changed"
 enabled = true
 executions = [
-  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "komodo_core*, middleware*, storage*, servarr*, media_servers*, tools*, ai_llm*, dns_ntp*, nextcloud*, minecraft*", enabled = true }
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "komodo_core*, middleware*, servarr*, media_servers*, tools*, ai_llm*, dns_ntp*, minecraft*", enabled = true }
 ]
 
 ##
