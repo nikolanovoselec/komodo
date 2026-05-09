@@ -15,6 +15,7 @@ services:
       - VPN_SERVICE_PROVIDER=custom
       #- VPN_TYPE=wireguard
       - VPN_TYPE=openvpn
+      - OPENVPN_CUSTOM_CONFIG=/gluetun/custom.conf
       - OPENVPN_USERNAME=${OPENVPN_USERNAME}
       - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
       - FIREWALL_VPN_INPUT_PORTS=32323
