@@ -53,7 +53,7 @@ services:
       - /mnt/unas/:/data
       #- /volume1/homes/nikola.novoselec/Drive/_OneDrive/Drive/Temp/qBittorrent:/watch
     network_mode: "service:gluetun"
-    mem_limit: 1g
+ #   mem_limit: 1g
     depends_on:
       gluetun:
         condition: service_healthy
