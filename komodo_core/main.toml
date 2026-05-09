@@ -1424,7 +1424,8 @@ repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
 run_directory = "servarr/qbittorrent_gluetun"
 environment = """
-CFD_TOKEN_INGRESS = [[CFD_TOKEN_INGRESS]]
+OPENVPN_USERNAME = [[OPENVPN_USERNAME]]
+OPENVPN_PASSWORD = [[OPENVPN_PASSWORD]]
 """
 
 ##
@@ -2170,7 +2171,7 @@ name = "local"
 tags = ["sync"]
 [builder.config]
 type = "Server"
-params.server_id = "komodo_core"
+params.server = "komodo_core"
 
 ##
 
