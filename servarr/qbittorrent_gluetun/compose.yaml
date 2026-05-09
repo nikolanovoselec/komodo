@@ -16,7 +16,7 @@ services:
       #- VPN_TYPE=wireguard
       - VPN_TYPE=openvpn
       - OPENVPN_CUSTOM_CONFIG=/gluetun/custom.conf
-      - OPENVPN_USERNAME=${OPENVPN_USERNAME}
+      - OPENVPN_USER=${OPENVPN_USERNAME}
       - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
       - FIREWALL_VPN_INPUT_PORTS=32323
       - FIREWALL_OUTBOUND_SUBNETS=192.168.2.0/24    # ← fixes the WebUI access
