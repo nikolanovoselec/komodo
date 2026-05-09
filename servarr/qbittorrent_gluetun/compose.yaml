@@ -28,7 +28,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       #- /docker/configs/gluetun/10.conf:/gluetun/wireguard/wg0.conf:ro
-      - /docker/configs/gluetun/23.ovpn:/gluetun/custom.conf:ro
+      - /docker/configs/gluetun/40.ovpn:/gluetun/custom.conf:ro
 #    labels:
 #      deunhealth.restart.on.unhealthy: "true"
     healthcheck:
