@@ -18,5 +18,5 @@ services:
 #      - 1900:1900/udp #optional
     devices:
       - /dev/dri:/dev/dri
-    mem_limit: 1500m
+    mem_limit: 1000m
     restart: unless-stopped
