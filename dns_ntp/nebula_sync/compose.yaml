@@ -3,8 +3,8 @@ services:
     image: ghcr.io/lovelaze/nebula-sync:v0.11.2
     container_name: dns_ntp_nebula_sync
     environment:
-    - PRIMARY=http://pihole-master.local|${PIHOLE_API_KEY}
-    - REPLICAS=http://pihole-slave.local|${PIHOLE_API_KEY} #,http://nas.local:81|${PIHOLE_API_KEY}
+    - PRIMARY=http://pihole-master.lan|${PIHOLE_API_KEY}
+    - REPLICAS=http://pihole-slave.lan|${PIHOLE_API_KEY} #,http://nas.local:81|${PIHOLE_API_KEY}
     - FULL_SYNC=true
     - RUN_GRAVITY=false
     - CRON=1 * * * *
