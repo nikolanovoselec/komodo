@@ -13,8 +13,8 @@ services:
       - UN_SONARR_0_API_KEY=${SONARR_API_KEY}
       - UN_RADARR_0_URL=http://servarr.lan:8309
       - UN_RADARR_0_API_KEY=${RADARR_API_KEY}
-      - UN_FOLDER_0_PATH=/data/download/Unpackerr
-      - UN_FOLDER_EXTRACT_PATH=/data/download/Unpackerr
+      - UN_FOLDER_0_PATH=/data/Downloads/Unpackerr
+      - UN_FOLDER_EXTRACT_PATH=/data/Downloads/Unpackerr
       - UN_FOLDER_0_DISABLE_RECURSION=true
       - UN_FOLDER_MOVE_BACK=true
     network_mode: host
