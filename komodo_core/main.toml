@@ -1704,10 +1704,10 @@ TRANSMISSION_RPC_PASSWORD = [[TRANSMISSION_RPC_PASSWORD]]
 ##
 
 [[stack]]
-name = "storage_unpackerr"
+name = "servarr_unpackerr"
 tags = ["sync"]
 [stack.config]
-server = "storage"
+server = "servarr"
 run_build = true
 poll_for_updates = true
 auto_update = true
@@ -1715,7 +1715,7 @@ auto_update_all_services = true
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 webhook_force_deploy = true
-run_directory = "storage/unpackerr"
+run_directory = "servarr/unpackerr"
 environment = """
 SONARR_API_KEY = [[SONARR_API_KEY]]
 RADARR_API_KEY = [[RADARR_API_KEY]]
