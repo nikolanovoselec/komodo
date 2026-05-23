@@ -61,7 +61,7 @@ services:
       deunhealth.restart.on.unhealthy: "true"
     restart: unless-stopped
     healthcheck: # https://github.com/qdm12/gluetun/issues/641#issuecomment-933856220
-      test: "curl -sf https://google.com  || exit 1"
+      test: "curl -sf http://localhost:8080/api/v2/app/version || exit 1"
       interval: 1m
       timeout: 10s
       retries: 3
