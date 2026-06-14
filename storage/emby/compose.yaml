@@ -1,6 +1,6 @@
 services:
   emby:
-    image: lscr.io/linuxserver/emby:4.9.5.0-ls282
+    image: lscr.io/linuxserver/emby:4.9.5.0-ls283
     container_name: storage_emby
     environment:
       - PUID=1026
