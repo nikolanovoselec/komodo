@@ -1,6 +1,6 @@
 services:
     pihole:
-      image: pihole/pihole:2026.05.0
+      image: pihole/pihole:2026.06.0
       container_name: storage_pihole
       #dns:
       #  - 100.64.0.2
