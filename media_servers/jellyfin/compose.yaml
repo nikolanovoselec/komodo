@@ -11,6 +11,7 @@ services:
       - UMASK=002
     volumes:
       - /docker/configs/jellyfin:/config
+      - /docker/configs/jellyfin/custom-cont-init.d:/custom-cont-init.d
       - /mnt/unas/Shows/:/data/tvshows
       - /mnt/unas/Movies/:/data/movies
       - /mnt/unas/Music/:/data/music
