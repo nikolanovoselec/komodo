@@ -6,10 +6,14 @@ services:
     environment:
       - TZ=Europe/Zurich
       - JELLYFIN_PublishedServerUrl=https://jellyfin.novoselec.ch/ #optional
+      - PUID=977
+      - PGID=988
+      - UMASK=002
     volumes:
       - /docker/configs/jellyfin:/config
-      - /mnt/video/tv shows/:/data/tvshows
-      - /mnt/video/movies/:/data/movies
+      - /mnt/unas/Shows/:/data/tvshows
+      - /mnt/unas/Movies/:/data/movies
+      - /mnt/unas/Music/:/data/music
 #    ports:
 #      - 8095:8096
 #      - 8920:8920 #optional
