@@ -1,6 +1,6 @@
 services:
     profilarr:
-        image: santiagosayshey/profilarr:v1.1.4
+        image: santiagosayshey/profilarr:v1.1.5
         container_name: servarr_profilarr
         #dns:
         #    - 100.64.0.2
