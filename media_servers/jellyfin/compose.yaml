@@ -1,6 +1,6 @@
 services:
   jellyfin:
-    image: lscr.io/linuxserver/jellyfin:10.11.11ubu2404-ls38
+    image: lscr.io/linuxserver/jellyfin:10.11.11ubu2404-ls39
     container_name: media_servers_jellyfin
     network_mode: host #for local/remote stream discovery
     environment:
