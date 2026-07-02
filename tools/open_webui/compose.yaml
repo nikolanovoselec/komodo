@@ -31,7 +31,7 @@ services:
       SEARXNG_QUERY_URL: http://searxng:8080/search?q=<query>
       SEARXNG_LANGUAGE: all
       DEFAULT_MODEL_METADATA: '{"capabilities":{"file_context":true,"vision":true,"file_upload":true,"web_search":true,"image_generation":false,"code_interpreter":false,"terminal":false,"citations":true,"status_updates":true,"builtin_tools":true},"defaultFeatureIds":["web_search"],"toolIds":["image_search"],"builtinTools":{"web_search":true,"image_generation":false,"code_interpreter":false,"memory":false,"chats":false,"notes":false,"knowledge":false,"channels":false,"tasks":false,"automations":false,"calendar":false}}'
-      DEFAULT_MODEL_PARAMS: '{"function_calling":"native","stream_response":true,"stream_delta_chunk_size":1}'
+      DEFAULT_MODEL_PARAMS: '{"function_calling":"native","stream_response":true,"stream_delta_chunk_size":1,"reasoning_format":"none","chat_template_kwargs":{"enable_thinking":false}}'
     command:
       - bash
       - -lc
@@ -85,6 +85,10 @@ services:
             "function_calling": "native",
             "stream_response": True,
             "stream_delta_chunk_size": 1,
+            "reasoning_format": "none",
+            "chat_template_kwargs": {
+                "enable_thinking": False,
+            },
         }
         updates = {
             "direct.enable": False,
@@ -207,11 +211,19 @@ services:
                 params["function_calling"] = "native"
                 params["stream_response"] = True
                 params["stream_delta_chunk_size"] = 1
+                params["reasoning_format"] = "none"
+                params["chat_template_kwargs"] = {"enable_thinking": False}
+
+                body["reasoning_format"] = "none"
+                chat_template_kwargs = body.setdefault("chat_template_kwargs", {})
+                chat_template_kwargs["enable_thinking"] = False
 
                 if isinstance(__metadata__, dict):
                     metadata_params = __metadata__.setdefault("params", {})
                     metadata_params["function_calling"] = "native"
                     metadata_params["stream_delta_chunk_size"] = 1
+                    metadata_params["reasoning_format"] = "none"
+                    metadata_params["chat_template_kwargs"] = {"enable_thinking": False}
 
                 features = body.setdefault("features", {})
                 features["web_search"] = True
