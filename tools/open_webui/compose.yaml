@@ -22,7 +22,7 @@ services:
       ENABLE_TAGS_GENERATION: "False"
       ENABLE_FOLLOW_UP_GENERATION: "False"
       WEBUI_SECRET_KEY: ${OPEN_WEBUI_SECRET_KEY}
-      WEBUI_NAME: Codeflare Open WebUI
+      WEBUI_NAME: Codeflare Inference Mesh
       CORS_ALLOW_ORIGIN: https://chat.codeflare.ch
       ENABLE_WEB_SEARCH: "True"
       WEB_SEARCH_ENGINE: searxng
@@ -40,6 +40,7 @@ services:
         python3 - <<'PY'
         import json
         import os
+        import shutil
         import sqlite3
         import textwrap
         import time
@@ -52,6 +53,45 @@ services:
         gateway_base_url = os.environ["OPENAI_API_BASE_URL"]
         gateway_api_key = os.environ["OPENAI_API_KEY"]
         searxng_query_url = os.getenv("SEARXNG_QUERY_URL", "http://searxng:8080/search?q=<query>")
+
+        env_file = "/app/backend/open_webui/env.py"
+        with open(env_file) as file:
+            env_content = file.read()
+        env_content = env_content.replace(
+            "WEBUI_NAME = os.getenv('WEBUI_NAME', 'Open WebUI')\n"
+            "if WEBUI_NAME != 'Open WebUI':\n"
+            "    WEBUI_NAME += ' (Open WebUI)'\n",
+            "WEBUI_NAME = os.getenv('WEBUI_NAME', 'Open WebUI')\n",
+        )
+        with open(env_file, "w") as file:
+            file.write(env_content)
+
+        branding_dir = "/app/backend/data/branding"
+        branding_files = {
+            "favicon.png": [
+                "/app/backend/open_webui/static/favicon.png",
+                "/app/build/static/favicon.png",
+                "/app/build/favicon.png",
+            ],
+            "favicon.svg": [
+                "/app/backend/open_webui/static/favicon.svg",
+                "/app/build/static/favicon.svg",
+            ],
+            "favicon.ico": [
+                "/app/backend/open_webui/static/favicon.ico",
+                "/app/build/static/favicon.ico",
+            ],
+            "logo.png": [
+                "/app/backend/open_webui/static/logo.png",
+                "/app/build/static/logo.png",
+            ],
+        }
+        for source_name, targets in branding_files.items():
+            source = os.path.join(branding_dir, source_name)
+            if os.path.isfile(source):
+                for target in targets:
+                    shutil.copyfile(source, target)
+
         model_metadata = {
             "capabilities": {
                 "file_context": True,
@@ -242,8 +282,7 @@ services:
             )
             for key, value in updates.items():
                 connection.execute(
-                    "INSERT INTO config (key, value, updated_at) VALUES (?, ?, ?) "
-                    "ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at",
+                    "INSERT OR IGNORE INTO config (key, value, updated_at) VALUES (?, ?, ?)",
                     (key, json.dumps(value), now),
                 )
             connection.commit()
@@ -291,11 +330,9 @@ services:
 
                 if table_exists("model"):
                     connection.execute(
-                        "INSERT INTO model (id, user_id, base_model_id, name, params, meta, is_active, updated_at, created_at) "
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) "
-                        "ON CONFLICT(id) DO UPDATE SET user_id = excluded.user_id, base_model_id = excluded.base_model_id, "
-                        "name = excluded.name, params = excluded.params, meta = excluded.meta, "
-                        "is_active = excluded.is_active, updated_at = excluded.updated_at",
+                        "INSERT OR IGNORE INTO model "
+                        "(id, user_id, base_model_id, name, params, meta, is_active, updated_at, created_at) "
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         (
                             model_id,
                             admin_user_id,
