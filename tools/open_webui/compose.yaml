@@ -38,7 +38,7 @@ services:
       M365_MCP_OAUTH_CLIENT_ID: ${M365_MCP_OAUTH_CLIENT_ID:-}
       M365_MCP_OAUTH_CLIENT_SECRET: ${M365_MCP_OAUTH_CLIENT_SECRET:-}
       M365_MCP_OAUTH_SCOPE: ${M365_MCP_OAUTH_SCOPE:-api://e8c77dc2-69b3-43f4-bc51-3213c9d915b4/.default}
-      DEFAULT_MODEL_METADATA: '{"capabilities":{"file_context":true,"vision":true,"file_upload":true,"web_search":true,"image_generation":false,"code_interpreter":false,"terminal":false,"citations":true,"status_updates":true,"builtin_tools":true},"defaultFeatureIds":["web_search"],"toolIds":["image_search"],"builtinTools":{"web_search":true,"image_generation":false,"code_interpreter":false,"memory":false,"chats":false,"notes":false,"knowledge":false,"channels":false,"tasks":false,"automations":false,"calendar":false}}'
+      DEFAULT_MODEL_METADATA: '{"capabilities":{"file_context":true,"vision":true,"file_upload":true,"web_search":true,"image_generation":false,"code_interpreter":false,"terminal":false,"citations":true,"status_updates":true,"builtin_tools":true},"defaultFeatureIds":["web_search"],"toolIds":["image_search","server:mcp:github"],"builtinTools":{"web_search":true,"image_generation":false,"code_interpreter":false,"memory":false,"chats":false,"notes":false,"knowledge":false,"channels":false,"tasks":false,"automations":false,"calendar":false}}'
       DEFAULT_MODEL_PARAMS: '{"function_calling":"native","stream_response":true,"stream_delta_chunk_size":1,"reasoning_format":"none","chat_template_kwargs":{"enable_thinking":false}}'
     command:
       - bash
@@ -192,7 +192,7 @@ services:
                 "builtin_tools": True,
             },
             "defaultFeatureIds": ["web_search"],
-            "toolIds": [image_search_tool_id],
+            "toolIds": [image_search_tool_id, "server:mcp:github"],
             "builtinTools": {
                 "web_search": True,
                 "image_generation": False,
@@ -427,6 +427,17 @@ services:
 
 
         class Filter:
+            GITHUB_GUIDANCE = """GitHub MCP defaults:
+        - Canonical owner/user: nikolanovoselec.
+        - If the user writes nikolanovoslec, treat it as a typo for nikolanovoselec.
+        - To list the user's repositories, call github_search_repositories with query `owner:nikolanovoselec`, perPage 100, minimal_output true.
+        - For known repository tasks, do not use global repository search. Use the exact owner `nikolanovoselec` and the exact repo name.
+        - Known repos include: codeflare, komodo, codeflare-inference-mesh.
+        - To list open issues in a repo, call github_list_issues with owner `nikolanovoselec`, repo, state `OPEN`, and perPage 100.
+        - To read one issue, call github_issue_read with method `get`, owner `nikolanovoselec`, repo, and issue_number.
+        - To list open pull requests, call github_list_pull_requests with owner `nikolanovoselec`, repo, state `open`, and perPage 100.
+        - Do not say GitHub access is unavailable when GitHub MCP tools are present. Use the GitHub MCP tools first."""
+
             def inlet(self, body: dict, __metadata__: dict = None) -> dict:
                 if body.get("model") != "dynamic/freestyler":
                     return body
@@ -456,6 +467,28 @@ services:
                 tool_ids = body.setdefault("tool_ids", [])
                 if "image_search" not in tool_ids:
                     tool_ids.append("image_search")
+                if "server:mcp:github" not in tool_ids:
+                    tool_ids.append("server:mcp:github")
+
+                messages = body.setdefault("messages", [])
+                for message in messages:
+                    content = message.get("content")
+                    if isinstance(content, str):
+                        message["content"] = content.replace("nikolanovoslec", "nikolanovoselec")
+
+                if messages:
+                    first_message = messages[0]
+                    if first_message.get("role") == "system":
+                        content = first_message.get("content") or ""
+                        if "GitHub MCP defaults:" not in content:
+                            first_message["content"] = f"{content}\n\n{self.GITHUB_GUIDANCE}".strip()
+                    else:
+                        messages.insert(0, {"role": "system", "content": self.GITHUB_GUIDANCE})
+
+                if isinstance(__metadata__, dict):
+                    metadata_tool_ids = __metadata__.setdefault("tool_ids", [])
+                    if "server:mcp:github" not in metadata_tool_ids:
+                        metadata_tool_ids.append("server:mcp:github")
 
                 return body
         ''').strip()
