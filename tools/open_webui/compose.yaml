@@ -15,7 +15,7 @@ services:
       OPENAI_API_BASE_URLS: ${CLOUDFLARE_AI_GATEWAY_BASE_URL}
       OPENAI_API_KEY: ${CLOUDFLARE_AI_GATEWAY_API_KEY}
       OPENAI_API_KEYS: ${CLOUDFLARE_AI_GATEWAY_API_KEY}
-      OPENAI_API_CONFIGS: '{"0":{"enable":true,"model_ids":["dynamic/freestyler"],"connection_type":"openai"}}'
+      OPENAI_API_CONFIGS: '{"0":{"enable":true,"model_ids":["dynamic/freestyler"],"connection_type":"openai","provider":"llama.cpp"}}'
       DEFAULT_MODELS: dynamic/freestyler
       TASK_MODEL_EXTERNAL: dynamic/freestyler
       WEBUI_SECRET_KEY: ${OPEN_WEBUI_SECRET_KEY}
@@ -27,7 +27,7 @@ services:
       SEARXNG_QUERY_URL: http://searxng:8080/search?q=<query>
       SEARXNG_LANGUAGE: all
       DEFAULT_MODEL_METADATA: '{"capabilities":{"file_context":true,"vision":true,"file_upload":true,"web_search":true,"image_generation":false,"code_interpreter":false,"terminal":false,"citations":true,"status_updates":true,"builtin_tools":true},"defaultFeatureIds":["web_search"],"toolIds":["image_search"],"builtinTools":{"web_search":true,"image_generation":false,"code_interpreter":false,"memory":false,"chats":false,"notes":false,"knowledge":false,"channels":false,"tasks":false,"automations":false,"calendar":false}}'
-      DEFAULT_MODEL_PARAMS: '{"function_calling":"native"}'
+      DEFAULT_MODEL_PARAMS: '{"function_calling":"native","stream_response":true,"stream_delta_chunk_size":1}'
     command:
       - bash
       - -lc
@@ -77,7 +77,11 @@ services:
                 "calendar": False,
             },
         }
-        model_params = {"function_calling": "native"}
+        model_params = {
+            "function_calling": "native",
+            "stream_response": True,
+            "stream_delta_chunk_size": 1,
+        }
         updates = {
             "direct.enable": False,
             "ollama.enable": False,
@@ -88,7 +92,8 @@ services:
                 "0": {
                     "enable": True,
                     "model_ids": ["dynamic/freestyler"],
-                    "connection_type": "openai"
+                    "connection_type": "openai",
+                    "provider": "llama.cpp",
                 }
             },
             "models.base_models_cache": False,
@@ -193,10 +198,13 @@ services:
 
                 params = body.setdefault("params", {})
                 params["function_calling"] = "native"
+                params["stream_response"] = True
+                params["stream_delta_chunk_size"] = 1
 
                 if isinstance(__metadata__, dict):
                     metadata_params = __metadata__.setdefault("params", {})
                     metadata_params["function_calling"] = "native"
+                    metadata_params["stream_delta_chunk_size"] = 1
 
                 features = body.setdefault("features", {})
                 features["web_search"] = True
