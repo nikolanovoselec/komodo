@@ -20,6 +20,7 @@ services:
       TASK_MODEL_EXTERNAL: dynamic/freestyler
       WEBUI_SECRET_KEY: ${OPEN_WEBUI_SECRET_KEY}
       WEBUI_NAME: Codeflare Open WebUI
+      CORS_ALLOW_ORIGIN: https://chat.codeflare.ch
       ENABLE_WEB_SEARCH: "True"
       WEB_SEARCH_ENGINE: searxng
       WEB_SEARCH_RESULT_COUNT: "5"
