@@ -117,12 +117,24 @@ services:
                     shutil.copyfile(source, target)
 
         custom_css = os.path.join(branding_dir, "custom.css")
+        custom_css_targets = [
+            "/app/backend/open_webui/static/custom.css",
+            "/app/build/static/custom.css",
+        ]
         if os.path.isfile(custom_css):
-            shutil.copyfile(custom_css, "/app/backend/open_webui/static/custom.css")
+            for target in custom_css_targets:
+                shutil.copyfile(custom_css, target)
         else:
-            with open("/app/backend/open_webui/static/custom.css", "w") as file:
-                file.write(
-                    """
+            for target in custom_css_targets:
+                with open(target, "w") as file:
+                    file.write(
+                        """
+        img.sidebar-new-chat-icon {
+            content: url('/static/favicon.svg?v=codeflare');
+            border-radius: 3px !important;
+        }
+
+        #sidebar-webui-name,
         #auth-login-card .text-2xl.font-medium {
             background: linear-gradient(96deg, #ff8a3d 0%, #ff5c3c 52%, #ff3f7c 100%);
             -webkit-background-clip: text;
@@ -130,7 +142,7 @@ services:
             color: transparent !important;
         }
         """
-                )
+                    )
 
         model_metadata = {
             "capabilities": {
