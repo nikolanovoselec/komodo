@@ -22,7 +22,7 @@ services:
       ENABLE_TAGS_GENERATION: "False"
       ENABLE_FOLLOW_UP_GENERATION: "False"
       WEBUI_SECRET_KEY: ${OPEN_WEBUI_SECRET_KEY}
-      WEBUI_NAME: Codeflare Inference Mesh
+      WEBUI_NAME: Codeflare Mesh
       CORS_ALLOW_ORIGIN: https://chat.codeflare.ch
       ENABLE_WEB_SEARCH: "True"
       WEB_SEARCH_ENGINE: searxng
