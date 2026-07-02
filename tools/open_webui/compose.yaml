@@ -13,9 +13,9 @@ services:
       OPENAI_API_BASE_URLS: ${CLOUDFLARE_AI_GATEWAY_BASE_URL}
       OPENAI_API_KEY: ${CLOUDFLARE_AI_GATEWAY_API_KEY}
       OPENAI_API_KEYS: ${CLOUDFLARE_AI_GATEWAY_API_KEY}
-      OPENAI_API_CONFIGS: '{"0":{"enable":true,"model_ids":["freestyler"],"connection_type":"openai"}}'
-      DEFAULT_MODELS: freestyler
-      TASK_MODEL_EXTERNAL: freestyler
+      OPENAI_API_CONFIGS: '{"0":{"enable":true,"model_ids":["dynamic/freestyler"],"connection_type":"openai"}}'
+      DEFAULT_MODELS: dynamic/freestyler
+      TASK_MODEL_EXTERNAL: dynamic/freestyler
       WEBUI_SECRET_KEY: ${OPEN_WEBUI_SECRET_KEY}
       WEBUI_NAME: Codeflare Open WebUI
     restart: unless-stopped
