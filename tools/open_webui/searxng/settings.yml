@@ -1,0 +1,16 @@
+use_default_settings: true
+
+server:
+  bind_address: "0.0.0.0"
+  port: 8080
+  secret_key: "codeflare-open-webui-searxng"
+  limiter: false
+  image_proxy: false
+
+search:
+  safe_search: 1
+  autocomplete: ""
+  default_lang: "all"
+  formats:
+    - html
+    - json

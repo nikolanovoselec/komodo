@@ -2,6 +2,8 @@ services:
   open-webui:
     image: ghcr.io/open-webui/open-webui:v0.10.2
     container_name: tools_open_webui
+    depends_on:
+      - searxng
     ports:
       - "3001:8080"
     volumes:
@@ -18,6 +20,14 @@ services:
       TASK_MODEL_EXTERNAL: dynamic/freestyler
       WEBUI_SECRET_KEY: ${OPEN_WEBUI_SECRET_KEY}
       WEBUI_NAME: Codeflare Open WebUI
+      ENABLE_WEB_SEARCH: "True"
+      WEB_SEARCH_ENGINE: searxng
+      WEB_SEARCH_RESULT_COUNT: "5"
+      WEB_SEARCH_CONCURRENT_REQUESTS: "10"
+      SEARXNG_QUERY_URL: http://searxng:8080/search?q=<query>
+      SEARXNG_LANGUAGE: all
+      DEFAULT_MODEL_METADATA: '{"capabilities":{"file_context":true,"vision":true,"file_upload":true,"web_search":true,"image_generation":false,"code_interpreter":false,"terminal":false,"citations":true,"status_updates":true,"builtin_tools":true},"defaultFeatureIds":["web_search"],"toolIds":["image_search"],"builtinTools":{"web_search":true,"image_generation":false,"code_interpreter":false,"memory":false,"chats":false,"notes":false,"knowledge":false,"channels":false,"tasks":false,"automations":false,"calendar":false}}'
+      DEFAULT_MODEL_PARAMS: '{"function_calling":"native"}'
     command:
       - bash
       - -lc
@@ -26,10 +36,44 @@ services:
         import json
         import os
         import sqlite3
+        import textwrap
         import time
 
         database = "/app/backend/data/webui.db"
         now = int(time.time())
+        model_id = "dynamic/freestyler"
+        image_search_tool_id = "image_search"
+        searxng_query_url = os.getenv("SEARXNG_QUERY_URL", "http://searxng:8080/search?q=<query>")
+        model_metadata = {
+            "capabilities": {
+                "file_context": True,
+                "vision": True,
+                "file_upload": True,
+                "web_search": True,
+                "image_generation": False,
+                "code_interpreter": False,
+                "terminal": False,
+                "citations": True,
+                "status_updates": True,
+                "builtin_tools": True,
+            },
+            "defaultFeatureIds": ["web_search"],
+            "toolIds": [image_search_tool_id],
+            "builtinTools": {
+                "web_search": True,
+                "image_generation": False,
+                "code_interpreter": False,
+                "memory": False,
+                "chats": False,
+                "notes": False,
+                "knowledge": False,
+                "channels": False,
+                "tasks": False,
+                "automations": False,
+                "calendar": False,
+            },
+        }
+        model_params = {"function_calling": "native"}
         updates = {
             "direct.enable": False,
             "ollama.enable": False,
@@ -44,7 +88,93 @@ services:
                 }
             },
             "models.base_models_cache": False,
+            "models.default_metadata": model_metadata,
+            "models.default_params": model_params,
+            "web.search.enable": True,
+            "web.search.engine": "searxng",
+            "web.search.result_count": 5,
+            "web.search.concurrent_requests": 10,
+            "web.search.searxng_query_url": searxng_query_url,
+            "web.search.searxng_language": "all",
+            "web.search.confirmation.enable": False,
         }
+        image_search_tool_content = textwrap.dedent(r'''
+        import json
+        import urllib.parse
+        import urllib.request
+
+
+        class Tools:
+            def search_images(self, query: str, count: int = 5) -> str:
+                """
+                Search the web for images and return direct image URLs, thumbnail URLs, source pages, and metadata.
+                :param query: Image search query.
+                :param count: Maximum number of image results to return.
+                :return: JSON object containing image search results.
+                """
+                count = max(1, min(int(count or 5), 10))
+                params = urllib.parse.urlencode(
+                    {
+                        "q": query,
+                        "categories": "images",
+                        "format": "json",
+                        "safesearch": "1",
+                        "language": "all",
+                        "image_proxy": "0",
+                    }
+                )
+                url = f"http://searxng:8080/search?{params}"
+                request = urllib.request.Request(
+                    url,
+                    headers={"User-Agent": "Open WebUI image_search tool"},
+                )
+
+                with urllib.request.urlopen(request, timeout=20) as response:
+                    payload = json.loads(response.read().decode("utf-8"))
+
+                results = []
+                for item in payload.get("results", [])[:count]:
+                    image_url = item.get("img_src") or item.get("thumbnail_src") or item.get("thumbnail") or ""
+                    thumbnail_url = item.get("thumbnail_src") or item.get("thumbnail") or image_url
+                    title = item.get("title") or item.get("source") or query
+                    results.append(
+                        {
+                            "title": title,
+                            "source_page_url": item.get("url", ""),
+                            "image_url": image_url,
+                            "thumbnail_url": thumbnail_url,
+                            "resolution": item.get("resolution", ""),
+                            "format": item.get("img_format", ""),
+                            "source": item.get("source") or item.get("engine", ""),
+                            "markdown_preview": f"![{title}]({thumbnail_url or image_url})"
+                            if (thumbnail_url or image_url)
+                            else "",
+                        }
+                    )
+
+                return json.dumps({"query": query, "results": results}, ensure_ascii=False)
+        ''').strip()
+        image_search_tool_specs = [
+            {
+                "name": "search_images",
+                "description": "Search the web for images and return direct image URLs, thumbnail URLs, source pages, and metadata.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "Image search query.",
+                        },
+                        "count": {
+                            "type": "integer",
+                            "description": "Maximum number of image results to return, from 1 to 10.",
+                            "default": 5,
+                        },
+                    },
+                    "required": ["query"],
+                },
+            }
+        ]
 
         with sqlite3.connect(database) as connection:
             connection.execute(
@@ -57,7 +187,103 @@ services:
                     (key, json.dumps(value), now),
                 )
             connection.commit()
+
+            def table_exists(table_name):
+                row = connection.execute(
+                    "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?",
+                    (table_name,),
+                ).fetchone()
+                return row is not None
+
+            admin_user = None
+            if table_exists("user"):
+                admin_user = connection.execute(
+                    'SELECT id FROM "user" WHERE role = ? ORDER BY created_at ASC LIMIT 1',
+                    ("admin",),
+                ).fetchone()
+
+            if admin_user and table_exists("tool"):
+                admin_user_id = admin_user[0]
+                connection.execute(
+                    "INSERT INTO tool (id, user_id, name, content, specs, meta, valves, updated_at, created_at) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                    "ON CONFLICT(id) DO UPDATE SET user_id = excluded.user_id, name = excluded.name, "
+                    "content = excluded.content, specs = excluded.specs, meta = excluded.meta, "
+                    "valves = excluded.valves, updated_at = excluded.updated_at",
+                    (
+                        image_search_tool_id,
+                        admin_user_id,
+                        "Image Search",
+                        image_search_tool_content,
+                        json.dumps(image_search_tool_specs),
+                        json.dumps(
+                            {
+                                "description": "Search SearXNG image results and return image URLs.",
+                                "manifest": {},
+                                "has_user_valves": False,
+                            }
+                        ),
+                        json.dumps({}),
+                        now,
+                        now,
+                    ),
+                )
+
+                if table_exists("model"):
+                    connection.execute(
+                        "INSERT INTO model (id, user_id, base_model_id, name, params, meta, is_active, updated_at, created_at) "
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                        "ON CONFLICT(id) DO UPDATE SET user_id = excluded.user_id, base_model_id = excluded.base_model_id, "
+                        "name = excluded.name, params = excluded.params, meta = excluded.meta, "
+                        "is_active = excluded.is_active, updated_at = excluded.updated_at",
+                        (
+                            model_id,
+                            admin_user_id,
+                            None,
+                            model_id,
+                            json.dumps(model_params),
+                            json.dumps(model_metadata),
+                            1,
+                            now,
+                            now,
+                        ),
+                    )
+
+                if table_exists("access_grant"):
+                    grants = [
+                        ("open_webui_image_search_public_read", "tool", image_search_tool_id),
+                        ("open_webui_freestyler_public_read", "model", model_id),
+                    ]
+                    for grant_id, resource_type, resource_id in grants:
+                        connection.execute(
+                            "INSERT OR IGNORE INTO access_grant "
+                            "(id, resource_type, resource_id, principal_type, principal_id, permission, created_at) "
+                            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                            (grant_id, resource_type, resource_id, "user", "*", "read", now),
+                        )
+
+                connection.commit()
         PY
         exec bash start.sh
     restart: unless-stopped
-    network_mode: bridge
+
+  searxng:
+    image: docker.io/searxng/searxng:latest
+    container_name: tools_open_webui_searxng
+    volumes:
+      - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
+    environment:
+      SEARXNG_BASE_URL: http://searxng:8080/
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - DAC_OVERRIDE
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+        max-file: "1"
