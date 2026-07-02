@@ -1882,6 +1882,27 @@ OPEN_NOTEBOOK_SURREAL_PASSWORD = [[OPEN_NOTEBOOK_SURREAL_PASSWORD]]
 ##
 
 [[stack]]
+name = "tools_open_webui"
+tags = ["sync"]
+[stack.config]
+server = "tools"
+run_build = true
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+git_account = "nikolanovoselec"
+repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
+run_directory = "tools/open_webui"
+environment = """
+CLOUDFLARE_AI_GATEWAY_BASE_URL = [[CLOUDFLARE_AI_GATEWAY_BASE_URL]]
+CLOUDFLARE_AI_GATEWAY_API_KEY = [[CLOUDFLARE_AI_GATEWAY_API_KEY]]
+OPEN_WEBUI_SECRET_KEY = [[OPEN_WEBUI_SECRET_KEY]]
+"""
+
+##
+
+[[stack]]
 name = "tools_paperless_ngx"
 tags = ["sync"]
 [stack.config]

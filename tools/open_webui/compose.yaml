@@ -1,0 +1,22 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:v0.10.1
+    container_name: tools_open_webui
+    ports:
+      - "3001:8080"
+    volumes:
+      - /docker/configs/open_webui/data:/app/backend/data
+    environment:
+      ENABLE_OLLAMA_API: "False"
+      ENABLE_OPENAI_API: "True"
+      OPENAI_API_BASE_URL: ${CLOUDFLARE_AI_GATEWAY_BASE_URL}
+      OPENAI_API_BASE_URLS: ${CLOUDFLARE_AI_GATEWAY_BASE_URL}
+      OPENAI_API_KEY: ${CLOUDFLARE_AI_GATEWAY_API_KEY}
+      OPENAI_API_KEYS: ${CLOUDFLARE_AI_GATEWAY_API_KEY}
+      OPENAI_API_CONFIGS: '{"0":{"enable":true,"model_ids":["freestyler"],"connection_type":"openai"}}'
+      DEFAULT_MODELS: freestyler
+      TASK_MODEL_EXTERNAL: freestyler
+      WEBUI_SECRET_KEY: ${OPEN_WEBUI_SECRET_KEY}
+      WEBUI_NAME: Codeflare Open WebUI
+    restart: unless-stopped
+    network_mode: bridge
