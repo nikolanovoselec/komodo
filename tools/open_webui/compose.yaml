@@ -18,6 +18,9 @@ services:
       OPENAI_API_CONFIGS: '{"0":{"enable":true,"model_ids":["dynamic/freestyler"],"connection_type":"openai","provider":"llama.cpp"}}'
       DEFAULT_MODELS: dynamic/freestyler
       TASK_MODEL_EXTERNAL: dynamic/freestyler
+      ENABLE_TITLE_GENERATION: "False"
+      ENABLE_TAGS_GENERATION: "False"
+      ENABLE_FOLLOW_UP_GENERATION: "False"
       WEBUI_SECRET_KEY: ${OPEN_WEBUI_SECRET_KEY}
       WEBUI_NAME: Codeflare Open WebUI
       CORS_ALLOW_ORIGIN: https://chat.codeflare.ch
@@ -100,6 +103,9 @@ services:
             "models.base_models_cache": False,
             "models.default_metadata": model_metadata,
             "models.default_params": model_params,
+            "task.title.enable": False,
+            "task.tags.enable": False,
+            "task.follow_up.enable": False,
             "web.search.enable": True,
             "web.search.engine": "searxng",
             "web.search.result_count": 5,
