@@ -22,7 +22,8 @@ services:
       ENABLE_TAGS_GENERATION: "False"
       ENABLE_FOLLOW_UP_GENERATION: "False"
       WEBUI_SECRET_KEY: ${OPEN_WEBUI_SECRET_KEY}
-      WEBUI_NAME: Codeflare Mesh
+      WEBUI_NAME: Codeflare Chat
+      WEBUI_URL: https://chat.codeflare.ch
       CORS_ALLOW_ORIGIN: https://chat.codeflare.ch
       ENABLE_WEB_SEARCH: "True"
       WEB_SEARCH_ENGINE: searxng
@@ -30,6 +31,13 @@ services:
       WEB_SEARCH_CONCURRENT_REQUESTS: "10"
       SEARXNG_QUERY_URL: http://searxng:8080/search?q=<query>
       SEARXNG_LANGUAGE: all
+      GITHUB_MCP_OAUTH_CLIENT_ID: ${GITHUB_MCP_OAUTH_CLIENT_ID:-}
+      GITHUB_MCP_OAUTH_CLIENT_SECRET: ${GITHUB_MCP_OAUTH_CLIENT_SECRET:-}
+      GITHUB_MCP_OAUTH_SCOPE: ${GITHUB_MCP_OAUTH_SCOPE:-repo read:org read:user user:email workflow}
+      GITHUB_MCP_TOOLSETS: ${GITHUB_MCP_TOOLSETS:-repos,issues,pull_requests,actions,code_security}
+      M365_MCP_OAUTH_CLIENT_ID: ${M365_MCP_OAUTH_CLIENT_ID:-}
+      M365_MCP_OAUTH_CLIENT_SECRET: ${M365_MCP_OAUTH_CLIENT_SECRET:-}
+      M365_MCP_OAUTH_SCOPE: ${M365_MCP_OAUTH_SCOPE:-api://e8c77dc2-69b3-43f4-bc51-3213c9d915b4/.default}
       DEFAULT_MODEL_METADATA: '{"capabilities":{"file_context":true,"vision":true,"file_upload":true,"web_search":true,"image_generation":false,"code_interpreter":false,"terminal":false,"citations":true,"status_updates":true,"builtin_tools":true},"defaultFeatureIds":["web_search"],"toolIds":["image_search"],"builtinTools":{"web_search":true,"image_generation":false,"code_interpreter":false,"memory":false,"chats":false,"notes":false,"knowledge":false,"channels":false,"tasks":false,"automations":false,"calendar":false}}'
       DEFAULT_MODEL_PARAMS: '{"function_calling":"native","stream_response":true,"stream_delta_chunk_size":1,"reasoning_format":"none","chat_template_kwargs":{"enable_thinking":false}}'
     command:
@@ -38,6 +46,7 @@ services:
       - |
         set -euo pipefail
         python3 - <<'PY'
+        import asyncio
         import json
         import os
         import re
@@ -54,6 +63,12 @@ services:
         gateway_base_url = os.environ["OPENAI_API_BASE_URL"]
         gateway_api_key = os.environ["OPENAI_API_KEY"]
         searxng_query_url = os.getenv("SEARXNG_QUERY_URL", "http://searxng:8080/search?q=<query>")
+        webui_url = os.getenv("WEBUI_URL", "https://chat.codeflare.ch").rstrip("/")
+        public_read_grant = {
+            "principal_type": "user",
+            "principal_id": "*",
+            "permission": "read",
+        }
 
         env_file = "/app/backend/open_webui/env.py"
         with open(env_file) as file:
@@ -201,7 +216,105 @@ services:
                 "enable_thinking": False,
             },
         }
+
+        async def build_oauth_client_info_blob(server_id, server_url, oauth_client_id, oauth_client_secret, oauth_scope):
+            if not oauth_client_id or not oauth_client_secret:
+                return None
+
+            try:
+                from open_webui.utils.oauth import encrypt_data, get_oauth_client_info_with_static_credentials
+
+                class RegistrationRequest:
+                    base_url = f"{webui_url}/"
+
+                oauth_client_info = await get_oauth_client_info_with_static_credentials(
+                    RegistrationRequest(),
+                    f"mcp:{server_id}",
+                    server_url,
+                    oauth_client_id=oauth_client_id,
+                    oauth_client_secret=oauth_client_secret,
+                    oauth_scope=oauth_scope,
+                )
+                return encrypt_data(oauth_client_info.model_dump(mode="json"))
+            except Exception as exc:
+                print(f"WARNING: failed to build OAuth client metadata for MCP server {server_id}: {exc}")
+                return None
+
+        async def build_mcp_connections():
+            github_oauth_info = await build_oauth_client_info_blob(
+                "github",
+                "https://api.githubcopilot.com/mcp/",
+                os.getenv("GITHUB_MCP_OAUTH_CLIENT_ID", "").strip(),
+                os.getenv("GITHUB_MCP_OAUTH_CLIENT_SECRET", "").strip(),
+                os.getenv("GITHUB_MCP_OAUTH_SCOPE", "").strip(),
+            )
+            m365_oauth_info = await build_oauth_client_info_blob(
+                "m365",
+                "https://mcp.svc.cloud.microsoft/enterprise",
+                os.getenv("M365_MCP_OAUTH_CLIENT_ID", "").strip(),
+                os.getenv("M365_MCP_OAUTH_CLIENT_SECRET", "").strip(),
+                os.getenv("M365_MCP_OAUTH_SCOPE", "").strip(),
+            )
+
+            github_info = {
+                "id": "github",
+                "name": "GitHub",
+                "description": "GitHub remote MCP server with per-user OAuth authentication.",
+                "oauth_scope": os.getenv("GITHUB_MCP_OAUTH_SCOPE", "").strip(),
+                "oauth_resource_parameter": "omit",
+            }
+            if github_oauth_info:
+                github_info["oauth_client_info"] = github_oauth_info
+
+            m365_info = {
+                "id": "m365",
+                "name": "Microsoft 365",
+                "description": "Microsoft MCP Server for Enterprise with delegated Microsoft 365 OAuth authentication.",
+                "oauth_scope": os.getenv("M365_MCP_OAUTH_SCOPE", "").strip(),
+                "oauth_resource_parameter": "auto",
+            }
+            if m365_oauth_info:
+                m365_info["oauth_client_info"] = m365_oauth_info
+
+            return [
+                {
+                    "type": "mcp",
+                    "url": "https://api.githubcopilot.com/mcp/",
+                    "spec_type": "url",
+                    "spec": "",
+                    "path": "openapi.json",
+                    "auth_type": "oauth_2.1_static",
+                    "headers": {
+                        "X-MCP-Toolsets": os.getenv("GITHUB_MCP_TOOLSETS", "").strip(),
+                    },
+                    "key": "",
+                    "config": {
+                        "enable": True,
+                        "access_grants": [public_read_grant],
+                    },
+                    "info": github_info,
+                },
+                {
+                    "type": "mcp",
+                    "url": "https://mcp.svc.cloud.microsoft/enterprise",
+                    "spec_type": "url",
+                    "spec": "",
+                    "path": "openapi.json",
+                    "auth_type": "oauth_2.1_static",
+                    "headers": {},
+                    "key": "",
+                    "config": {
+                        "enable": True,
+                        "access_grants": [public_read_grant],
+                    },
+                    "info": m365_info,
+                },
+            ]
+
+        mcp_connections = asyncio.run(build_mcp_connections())
+
         updates = {
+            "webui.url": webui_url,
             "direct.enable": False,
             "ollama.enable": False,
             "openai.enable": True,
@@ -356,6 +469,66 @@ services:
                     "INSERT OR IGNORE INTO config (key, value, updated_at) VALUES (?, ?, ?)",
                     (key, json.dumps(value), now),
                 )
+            connection.commit()
+
+            existing_connections_row = connection.execute(
+                "SELECT value FROM config WHERE key = ?",
+                ("tool_server.connections",),
+            ).fetchone()
+            try:
+                existing_connections = json.loads(existing_connections_row[0]) if existing_connections_row else []
+            except Exception:
+                existing_connections = []
+
+            if not isinstance(existing_connections, list):
+                existing_connections = []
+
+            desired_by_id = {
+                (server.get("info") or {}).get("id"): server
+                for server in mcp_connections
+                if (server.get("info") or {}).get("id")
+            }
+            merged_connections = []
+            seen_connection_ids = set()
+            for existing_connection in existing_connections:
+                existing_info = existing_connection.get("info") or {}
+                connection_id = existing_info.get("id")
+                desired_connection = desired_by_id.get(connection_id)
+
+                if desired_connection:
+                    desired_info = desired_connection.get("info") or {}
+                    if not desired_info.get("oauth_client_info") and existing_info.get("oauth_client_info"):
+                        desired_info = {
+                            **desired_info,
+                            "oauth_client_info": existing_info["oauth_client_info"],
+                        }
+
+                    merged_connections.append(
+                        {
+                            **existing_connection,
+                            **desired_connection,
+                            "config": {
+                                **(existing_connection.get("config") or {}),
+                                **(desired_connection.get("config") or {}),
+                            },
+                            "info": {
+                                **existing_info,
+                                **desired_info,
+                            },
+                        }
+                    )
+                    seen_connection_ids.add(connection_id)
+                else:
+                    merged_connections.append(existing_connection)
+
+            for connection_id, desired_connection in desired_by_id.items():
+                if connection_id not in seen_connection_ids:
+                    merged_connections.append(desired_connection)
+
+            connection.execute(
+                "INSERT OR REPLACE INTO config (key, value, updated_at) VALUES (?, ?, ?)",
+                ("tool_server.connections", json.dumps(merged_connections), now),
+            )
             connection.commit()
 
             def table_exists(table_name):
