@@ -40,6 +40,7 @@ services:
         python3 - <<'PY'
         import json
         import os
+        import re
         import shutil
         import sqlite3
         import textwrap
@@ -130,8 +131,14 @@ services:
                     file.write(
                         """
         img.sidebar-new-chat-icon {
-            content: url('/static/favicon.svg?v=codeflare');
+            width: 1.5rem !important;
+            height: 1.5rem !important;
+            box-sizing: border-box !important;
+            padding-left: 1.5rem !important;
+            overflow: hidden !important;
             border-radius: 3px !important;
+            background: linear-gradient(96deg, #ff8a3d 0%, #ff5c3c 52%, #ff3f7c 100%) !important;
+            box-shadow: 0 0 14px rgba(255, 92, 60, 0.45) !important;
         }
 
         #sidebar-webui-name,
@@ -143,6 +150,18 @@ services:
         }
         """
                     )
+
+        index_file = "/app/build/index.html"
+        if os.path.isfile(index_file):
+            with open(index_file) as file:
+                index_content = file.read()
+            index_content = re.sub(
+                r'href="/static/custom\.css(?:\?v=[^"]*)?"',
+                'href="/static/custom.css?v=codeflare-mark-20260702"',
+                index_content,
+            )
+            with open(index_file, "w") as file:
+                file.write(index_content)
 
         model_metadata = {
             "capabilities": {
