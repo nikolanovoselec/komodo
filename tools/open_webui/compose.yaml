@@ -32,6 +32,7 @@ services:
       - bash
       - -lc
       - |
+        set -euo pipefail
         python3 - <<'PY'
         import json
         import os
@@ -43,6 +44,9 @@ services:
         now = int(time.time())
         model_id = "dynamic/freestyler"
         image_search_tool_id = "image_search"
+        force_tooling_function_id = "force_freestyler_tooling"
+        gateway_base_url = os.environ["OPENAI_API_BASE_URL"]
+        gateway_api_key = os.environ["OPENAI_API_KEY"]
         searxng_query_url = os.getenv("SEARXNG_QUERY_URL", "http://searxng:8080/search?q=<query>")
         model_metadata = {
             "capabilities": {
@@ -78,8 +82,8 @@ services:
             "direct.enable": False,
             "ollama.enable": False,
             "openai.enable": True,
-            "openai.api_base_urls": [os.environ["CLOUDFLARE_AI_GATEWAY_BASE_URL"]],
-            "openai.api_keys": [os.environ["CLOUDFLARE_AI_GATEWAY_API_KEY"]],
+            "openai.api_base_urls": [gateway_base_url],
+            "openai.api_keys": [gateway_api_key],
             "openai.api_configs": {
                 "0": {
                     "enable": True,
@@ -175,6 +179,35 @@ services:
                 },
             }
         ]
+        force_tooling_function_content = textwrap.dedent(r'''
+        """
+        title: Force Freestyler Tooling
+        version: 1.0.0
+        """
+
+
+        class Filter:
+            def inlet(self, body: dict, __metadata__: dict = None) -> dict:
+                if body.get("model") != "dynamic/freestyler":
+                    return body
+
+                params = body.setdefault("params", {})
+                params["function_calling"] = "native"
+
+                if isinstance(__metadata__, dict):
+                    metadata_params = __metadata__.setdefault("params", {})
+                    metadata_params["function_calling"] = "native"
+
+                features = body.setdefault("features", {})
+                features["web_search"] = True
+                features["image_generation"] = False
+
+                tool_ids = body.setdefault("tool_ids", [])
+                if "image_search" not in tool_ids:
+                    tool_ids.append("image_search")
+
+                return body
+        ''').strip()
 
         with sqlite3.connect(database) as connection:
             connection.execute(
@@ -261,6 +294,36 @@ services:
                             "VALUES (?, ?, ?, ?, ?, ?, ?)",
                             (grant_id, resource_type, resource_id, "user", "*", "read", now),
                         )
+
+                if table_exists("function"):
+                    connection.execute(
+                        "INSERT INTO function (id, user_id, name, type, content, meta, valves, is_active, is_global, updated_at, created_at) "
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                        "ON CONFLICT(id) DO UPDATE SET user_id = excluded.user_id, name = excluded.name, "
+                        "type = excluded.type, content = excluded.content, meta = excluded.meta, valves = excluded.valves, "
+                        "is_active = excluded.is_active, is_global = excluded.is_global, updated_at = excluded.updated_at",
+                        (
+                            force_tooling_function_id,
+                            admin_user_id,
+                            "Force Freestyler Tooling",
+                            "filter",
+                            force_tooling_function_content,
+                            json.dumps(
+                                {
+                                    "description": "Forces web search and image search tooling for dynamic/freestyler.",
+                                    "manifest": {
+                                        "title": "Force Freestyler Tooling",
+                                        "version": "1.0.0",
+                                    },
+                                }
+                            ),
+                            json.dumps({}),
+                            1,
+                            1,
+                            now,
+                            now,
+                        ),
+                    )
 
                 connection.commit()
         PY
