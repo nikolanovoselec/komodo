@@ -1,6 +1,6 @@
 services:
   tracearr:
-    image: ghcr.io/connorgallopo/tracearr:1.4.28
+    image: ghcr.io/connorgallopo/tracearr:1.4.30
     container_name: media_servers_tracearr
     ports:
       - 3000:3000
