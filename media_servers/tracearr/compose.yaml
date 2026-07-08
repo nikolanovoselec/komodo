@@ -1,7 +1,6 @@
 services:
   tracearr:
     image: ghcr.io/connorgallopo/tracearr:1.4.30
-    container_name: media_servers_tracearr
     ports:
       - 3000:3000
     environment:
@@ -29,7 +28,6 @@ services:
 
   timescale:
     image: timescale/timescaledb-ha:pg18.1-ts2.25.0
-    container_name: media_servers_tracearr_db
     shm_size: 512mb
     ulimits:
       nofile:
@@ -53,7 +51,6 @@ services:
 
   redis:
     image: redis:8-alpine
-    container_name: media_servers_tracearr_redis
     command: redis-server --requirepass "${TRACEARR_REDIS_PASSWORD}" --appendonly yes
     volumes:
       - /docker/configs/tracearr/redis:/data
