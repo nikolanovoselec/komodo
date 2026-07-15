@@ -15,9 +15,9 @@ services:
       OPENAI_API_BASE_URLS: ${CLOUDFLARE_AI_GATEWAY_BASE_URL}
       OPENAI_API_KEY: ${CLOUDFLARE_AI_GATEWAY_API_KEY}
       OPENAI_API_KEYS: ${CLOUDFLARE_AI_GATEWAY_API_KEY}
-      OPENAI_API_CONFIGS: '{"0":{"enable":true,"model_ids":["dynamic/freestyler"],"connection_type":"openai","provider":"llama.cpp"}}'
-      DEFAULT_MODELS: dynamic/freestyler
-      TASK_MODEL_EXTERNAL: dynamic/freestyler
+      OPENAI_API_CONFIGS: '{"0":{"enable":true,"model_ids":["dynamic/codeflare-mesh"],"connection_type":"openai","provider":"llama.cpp"}}'
+      DEFAULT_MODELS: dynamic/codeflare-mesh
+      TASK_MODEL_EXTERNAL: dynamic/codeflare-mesh
       ENABLE_TITLE_GENERATION: "False"
       ENABLE_TAGS_GENERATION: "False"
       ENABLE_FOLLOW_UP_GENERATION: "False"
@@ -57,7 +57,7 @@ services:
 
         database = "/app/backend/data/webui.db"
         now = int(time.time())
-        model_id = "dynamic/freestyler"
+        model_id = "dynamic/codeflare-mesh"
         image_search_tool_id = "image_search"
         force_tooling_function_id = "force_freestyler_tooling"
         gateway_base_url = os.environ["OPENAI_API_BASE_URL"]
@@ -323,7 +323,7 @@ services:
             "openai.api_configs": {
                 "0": {
                     "enable": True,
-                    "model_ids": ["dynamic/freestyler"],
+                    "model_ids": ["dynamic/codeflare-mesh"],
                     "connection_type": "openai",
                     "provider": "llama.cpp",
                 }
