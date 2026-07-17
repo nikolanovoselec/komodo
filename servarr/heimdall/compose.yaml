@@ -1,6 +1,6 @@
 services:
   heimdall:
-    image: lscr.io/linuxserver/heimdall:v2.8.1-ls354
+    image: lscr.io/linuxserver/heimdall:v2.8.1-ls355
     container_name: servarr_heimdall
     #dns:
     #  - 100.64.0.2
