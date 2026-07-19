@@ -1,6 +1,6 @@
 services:
   ombi:
-    image: lscr.io/linuxserver/ombi:v4.53.10-ls261
+    image: lscr.io/linuxserver/ombi:v4.53.10-ls262
     container_name: servarr_ombi
     #dns:
     #  - 100.64.0.2
