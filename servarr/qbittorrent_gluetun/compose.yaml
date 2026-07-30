@@ -1,6 +1,6 @@
 services:
   gluetun:
-    image: ghcr.io/qdm12/gluetun:v3.41.1
+    image: ghcr.io/qdm12/gluetun:v3.41.3
     container_name: servarr_qbittorrent_gluetun
     #dns:
     #  - 100.64.0.2
