@@ -1907,30 +1907,6 @@ M365_MCP_OAUTH_CLIENT_SECRET = [[M365_MCP_OAUTH_CLIENT_SECRET]]
 ##
 
 [[stack]]
-name = "tools_paperless_ngx"
-tags = ["sync", "disabled"]
-[stack.config]
-server = "tools"
-run_build = true
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-webhook_force_deploy = true
-run_directory = "tools/paperless-ngx"
-environment = """
-USERMAP_UID=1000
-USERMAP_GID=1000
-PAPERLESS_URL="https://paperless.graymatter.ch"
-PAPERLESS_SECRET_KEY=[[PAPERLESS_SECRET_KEY]]
-PAPERLESS_TIME_ZONE=Europe/Zurich
-PAPERLESS_OCR_LANGUAGE=eng
-"""
-
-##
-
-[[stack]]
 name = "tools_zipline"
 tags = ["sync"]
 [stack.config]
