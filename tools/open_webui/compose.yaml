@@ -651,7 +651,7 @@ services:
                             force_tooling_function_content,
                             json.dumps(
                                 {
-                                    "description": "Forces web search and image search tooling for dynamic/freestyler.",
+                                    "description": "Forces web search and image search tooling for dynamic/codeflare-mesh.",
                                     "manifest": {
                                         "title": "Force Freestyler Tooling",
                                         "version": "1.0.0",
