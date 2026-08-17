@@ -1,6 +1,6 @@
 services:
   beszel:
-    image: henrygd/beszel:0.18.7
+    image: henrygd/beszel:0.18.8
     container_name: middleware_beszel
     #dns:
     #  - 100.64.0.2
