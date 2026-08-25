@@ -1316,22 +1316,6 @@ run_directory = "servarr/heimdall"
 ##
 
 [[stack]]
-name = "servarr_lidarr"
-tags = ["sync", "disabled"]
-[stack.config]
-server = "servarr"
-run_build = true
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
-git_account = "nikolanovoselec"
-repo = "nikolanovoselec/komodo"
-webhook_force_deploy = true
-run_directory = "servarr/lidarr"
-
-##
-
-[[stack]]
 name = "servarr_maintainerr"
 tags = ["sync"]
 [stack.config]
@@ -1975,7 +1959,7 @@ config.webhook_secret = "ceTXriBfjq!G4r_H_ZDbpn.@Qq_3FqjFh@zPPezFZsskcbdd7F-qYRZ
 name = "Deploy Stacks If Changed"
 enabled = true
 executions = [
-  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "komodo_core*, middleware*, servarr*, media_servers*, tools*, ai_llm*, dns_ntp*, minecraft*", enabled = true }
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "komodo_core*, middleware*, servarr*, media_servers*, tools*, ai_llm*, dns_ntp*, minecraft*", execution.params.tags = [], enabled = true }
 ]
 
 ##
@@ -2172,7 +2156,7 @@ name = "local"
 tags = ["sync"]
 [builder.config]
 type = "Server"
-params.server = "komodo_core"
+params.servers = ["komodo_core"]
 
 ##
 
