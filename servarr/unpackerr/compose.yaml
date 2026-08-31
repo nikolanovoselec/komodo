@@ -1,6 +1,6 @@
 services:
   unpackerr:
-    image: golift/unpackerr:0.15.2
+    image: golift/unpackerr:v0.16.1
     container_name: servarr_unpackerr
     volumes:
       - /mnt/unas:/data
