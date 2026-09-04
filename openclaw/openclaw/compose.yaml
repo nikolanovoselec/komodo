@@ -1,8 +1,6 @@
 services:
   openclaw-gateway:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/openclaw/openclaw:2026.9.1
     container_name: openclaw_openclaw_gateway
     environment:
       HOME: /home/node
@@ -30,7 +28,9 @@ services:
     init: true
     restart: unless-stopped
     command:
-      - /usr/local/bin/openclaw-gateway-entrypoint
+      - /bin/sh
+      - -c
+      - node dist/index.js config set gateway.auth.mode none && exec node dist/index.js gateway --bind lan --port 18789
     healthcheck:
       test:
         - CMD
@@ -43,9 +43,7 @@ services:
       start_period: 20s
 
   openclaw-cli:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/openclaw/openclaw:2026.9.1
     container_name: openclaw_openclaw_cli
     profiles:
       - cli
