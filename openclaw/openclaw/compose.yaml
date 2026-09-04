@@ -1,7 +1,7 @@
 services:
   openclaw-gateway:
     image: ghcr.io/openclaw/openclaw:2026.8.2
-    container_name: openclaw_gateway
+    container_name: openclaw_openclaw_gateway
     env_file:
       - /docker/configs/openclaw/.env
     environment:
@@ -50,6 +50,7 @@ services:
 
   openclaw-cli:
     image: ghcr.io/openclaw/openclaw:2026.8.2
+    container_name: openclaw_openclaw_cli
     profiles:
       - cli
     network_mode: service:openclaw-gateway
