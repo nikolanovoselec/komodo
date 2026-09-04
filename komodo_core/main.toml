@@ -2133,19 +2133,23 @@ for (const server of servers) {
   console.log();
   console.log("------------------");
   console.log("Updating", server.name);
-  await komodo.execute_server_terminal(
-    {
-      server: server.name,
-      terminal: "apt-upgrade",
-      command:
-        "export DEBIAN_FRONTEND=noninteractive && apt update && apt upgrade -y -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef' && apt autoremove -y && apt clean && journalctl --vacuum-time=7d",
-      init: { command: "bash", recreate: Types.TerminalRecreateMode.DifferentCommand },
-    },
-    {
-      onLine: console.log,
-      onFinish: (code) => console.log("Finished", code),
-    },
-  );
+  try {
+    await komodo.execute_server_terminal(
+      {
+        server: server.name,
+        terminal: "apt-upgrade",
+        command:
+          "timeout --signal=TERM --kill-after=5m 60m bash -lc \"export DEBIAN_FRONTEND=noninteractive; apt update && apt upgrade -y -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef' && apt autoremove -y && apt clean && journalctl --vacuum-time=7d\"",
+        init: { command: "bash", recreate: Types.TerminalRecreateMode.Always },
+      },
+      {
+        onLine: console.log,
+        onFinish: (code) => console.log("Finished", server.name, code),
+      },
+    );
+  } catch (error) {
+    console.error("Failed", server.name, error);
+  }
 }
 """
 
