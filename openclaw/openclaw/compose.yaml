@@ -10,6 +10,8 @@ services:
       OPENCLAW_CONFIG_DIR: /home/node/.openclaw
       OPENCLAW_WORKSPACE_DIR: /home/node/.openclaw/workspace
       OPENCLAW_DISABLE_BONJOUR: "1"
+      CODEX_HOME: /home/node/.openclaw/codex
+      PATH: /home/node/.openclaw/npm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       TZ: Europe/Zurich
     volumes:
       - /docker/configs/openclaw/config:/home/node/.openclaw
@@ -29,7 +31,7 @@ services:
     command:
       - /bin/sh
       - -c
-      - node dist/index.js config set gateway.auth.mode none && node dist/index.js config set gateway.trustedProxies '["127.0.0.1"]' --json && exec node dist/index.js gateway --bind loopback --port 18789
+      - set -e; test -x /home/node/.openclaw/npm/bin/codex || npm install --global --prefix /home/node/.openclaw/npm @openai/codex@0.152.1; test -f /home/node/.openclaw/extensions/codex/package.json || node dist/index.js plugins install @openclaw/codex@2026.9.1; node dist/index.js config set plugins.entries.codex.enabled true --json && node dist/index.js config set agents.defaults.model openai/gpt-5.6-sol && node dist/index.js config set gateway.cliAgents.enabled true --json && node dist/index.js config set gateway.terminal.enabled true --json && node dist/index.js config set gateway.terminal.shell /bin/bash && node dist/index.js config set gateway.terminal.detachedSessionTimeoutSeconds 3600 --json && node dist/index.js config set gateway.auth.mode none && node dist/index.js config set gateway.trustedProxies '["127.0.0.1"]' --json && exec node dist/index.js gateway --bind loopback --port 18789
     healthcheck:
       test:
         - CMD
@@ -71,6 +73,8 @@ services:
       OPENCLAW_CONFIG_DIR: /home/node/.openclaw
       OPENCLAW_WORKSPACE_DIR: /home/node/.openclaw/workspace
       OPENCLAW_DISABLE_BONJOUR: "1"
+      CODEX_HOME: /home/node/.openclaw/codex
+      PATH: /home/node/.openclaw/npm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       BROWSER: echo
       TZ: Europe/Zurich
     volumes:
