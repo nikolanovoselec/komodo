@@ -104,6 +104,19 @@ enabled = true
 ##
 
 [[server]]
+name = "openclaw"
+tags = [
+  "sync",
+  "auto-update",
+  "auto-cleanup"
+]
+[server.config]
+address = "https://192.168.3.203:8120"
+enabled = true
+
+##
+
+[[server]]
 name = "openziti-fabric-i"
 tags = ["sync"]
 [server.config]
