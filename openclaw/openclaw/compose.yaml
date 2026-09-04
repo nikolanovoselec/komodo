@@ -2,6 +2,7 @@ services:
   openclaw-gateway:
     image: ghcr.io/openclaw/openclaw:2026.9.1
     container_name: openclaw_openclaw_gateway
+    user: "0:0"
     environment:
       HOME: /home/node
       OPENCLAW_HOME: /home/node
@@ -11,6 +12,7 @@ services:
       OPENCLAW_WORKSPACE_DIR: /home/node/.openclaw/workspace
       OPENCLAW_DISABLE_BONJOUR: "1"
       CODEX_HOME: /home/node/.openclaw/codex
+      NPM_CONFIG_PREFIX: /home/node/.openclaw/npm
       PATH: /home/node/.openclaw/npm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       TZ: Europe/Zurich
     volumes:
@@ -19,11 +21,11 @@ services:
       - /docker/configs/openclaw/auth:/home/node/.config/openclaw
     ports:
       - "18789:18790"
-    cap_drop:
-      - NET_RAW
-      - NET_ADMIN
+    cap_add:
+      - ALL
     security_opt:
-      - no-new-privileges:true
+      - apparmor:unconfined
+      - seccomp:unconfined
     extra_hosts:
       - host.docker.internal:host-gateway
     init: true
@@ -31,7 +33,7 @@ services:
     command:
       - /bin/sh
       - -c
-      - set -e; test -x /home/node/.openclaw/npm/bin/codex || npm install --global --prefix /home/node/.openclaw/npm @openai/codex@0.152.1; node dist/index.js plugins install npm:@openclaw/codex@2026.9.1 --force; node dist/index.js config set plugins.entries.codex.enabled true --json && node dist/index.js config set plugins.entries.codex.config.supervision.enabled true --json && node dist/index.js config set agents.defaults.model openai/gpt-5.6-sol && node dist/index.js config set gateway.cliAgents.enabled true --json && node dist/index.js config set gateway.terminal.enabled true --json && node dist/index.js config set gateway.terminal.shell /bin/bash && node dist/index.js config set gateway.terminal.detachedSessionTimeoutSeconds 3600 --json && node dist/index.js config set gateway.auth.mode none && node dist/index.js config set gateway.trustedProxies '["127.0.0.1"]' --json && exec node dist/index.js gateway --bind loopback --port 18789
+      - set -e; test -x /home/node/.openclaw/npm/bin/codex || npm install --global --prefix /home/node/.openclaw/npm @openai/codex@0.152.1; node dist/index.js plugins install npm:@openclaw/codex@2026.9.1 --force; node dist/index.js config set plugins.entries.codex.enabled true --json && node dist/index.js config set plugins.entries.codex.config.supervision.enabled true --json && node dist/index.js config set agents.defaults.model openai/gpt-5.6-sol && node dist/index.js config set agents.defaults.sandbox.mode off && node dist/index.js config set tools.profile full && node dist/index.js config set tools.exec.mode full && node dist/index.js config set tools.elevated.enabled true --json && node dist/index.js config set gateway.cliAgents.enabled true --json && node dist/index.js config set gateway.terminal.enabled true --json && node dist/index.js config set gateway.terminal.shell /bin/bash && node dist/index.js config set gateway.terminal.detachedSessionTimeoutSeconds 3600 --json && node dist/index.js config set gateway.auth.mode none && node dist/index.js config set gateway.trustedProxies '["127.0.0.1"]' --json && exec node dist/index.js gateway --bind loopback --port 18789
     healthcheck:
       test:
         - CMD
@@ -62,6 +64,7 @@ services:
   openclaw-cli:
     image: ghcr.io/openclaw/openclaw:2026.9.1
     container_name: openclaw_openclaw_cli
+    user: "0:0"
     profiles:
       - cli
     network_mode: service:openclaw-gateway
@@ -74,6 +77,7 @@ services:
       OPENCLAW_WORKSPACE_DIR: /home/node/.openclaw/workspace
       OPENCLAW_DISABLE_BONJOUR: "1"
       CODEX_HOME: /home/node/.openclaw/codex
+      NPM_CONFIG_PREFIX: /home/node/.openclaw/npm
       PATH: /home/node/.openclaw/npm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       BROWSER: echo
       TZ: Europe/Zurich
@@ -81,11 +85,11 @@ services:
       - /docker/configs/openclaw/config:/home/node/.openclaw
       - /docker/configs/openclaw/workspace:/home/node/.openclaw/workspace
       - /docker/configs/openclaw/auth:/home/node/.config/openclaw
-    cap_drop:
-      - NET_RAW
-      - NET_ADMIN
+    cap_add:
+      - ALL
     security_opt:
-      - no-new-privileges:true
+      - apparmor:unconfined
+      - seccomp:unconfined
     stdin_open: true
     tty: true
     init: true
