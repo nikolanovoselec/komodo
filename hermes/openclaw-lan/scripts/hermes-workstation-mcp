@@ -5,12 +5,13 @@ mode="${1:?usage: hermes-workstation-mcp codex|cua}"
 ssh_args=(
   -T
   -i /root/.ssh/hermes-workstation
+  -p 22022
   -o BatchMode=yes
   -o IdentitiesOnly=yes
   -o StrictHostKeyChecking=accept-new
   -o ServerAliveInterval=30
   -o ServerAliveCountMax=3
-  nikolanovoselec@192.168.1.109
+  nikolanovoselec@127.0.0.1
 )
 
 case "$mode" in

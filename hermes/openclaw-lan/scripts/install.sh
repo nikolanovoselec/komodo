@@ -26,12 +26,13 @@ bash "$tmp_dir/hermes-install.sh" \
   --force-commit \
   --dir /usr/local/lib/hermes-agent \
   --hermes-home /root/.hermes
+ln -sfn /root/.local/bin/hermes /usr/local/bin/hermes
 
 curl -fsSL \
-  "https://github.com/AsamK/signal-cli/releases/download/v${SIGNAL_CLI_VERSION}/signal-cli-${SIGNAL_CLI_VERSION}.tar.gz" \
+  "https://github.com/AsamK/signal-cli/releases/download/v${SIGNAL_CLI_VERSION}/signal-cli-${SIGNAL_CLI_VERSION}-Linux-native.tar.gz" \
   -o "$tmp_dir/signal-cli.tar.gz"
 tar -xzf "$tmp_dir/signal-cli.tar.gz" -C /opt
-ln -sfn "/opt/signal-cli-${SIGNAL_CLI_VERSION}/bin/signal-cli" /usr/local/bin/signal-cli
+ln -sfn /opt/signal-cli /usr/local/bin/signal-cli
 
 install -m 0755 "$repo_dir/scripts/hermes-workstation-mcp" /usr/local/bin/hermes-workstation-mcp
 install -m 0644 "$repo_dir/systemd/hermes-dashboard.service" /etc/systemd/system/hermes-dashboard.service

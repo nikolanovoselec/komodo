@@ -5,6 +5,7 @@ repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$repo_dir/../versions.env"
 test "$(id -u)" -eq 0 || { echo "run as root" >&2; exit 1; }
 test -n "${HERMES_AUTHORIZED_KEY:-}" || { echo "set HERMES_AUTHORIZED_KEY" >&2; exit 1; }
+test -f "${HERMES_TUNNEL_KEY_FILE:-}" || { echo "set HERMES_TUNNEL_KEY_FILE" >&2; exit 1; }
 
 pacman -S --needed --noconfirm openssh
 
@@ -31,10 +32,17 @@ grep -qxF "$HERMES_AUTHORIZED_KEY" /home/nikolanovoselec/.ssh/authorized_keys ||
 
 install -m 0755 "$repo_dir/hermes-codex-mcp" /usr/local/bin/hermes-codex-mcp
 install -m 0755 "$repo_dir/hermes-cua-mcp" /usr/local/bin/hermes-cua-mcp
+install -o nikolanovoselec -g nikolanovoselec -m 0600 "$HERMES_TUNNEL_KEY_FILE" /home/nikolanovoselec/.ssh/hermes-openclaw-tunnel
+install -m 0644 "$repo_dir/hermes-openclaw-tunnel.service" /etc/systemd/system/hermes-openclaw-tunnel.service
 printf 'nikolanovoselec ALL=(ALL:ALL) NOPASSWD: ALL\n' > /etc/sudoers.d/90-hermes-agent
 chmod 0440 /etc/sudoers.d/90-hermes-agent
 visudo -cf /etc/sudoers.d/90-hermes-agent
 systemctl enable --now sshd.service
+systemctl daemon-reload
+systemctl enable --now hermes-openclaw-tunnel.service
+if command -v ufw >/dev/null 2>&1; then
+  ufw allow from 192.168.3.203 to any port 22 proto tcp comment 'Hermes openclaw workstation bridge'
+fi
 
 runuser -u nikolanovoselec -- /home/nikolanovoselec/.local/bin/cua-driver --version
 echo "Workstation bridge installed."
