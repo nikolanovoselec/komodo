@@ -20,6 +20,10 @@ web:
   backend: "ddgs"
 
 browser:
+  backend: "browser-use"
+  cdp_url: "http://127.0.0.1:9222"
+  headed: true
+  allow_private_urls: true
   inactivity_timeout: 300
   extension_control:
     enabled: true
@@ -72,3 +76,8 @@ mcp_servers:
     timeout: 300
     connect_timeout: 60
     keepalive_interval: 60
+
+plugins:
+  enabled: []
+
+_config_version: 39

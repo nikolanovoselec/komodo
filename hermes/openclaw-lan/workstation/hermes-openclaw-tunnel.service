@@ -1,5 +1,5 @@
 [Unit]
-Description=Reverse SSH tunnel for Hermes workstation bridge
+Description=SSH tunnels for Hermes workstation bridge and private browser
 After=network-online.target sshd.service
 Wants=network-online.target
 
@@ -7,7 +7,7 @@ Wants=network-online.target
 Type=simple
 User=nikolanovoselec
 Environment=HOME=/home/nikolanovoselec
-ExecStart=/usr/bin/ssh -NT -i /home/nikolanovoselec/.ssh/hermes-openclaw-tunnel -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -R 127.0.0.1:22022:127.0.0.1:22 root@openclaw.lan
+ExecStart=/usr/bin/ssh -NT -i /home/nikolanovoselec/.ssh/hermes-openclaw-tunnel -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -L 127.0.0.1:6080:127.0.0.1:6080 -R 127.0.0.1:22022:127.0.0.1:22 root@openclaw.lan
 Restart=always
 RestartSec=5
 
