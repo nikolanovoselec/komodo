@@ -47,6 +47,11 @@ bash "$tmp_dir/hermes-install.sh" \
   --force-commit \
   --dir /usr/local/lib/hermes-agent \
   --hermes-home /root/.hermes
+# The pinned tag checkout is intentionally detached, but Hermes' built-in
+# updater follows origin/main. Ensure the branch ref remains fetchable.
+git -C /usr/local/lib/hermes-agent config \
+  remote.origin.fetch '+refs/heads/main:refs/remotes/origin/main'
+git -C /usr/local/lib/hermes-agent fetch --prune origin main
 ln -sfn /root/.local/bin/hermes /usr/local/bin/hermes
 /root/.hermes/bin/uv pip install --quiet --upgrade \
   --python /usr/local/lib/hermes-agent/venv/bin/python \
