@@ -33,6 +33,10 @@ grep -qxF "$HERMES_AUTHORIZED_KEY" /home/nikolanovoselec/.ssh/authorized_keys ||
 install -m 0755 "$repo_dir/hermes-codex-mcp" /usr/local/bin/hermes-codex-mcp
 install -m 0755 "$repo_dir/hermes-cua-mcp" /usr/local/bin/hermes-cua-mcp
 install -m 0755 "$repo_dir/hermes-wayland-control" /usr/local/bin/hermes-wayland-control
+install -m 0755 "$repo_dir/hermes-network-ssh" /usr/local/bin/hermes-network-ssh
+install -d -o nikolanovoselec -g nikolanovoselec -m 0755 /home/nikolanovoselec/.config/omarchy/plugins/nikolanovoselec.hermes-browser
+install -o nikolanovoselec -g nikolanovoselec -m 0644 "$repo_dir/omarchy-hermes-browser/manifest.json" /home/nikolanovoselec/.config/omarchy/plugins/nikolanovoselec.hermes-browser/manifest.json
+install -o nikolanovoselec -g nikolanovoselec -m 0644 "$repo_dir/omarchy-hermes-browser/BarWidget.qml" /home/nikolanovoselec/.config/omarchy/plugins/nikolanovoselec.hermes-browser/BarWidget.qml
 install -o nikolanovoselec -g nikolanovoselec -m 0600 "$HERMES_TUNNEL_KEY_FILE" /home/nikolanovoselec/.ssh/hermes-openclaw-tunnel
 install -m 0644 "$repo_dir/hermes-openclaw-tunnel.service" /etc/systemd/system/hermes-openclaw-tunnel.service
 install -m 0644 "$repo_dir/ydotoold-hermes.service" /etc/systemd/system/ydotoold-hermes.service

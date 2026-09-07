@@ -20,7 +20,7 @@ web:
   backend: "ddgs"
 
 browser:
-  backend: "browser-use"
+  backend: "local"
   cdp_url: "http://127.0.0.1:9222"
   headed: true
   allow_private_urls: true
@@ -31,6 +31,10 @@ browser:
 computer_use:
   cua_telemetry: false
   max_image_dimension: 2048
+
+dashboard:
+  trusted_proxies:
+    - "192.168.5.148"
 
 platform_toolsets:
   cli: [hermes-cli]
@@ -78,6 +82,12 @@ mcp_servers:
     keepalive_interval: 60
 
 plugins:
-  enabled: []
+  enabled:
+    - self-hosted
+    - whatsapp-platform
+    - web-ddgs
+    - openai-codex
+    - security-guidance
 
-_config_version: 39
+_config_version: 41
+agent: {}

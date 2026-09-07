@@ -1,5 +1,5 @@
 [Unit]
-Description=Private display for the Hermes persistent browser
+Description=KasmVNC display for the Hermes persistent browser
 After=network.target
 
 [Service]
@@ -10,7 +10,7 @@ Environment=HOME=/var/lib/hermes-browser
 RuntimeDirectory=hermes-browser
 RuntimeDirectoryMode=0700
 RuntimeDirectoryPreserve=yes
-ExecStart=/usr/bin/Xtigervnc :99 -geometry 1920x1080 -depth 24 -localhost yes -rfbport 5900 -SecurityTypes VncAuth -PasswordFile /etc/hermes-browser/vnc.pass -AlwaysShared -AcceptKeyEvents -AcceptPointerEvents
+ExecStart=/usr/bin/Xkasmvnc :99 -geometry 1920x1080 -depth 24 -interface 0.0.0.0 -PublicIP 192.168.3.203 -disableBasicAuth -SecurityTypes None -httpd /usr/share/kasmvnc/www -websocketPort 6080 -sslOnly 0 -FreeKeyMappings -AlwaysShared -AcceptKeyEvents 1 -AcceptPointerEvents 1 -AcceptCutText 1 -SendCutText 1 -SendPrimary 1
 Restart=always
 RestartSec=3
 

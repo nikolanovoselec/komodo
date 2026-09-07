@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+test "$#" -ge 1 || {
+  echo "usage: hermes-network-ssh user@host [command ...]" >&2
+  exit 64
+}
+
+remote_command=""
+printf -v remote_command '%q ' /usr/local/bin/hermes-network-ssh "$@"
+
+exec ssh \
+  -T \
+  -i /root/.ssh/hermes-workstation \
+  -p 22022 \
+  -o BatchMode=yes \
+  -o IdentitiesOnly=yes \
+  -o StrictHostKeyChecking=accept-new \
+  -o ServerAliveInterval=30 \
+  -o ServerAliveCountMax=3 \
+  nikolanovoselec@127.0.0.1 \
+  "$remote_command"

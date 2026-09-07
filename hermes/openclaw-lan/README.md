@@ -13,17 +13,20 @@ The OpenClaw containers must only be retired through Komodo's stack control
 plane. Never stop, remove, or edit them directly on `openclaw.lan`.
 
 Hermes uses a dedicated, persistent Chromium profile running as the unprivileged
-`hermes-browser` user. CDP (`9222`), VNC (`5900`), and noVNC (`6080`) listen on
-loopback only. To log into websites without giving credentials to the agent,
-forward noVNC over SSH and open `http://127.0.0.1:6080/vnc.html` locally:
+`hermes-browser` user. CDP (`9222`) listens on loopback only. KasmVNC (`6080`)
+serves the interactive browser on the server's LAN address so Nginx Proxy
+Manager can publish it at `https://hermes.novoselec.ch/browser/` behind
+Cloudflare Access.
+The workstation also has a private SSH tunnel at
+`http://127.0.0.1:6080/`.
 
 ```bash
 ssh -L 6080:127.0.0.1:6080 root@openclaw.lan
 ```
 
-Use `HERMES_BROWSER_VNC_PASSWORD` from the private Hermes secrets. Website
-sessions remain in `/var/lib/hermes-browser/profile`; never commit that profile
-to this public repository.
+There is no separate KasmVNC password; Cloudflare Access protects the public route.
+Website sessions remain in `/var/lib/hermes-browser/profile`; never commit that
+profile to this public repository.
 
 For the safest manual login, first run
 `hermes-browser-login-mode enter` on `openclaw.lan`. This stops Hermes and any
