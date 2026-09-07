@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export HOME=/home/nikolanovoselec
+export XDG_RUNTIME_DIR=/run/user/1000
+export WAYLAND_DISPLAY=wayland-1
+export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+export YDOTOOL_SOCKET=/run/ydotoold-hermes/socket
+
+hypr_instance="$(find "$XDG_RUNTIME_DIR/hypr" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | head -1)"
+if [[ -n "$hypr_instance" ]]; then
+  export HYPRLAND_INSTANCE_SIGNATURE="$hypr_instance"
+fi
+
+command="${1:-}"
+shift || true
+
+case "$command" in
+  screenshot)
+    exec grim -
+    ;;
+  move)
+    [[ "${1:-}" =~ ^[0-9]+$ && "${2:-}" =~ ^[0-9]+$ ]]
+    exec hyprctl eval "return hl.dispatch(hl.dsp.cursor.move({x=$1, y=$2}))"
+    ;;
+  click)
+    [[ "${1:-}" =~ ^[0-9]+$ && "${2:-}" =~ ^[0-9]+$ ]]
+    hyprctl eval "return hl.dispatch(hl.dsp.cursor.move({x=$1, y=$2}))" >/dev/null
+    exec ydotool click "${3:-0xC0}"
+    ;;
+  type-b64)
+    [[ "${1:-}" =~ ^[A-Za-z0-9+/=]+$ ]]
+    printf '%s' "$1" | base64 -d | exec wtype -
+    ;;
+  key)
+    test -n "${1:-}"
+    exec wtype -k "$1"
+    ;;
+  hotkey)
+    test "$#" -ge 2
+    key="${!#}"
+    args=()
+    while [[ "$#" -gt 1 ]]; do
+      args+=( -M "$1" )
+      shift
+    done
+    args+=( -k "$key" )
+    for ((i=${#args[@]}-3; i>=0; i-=2)); do
+      [[ "${args[$i]}" == "-M" ]] && args+=( -m "${args[$((i+1))]}" )
+    done
+    exec wtype "${args[@]}"
+    ;;
+  active-window)
+    exec hyprctl -j activewindow
+    ;;
+  clients)
+    exec hyprctl -j clients
+    ;;
+  *)
+    echo "usage: hermes-wayland-control {screenshot|move X Y|click X Y [BUTTON]|type-b64 BASE64|key KEY|hotkey MOD... KEY|active-window|clients}" >&2
+    exit 2
+    ;;
+esac

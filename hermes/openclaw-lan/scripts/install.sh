@@ -59,6 +59,9 @@ tar -xzf "$tmp_dir/signal-cli.tar.gz" -C /opt
 ln -sfn /opt/signal-cli /usr/local/bin/signal-cli
 
 install -m 0755 "$repo_dir/scripts/hermes-workstation-mcp" /usr/local/bin/hermes-workstation-mcp
+install -m 0755 "$repo_dir/scripts/hermes-workstation-desktop" /usr/local/bin/hermes-workstation-desktop
+install -d -m 0755 /root/.hermes/skills/workstation-desktop
+install -m 0644 "$repo_dir/skills/workstation-desktop/SKILL.md" /root/.hermes/skills/workstation-desktop/SKILL.md
 install -m 0644 "$repo_dir/systemd/hermes-dashboard.service" /etc/systemd/system/hermes-dashboard.service
 install -m 0644 "$repo_dir/systemd/hermes-gateway.service" /etc/systemd/system/hermes-gateway.service
 install -m 0644 "$repo_dir/systemd/hermes-browser-display.service" /etc/systemd/system/hermes-browser-display.service

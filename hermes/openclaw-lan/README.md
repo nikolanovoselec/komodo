@@ -24,3 +24,7 @@ ssh -L 6080:127.0.0.1:6080 root@openclaw.lan
 Use `HERMES_BROWSER_VNC_PASSWORD` from the private Hermes secrets. Website
 sessions remain in `/var/lib/hermes-browser/profile`; never commit that profile
 to this public repository.
+
+The workstation bridge also installs a native Hyprland fallback using `grim`,
+`wtype`, and `ydotool`. Hermes loads the `workstation-desktop` skill when CUA
+Driver cannot capture a native Wayland window.

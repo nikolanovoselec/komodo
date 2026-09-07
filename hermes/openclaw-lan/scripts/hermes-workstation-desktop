@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ssh_args=(
+  -i /root/.ssh/hermes-workstation
+  -p 22022
+  -o BatchMode=yes
+  -o IdentitiesOnly=yes
+  -o StrictHostKeyChecking=accept-new
+  nikolanovoselec@127.0.0.1
+  /usr/local/bin/hermes-wayland-control
+)
+
+command="${1:-}"
+shift || true
+
+case "$command" in
+  screenshot)
+    output="${1:-}"
+    [[ "$output" == /srv/hermes/workspaces/*.png ]]
+    ssh "${ssh_args[@]}" screenshot > "$output"
+    printf '%s\n' "$output"
+    ;;
+  move|click|key|hotkey|active-window|clients)
+    exec ssh "${ssh_args[@]}" "$command" "$@"
+    ;;
+  type)
+    encoded="$(printf '%s' "${1:-}" | base64 -w0)"
+    exec ssh "${ssh_args[@]}" type-b64 "$encoded"
+    ;;
+  *)
+    echo "usage: hermes-workstation-desktop {screenshot OUTPUT.png|move X Y|click X Y [BUTTON]|type TEXT|key KEY|hotkey MOD... KEY|active-window|clients}" >&2
+    exit 2
+    ;;
+esac

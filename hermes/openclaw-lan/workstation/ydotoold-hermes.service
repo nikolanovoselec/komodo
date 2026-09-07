@@ -1,0 +1,14 @@
+[Unit]
+Description=Virtual input daemon for Hermes Wayland control
+After=systemd-udev-settle.service
+
+[Service]
+Type=simple
+RuntimeDirectory=ydotoold-hermes
+RuntimeDirectoryMode=0711
+ExecStart=/usr/bin/ydotoold --socket-path=/run/ydotoold-hermes/socket --socket-own=1000:1000 --socket-perm=0600
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
