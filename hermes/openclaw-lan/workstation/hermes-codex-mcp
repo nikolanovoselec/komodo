@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-export HOME=/home/nikolanovoselec
-export PATH="/home/nikolanovoselec/.local/share/mise/installs/codex/latest/bin:/home/nikolanovoselec/.local/bin:/usr/local/bin:/usr/bin:/bin"
-if [[ "${1:-}" == "--version" ]]; then
-  exec codex --version
-fi
-exec codex mcp-server
