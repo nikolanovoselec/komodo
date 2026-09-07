@@ -25,6 +25,12 @@ Use `HERMES_BROWSER_VNC_PASSWORD` from the private Hermes secrets. Website
 sessions remain in `/var/lib/hermes-browser/profile`; never commit that profile
 to this public repository.
 
+For the safest manual login, first run
+`hermes-browser-login-mode enter` on `openclaw.lan`. This stops Hermes and any
+attached browser-automation daemons while leaving noVNC available. Log in and
+complete MFA yourself, close the login form, then run
+`hermes-browser-login-mode exit` to restore the dashboard and gateway.
+
 The workstation bridge also installs a native Hyprland fallback using `grim`,
 `wtype`, and `ydotool`. Hermes loads the `workstation-desktop` skill when CUA
 Driver cannot capture a native Wayland window.
