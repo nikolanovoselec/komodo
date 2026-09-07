@@ -10,10 +10,20 @@ test -f /root/.hermes/.env || { echo "missing /root/.hermes/.env" >&2; exit 1; }
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get install -y ca-certificates curl git openssh-client build-essential python3 python3-venv openjdk-21-jre-headless
+apt-get install -y ca-certificates curl git gh openssh-client build-essential python3 python3-venv openjdk-21-jre-headless
 
 install -d -m 0700 /root/.hermes /root/.ssh
 install -d -m 0755 /srv/hermes/workspaces /usr/local/lib
+
+if ! swapon --show=NAME --noheadings | grep -qx /swapfile; then
+  if [[ ! -e /swapfile ]]; then
+    fallocate -l 8G /swapfile
+    chmod 0600 /swapfile
+    mkswap /swapfile >/dev/null
+  fi
+  swapon /swapfile
+fi
+grep -qE '^/swapfile[[:space:]]' /etc/fstab || printf '/swapfile none swap sw 0 0\n' >> /etc/fstab
 
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf -- "$tmp_dir"' EXIT
@@ -27,6 +37,9 @@ bash "$tmp_dir/hermes-install.sh" \
   --dir /usr/local/lib/hermes-agent \
   --hermes-home /root/.hermes
 ln -sfn /root/.local/bin/hermes /usr/local/bin/hermes
+/root/.hermes/bin/uv pip install --quiet --upgrade \
+  --python /usr/local/lib/hermes-agent/venv/bin/python \
+  ddgs
 
 curl -fsSL \
   "https://github.com/AsamK/signal-cli/releases/download/v${SIGNAL_CLI_VERSION}/signal-cli-${SIGNAL_CLI_VERSION}-Linux-native.tar.gz" \
