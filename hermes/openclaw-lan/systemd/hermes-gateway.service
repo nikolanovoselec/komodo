@@ -1,0 +1,18 @@
+[Unit]
+Description=Hermes Agent messaging gateway
+After=network-online.target signal-cli.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Environment=HOME=/root
+Environment=HERMES_HOME=/root/.hermes
+EnvironmentFile=-/root/.hermes/.env
+WorkingDirectory=/srv/hermes/workspaces
+ExecStart=/usr/local/bin/hermes gateway run --external-supervisor
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

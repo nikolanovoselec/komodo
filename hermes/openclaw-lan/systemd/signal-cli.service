@@ -1,0 +1,16 @@
+[Unit]
+Description=signal-cli JSON-RPC daemon for Hermes
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Environment=HOME=/root
+EnvironmentFile=-/root/.hermes/.env
+ExecStart=/usr/local/bin/signal-cli --config /root/.local/share/signal-cli --account ${SIGNAL_ACCOUNT} daemon --http 127.0.0.1:8080
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

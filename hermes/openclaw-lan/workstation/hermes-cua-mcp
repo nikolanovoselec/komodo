@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+export HOME=/home/nikolanovoselec
+export USER=nikolanovoselec
+export LOGNAME=nikolanovoselec
+export XDG_RUNTIME_DIR=/run/user/1000
+export WAYLAND_DISPLAY=wayland-1
+export DISPLAY=:0
+export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+export CUA_DRIVER_PERMISSION_MODE=unrestricted
+export CUA_DRIVER_DANGEROUSLY_BYPASS_APPROVALS=1
+export CUA_DRIVER_RS_TELEMETRY_ENABLED=0
+exec /home/nikolanovoselec/.local/bin/cua-driver mcp

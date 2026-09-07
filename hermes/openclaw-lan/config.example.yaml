@@ -1,0 +1,74 @@
+model:
+  default: "gpt-5.6-sol"
+  provider: "openai-codex"
+
+terminal:
+  backend: "local"
+  cwd: "/srv/hermes/workspaces"
+  timeout: 1800
+  home_mode: "real"
+  lifetime_seconds: 3600
+
+approvals:
+  mode: "off"
+
+tool_loop_guardrails:
+  warnings_enabled: true
+  hard_stop_enabled: false
+
+web:
+  backend: "ddgs"
+
+browser:
+  inactivity_timeout: 300
+  extension_control:
+    enabled: true
+
+computer_use:
+  cua_telemetry: false
+  max_image_dimension: 2048
+
+platform_toolsets:
+  cli: [hermes-cli]
+  signal: [hermes-signal]
+  whatsapp: [hermes-whatsapp]
+
+delegation:
+  max_iterations: 250
+  max_concurrent_children: 8
+  worktree_isolation: true
+  max_spawn_depth: 3
+  orchestrator_enabled: true
+  subagent_auto_approve: true
+  inherit_mcp_toolsets: true
+
+display:
+  tool_progress: all
+  interim_assistant_messages: true
+  long_running_notifications: true
+  busy_input_mode: steer
+  platforms:
+    signal:
+      tool_progress: off
+    whatsapp:
+      tool_progress: off
+
+checkpoints:
+  enabled: true
+  max_snapshots: 50
+  max_total_size_mb: 4096
+  auto_prune: true
+
+mcp_servers:
+  workstation_codex:
+    command: "/usr/local/bin/hermes-workstation-mcp"
+    args: ["codex"]
+    timeout: 1800
+    connect_timeout: 60
+    keepalive_interval: 120
+  workstation_cua:
+    command: "/usr/local/bin/hermes-workstation-mcp"
+    args: ["cua"]
+    timeout: 300
+    connect_timeout: 60
+    keepalive_interval: 60

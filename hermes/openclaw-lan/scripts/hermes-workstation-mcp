@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mode="${1:?usage: hermes-workstation-mcp codex|cua}"
+ssh_args=(
+  -T
+  -i /root/.ssh/hermes-workstation
+  -o BatchMode=yes
+  -o IdentitiesOnly=yes
+  -o StrictHostKeyChecking=accept-new
+  -o ServerAliveInterval=30
+  -o ServerAliveCountMax=3
+  nikolanovoselec@192.168.1.109
+)
+
+case "$mode" in
+  codex)
+    exec ssh "${ssh_args[@]}" /usr/local/bin/hermes-codex-mcp
+    ;;
+  cua)
+    exec ssh "${ssh_args[@]}" /usr/local/bin/hermes-cua-mcp
+    ;;
+  *)
+    echo "unknown workstation MCP mode: $mode" >&2
+    exit 64
+    ;;
+esac
