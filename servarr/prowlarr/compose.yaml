@@ -1,6 +1,6 @@
 services:
   prowlarr:
-    image: lscr.io/linuxserver/prowlarr:2.5.2.5491-ls158
+    image: lscr.io/linuxserver/prowlarr:2.5.2.5491-ls159
     container_name: servarr_prowlarr
     #dns:
     #  - 100.64.0.2
