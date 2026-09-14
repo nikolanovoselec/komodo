@@ -10,8 +10,6 @@ services:
     environment:
       LOG_LEVEL: INFO
       ENABLE_EDITOR: "false"
-      DYNACAT_AUTH_SECRET_KEY: ${DYNACAT_AUTH_SECRET_KEY}
-      DYNACAT_ADMIN_PASSWORD_HASH: ${DYNACAT_ADMIN_PASSWORD_HASH}
     restart: unless-stopped
     network_mode: bridge
     read_only: true

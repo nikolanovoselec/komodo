@@ -1817,10 +1817,6 @@ auto_update_all_services = true
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
 run_directory = "tools/dynacat"
-environment = """
-DYNACAT_AUTH_SECRET_KEY = [[DYNACAT_AUTH_SECRET_KEY]]
-DYNACAT_ADMIN_PASSWORD_HASH = [[DYNACAT_ADMIN_PASSWORD_HASH]]
-"""
 
 ##
 
