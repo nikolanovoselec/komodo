@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Read-only adapter: Dozzle SSE -> compact JSON for Dynacat custom-api widgets."""
 import json
+import os
 import urllib.request
 from collections import Counter
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -85,4 +86,4 @@ class Handler(BaseHTTPRequestHandler):
         pass
 
 
-ThreadingHTTPServer(("0.0.0.0", 8091), Handler).serve_forever()
+ThreadingHTTPServer((os.environ.get("BIND_HOST", "0.0.0.0"), 8091), Handler).serve_forever()

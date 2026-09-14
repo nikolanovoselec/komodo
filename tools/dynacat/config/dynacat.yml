@@ -169,8 +169,6 @@ pages:
         url: https://status.graymatter.ch/dashboard
       - title: Proxmox
         url: https://proxmox.graymatter.ch
-      - title: Plex
-        url: https://plex.novoselec.ch
     - type: bookmarks
       css-class: quick-links
       groups:
@@ -216,18 +214,12 @@ pages:
       show-history: true
       update-interval: 2m
       sites:
-      - title: Beszel fleet
-        url: https://beszel.local.graymatter.ch/
       - title: Proxmox cluster
         url: https://proxmox.graymatter.ch
       - title: Proxmox Backup Server
         url: https://pbs.graymatter.ch/
       - title: Komodo control plane
         url: https://komodo.graymatter.ch
-      - title: Middleware
-        url: https://middleware.lan
-      - title: Media Servers
-        url: https://plex.novoselec.ch
     - type: split-column
       widgets:
       - type: html
@@ -258,7 +250,7 @@ pages:
     - type: custom-api
       title: Container estate · live
       title-icon: mdi:docker
-      url: http://dynacat-dozzle-bridge:8091/dozzle
+      url: http://host.docker.internal:8091/dozzle
       cache: 20s
       template: "<div class=\"dozzle-summary\">\n  <div><strong class=\"color-highlight\">{{ .JSON.Int \"total\"\
         \ }}</strong><span>CONTAINERS</span></div>\n  <div><strong class=\"color-positive\">{{ .JSON.Int \"running\"\
