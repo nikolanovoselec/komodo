@@ -255,30 +255,20 @@ pages:
       frameless: true
       css-class: section-label
       source: <div><span class="status-dot"></span> CONTAINER ESTATE <small>Dozzle · 12 hosts</small></div>
-    - type: monitor
-      title: Container observability
+    - type: custom-api
+      title: Container estate · live
       title-icon: mdi:docker
-      style: compact
-      show-history: true
-      update-interval: 1m
-      sites:
-      - title: Dozzle · 12 Docker hosts
-        url: https://dozzle.local.graymatter.ch/
-      - title: Tools workloads
-        url: https://dozzle.local.graymatter.ch/
-      - title: Servarr workloads
-        url: https://dozzle.local.graymatter.ch/
-      - title: Media workloads
-        url: https://dozzle.local.graymatter.ch/
-      - title: Middleware workloads
-        url: https://dozzle.local.graymatter.ch/
-    - type: html
-      title: Container estate
-      title-icon: mdi:docker
-      source: <div class="metric-grid"><a href="https://dozzle.local.graymatter.ch/"><strong>12 Docker hosts</strong><span>Logs,
-        CPU, memory & containers</span></a><a href="https://komodo.graymatter.ch"><strong>Komodo</strong><span>Tracked
-        deployment control</span></a><a href="https://portainer.graymatter.ch"><strong>Portainer</strong><span>Container
-        administration</span></a></div>
+      url: http://dynacat-dozzle-bridge:8091/dozzle
+      cache: 20s
+      template: "<div class=\"dozzle-summary\">\n  <div><strong class=\"color-highlight\">{{ .JSON.Int \"total\"\
+        \ }}</strong><span>CONTAINERS</span></div>\n  <div><strong class=\"color-positive\">{{ .JSON.Int \"running\"\
+        \ }}</strong><span>RUNNING</span></div>\n  <div><strong>{{ .JSON.Int \"hosts\" }}</strong><span>HOSTS</span></div>\n\
+        </div>\n<div class=\"dozzle-usage\">{{ .JSON.Float \"cpu\" | printf \"%.1f\" }}% combined CPU · {{ .JSON.Float\
+        \ \"memory_mb\" | printf \"%.0f\" }} MB memory</div>\n<ul class=\"list list-gap-10 collapsible-container\"\
+        \ data-collapse-after=\"6\">\n{{ range .JSON.Array \"top\" }}\n  <li class=\"dozzle-row\"><span class=\"\
+        dozzle-state {{ if eq (.String \"state\") \"running\" }}color-positive{{ else }}color-negative{{ end }}\"\
+        >●</span><span class=\"dozzle-name\">{{ .String \"name\" }}</span><span>{{ .Float \"cpu\" | printf \"%.1f\"\
+        \ }}%</span><span>{{ .Float \"memory_mb\" | printf \"%.0f\" }} MB</span></li>\n{{ end }}\n</ul>"
     - type: rss
       title: Infrastructure signal
       title-icon: mdi:rss

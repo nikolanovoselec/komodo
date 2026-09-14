@@ -17,3 +17,5 @@ body { letter-spacing: .01em; }
 .metric-grid span { display:block; color:var(--color-paragraph); font-size:.68rem; margin-top:.28rem; }
 .quick-links .list { gap:.15rem; }
 @media(max-width:900px){ .cc-title{font-size:1.65rem}.telemetry-frame iframe,.dozzle-frame iframe{min-height:500px}.metric-grid{grid-template-columns:1fr} }
+
+.dozzle-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:.55rem}.dozzle-summary div{padding:.55rem .25rem;border:1px solid var(--cc-border);border-radius:.45rem;text-align:center;background:var(--cc-panel)}.dozzle-summary strong{display:block;font-size:1.35rem}.dozzle-summary span{display:block;font-size:.58rem;letter-spacing:.08em;color:var(--color-paragraph);margin-top:.15rem}.dozzle-usage{font-size:.72rem;color:var(--color-paragraph);padding:.35rem 0 .65rem}.dozzle-row{display:grid;grid-template-columns:.7rem 1fr 2.5rem 3.9rem;align-items:center;gap:.25rem;font-size:.72rem}.dozzle-state{font-size:.55rem}.dozzle-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
