@@ -1,0 +1,23 @@
+services:
+  dynacat:
+    image: panonim/dynacat:3.0.0
+    container_name: tools_dynacat
+    ports:
+      - "8080:8080"
+    volumes:
+      - /docker/configs/dynacat/config:/app/config
+      - /docker/configs/dynacat/assets:/app/assets
+    environment:
+      LOG_LEVEL: INFO
+      ENABLE_EDITOR: "false"
+      DYNACAT_AUTH_SECRET_KEY: ${DYNACAT_AUTH_SECRET_KEY}
+      DYNACAT_ADMIN_PASSWORD_HASH: ${DYNACAT_ADMIN_PASSWORD_HASH}
+    restart: unless-stopped
+    network_mode: bridge
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true

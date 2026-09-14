@@ -1,0 +1,23 @@
+# Initial private Dynacat configuration for tools.lan.
+# Set the Komodo variables DYNACAT_AUTH_SECRET_KEY and DYNACAT_ADMIN_PASSWORD_HASH
+# before deployment. Create the password hash with:
+# docker run --rm panonim/dynacat:3.0.0 password:hash '<password>'
+
+server:
+  port: 8080
+  assets-path: /app/assets
+  cache-dir: /app/assets/.cache
+  allow-editing: false
+
+auth:
+  require-auth: true
+  secret-key: ${DYNACAT_AUTH_SECRET_KEY}
+  users:
+    nikola:
+      password-hash: ${DYNACAT_ADMIN_PASSWORD_HASH}
+
+pages:
+  - name: Home
+    columns:
+      - size: full
+        widgets: []
