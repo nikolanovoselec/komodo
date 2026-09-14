@@ -1807,7 +1807,7 @@ run_directory = "tools/dozzle_agent"
 
 [[stack]]
 name = "tools_dynacat"
-tags = ["sync", "disabled"]
+tags = ["sync"]
 [stack.config]
 server = "tools"
 run_build = true
