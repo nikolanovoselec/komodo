@@ -13,26 +13,6 @@ services:
       # Values are injected by Komodo, never committed in this repository.
       SONARR_API_KEY: ${SONARR_API_KEY}
       RADARR_API_KEY: ${RADARR_API_KEY}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    restart: unless-stopped
-    read_only: true
-    tmpfs:
-      - /tmp
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges:true
-
-  dynacat-dozzle-bridge:
-    image: python:3.12-alpine
-    container_name: tools_dynacat_dozzle_bridge
-    command: ["python", "/app/dozzle_bridge.py"]
-    volumes:
-      - ./bridge/dozzle_bridge.py:/app/dozzle_bridge.py:ro
-    environment:
-      BIND_HOST: 172.17.0.1
-    network_mode: host
     restart: unless-stopped
     read_only: true
     tmpfs:
