@@ -196,10 +196,38 @@ pages:
       css-class: section-label
       source: <div><span class="status-dot"></span> LIVE FLEET TELEMETRY <small>Beszel · CPU / memory / disk / load
         / network / alerts</small></div>
-    - type: iframe
-      source: https://beszel.local.graymatter.ch/
-      height: 700
-      css-class: telemetry-frame
+    - type: server-stats
+      title: Tools node · live capacity
+      title-icon: mdi:server
+      servers:
+      - type: local
+        name: tools.lan
+        compact: false
+        hide-swap: true
+        hide-mountpoints-by-default: true
+        mountpoints:
+          /:
+            name: System volume
+            hide: false
+    - type: monitor
+      title: Fleet telemetry entrypoints
+      title-icon: mdi:server-network
+      style: compact
+      show-history: true
+      update-interval: 2m
+      sites:
+      - title: Beszel fleet
+        url: https://beszel.local.graymatter.ch/
+      - title: Proxmox cluster
+        url: https://proxmox.graymatter.ch
+      - title: Proxmox Backup Server
+        url: https://pbs.graymatter.ch/
+      - title: Komodo control plane
+        url: https://komodo.graymatter.ch
+      - title: Middleware
+        url: https://middleware.lan
+      - title: Media Servers
+        url: https://plex.novoselec.ch
     - type: split-column
       widgets:
       - type: html
@@ -227,10 +255,30 @@ pages:
       frameless: true
       css-class: section-label
       source: <div><span class="status-dot"></span> CONTAINER ESTATE <small>Dozzle · 12 hosts</small></div>
-    - type: iframe
-      source: https://dozzle.local.graymatter.ch/
-      height: 700
-      css-class: dozzle-frame
+    - type: monitor
+      title: Container observability
+      title-icon: mdi:docker
+      style: compact
+      show-history: true
+      update-interval: 1m
+      sites:
+      - title: Dozzle · 12 Docker hosts
+        url: https://dozzle.local.graymatter.ch/
+      - title: Tools workloads
+        url: https://dozzle.local.graymatter.ch/
+      - title: Servarr workloads
+        url: https://dozzle.local.graymatter.ch/
+      - title: Media workloads
+        url: https://dozzle.local.graymatter.ch/
+      - title: Middleware workloads
+        url: https://dozzle.local.graymatter.ch/
+    - type: html
+      title: Container estate
+      title-icon: mdi:docker
+      source: <div class="metric-grid"><a href="https://dozzle.local.graymatter.ch/"><strong>12 Docker hosts</strong><span>Logs,
+        CPU, memory & containers</span></a><a href="https://komodo.graymatter.ch"><strong>Komodo</strong><span>Tracked
+        deployment control</span></a><a href="https://portainer.graymatter.ch"><strong>Portainer</strong><span>Container
+        administration</span></a></div>
     - type: rss
       title: Infrastructure signal
       title-icon: mdi:rss
@@ -299,10 +347,23 @@ pages:
       frameless: true
       css-class: section-label
       source: <div><span class="status-dot"></span> MEDIA CONTROL <small>Downloads · releases · servers · library</small></div>
-    - type: iframe
-      source: https://dozzle.local.graymatter.ch/
-      height: 500
-      css-class: dozzle-frame
+    - type: monitor
+      title: Media container estate
+      title-icon: mdi:docker
+      style: compact
+      show-history: true
+      update-interval: 1m
+      sites:
+      - title: Dozzle
+        url: https://dozzle.local.graymatter.ch/
+      - title: Plex
+        url: https://plex.novoselec.ch
+      - title: qBittorrent
+        url: https://qbittorrent.graymatter.ch
+      - title: Sonarr
+        url: https://sonarr.graymatter.ch
+      - title: Radarr
+        url: https://radarr.graymatter.ch
     - type: videos
       title: Architecture & technology
       title-icon: mdi:youtube
@@ -608,10 +669,10 @@ pages:
       limit: 12
       collapse-after: 8
       feeds:
-      - title: SRF
-        url: https://www.srf.ch/feed/news/bnfz
-      - title: Watson
-        url: https://www.watson.ch/rss
+      - title: BBC News
+        url: https://feeds.bbci.co.uk/news/rss.xml
+      - title: Ars Technica
+        url: https://feeds.arstechnica.com/arstechnica/index
       - title: The Register
         url: https://www.theregister.com/headlines.atom
     - type: bookmarks
