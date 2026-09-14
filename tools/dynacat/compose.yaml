@@ -5,8 +5,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - /docker/configs/dynacat/config:/app/config
-      - /docker/configs/dynacat/assets:/app/assets
+      - ./config:/app/config
+      - ./assets:/app/assets
     environment:
       LOG_LEVEL: INFO
       ENABLE_EDITOR: "false"

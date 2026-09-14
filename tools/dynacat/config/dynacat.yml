@@ -1,14 +1,455 @@
-# Dynacat is protected by Cloudflare Access. Do not expose this port publicly
-# without an equivalent access-control layer.
+# Managed through nikolanovoselec/komodo. Cloudflare Access is the access boundary.
+# No Dynacat application authentication or Docker socket is configured.
 
 server:
   port: 8080
   assets-path: /app/assets
   cache-dir: /app/assets/.cache
   allow-editing: false
-
+branding:
+  app-name: Nikola Control Plane
+  hide-logo: false
+  custom-footer: <span>Gray Matter · private operational workspace</span>
+theme:
+  background-color: 220 12 12
+  primary-color: 8 82 67
+  positive-color: 150 48 57
+  negative-color: 350 83 66
+  contrast-multiplier: 1.2
+  text-saturation-multiplier: 0.8
+  disable-picker: false
+  presets:
+    teal-city:
+      background-color: 225 14 15
+      primary-color: 157 47 65
+      contrast-multiplier: 1.1
+    midnight-navy:
+      background-color: 222 20 7
+      primary-color: 215 50 60
+      contrast-multiplier: 1.1
+    camouflage:
+      background-color: 186 21 20
+      contrast-multiplier: 1.2
+      primary-color: 97 13 80
+    catppuccin-frappe:
+      background-color: 229 19 23
+      contrast-multiplier: 1.2
+      primary-color: 222 74 74
+      positive-color: 96 44 68
+      negative-color: 359 68 71
+    catppuccin-macchiato:
+      background-color: 232 23 18
+      contrast-multiplier: 1.2
+      primary-color: 220 83 75
+      positive-color: 105 48 72
+      negative-color: 351 74 73
+    catppuccin-mocha:
+      background-color: 240 21 15
+      contrast-multiplier: 1.2
+      primary-color: 217 92 83
+      positive-color: 115 54 76
+      negative-color: 347 70 65
+    gruvbox-dark:
+      background-color: 0 0 16
+      primary-color: 43 59 81
+      positive-color: 61 66 44
+      negative-color: 6 96 59
+    kanagawa-dark:
+      background-color: 240 13 14
+      primary-color: 51 33 68
+      negative-color: 358 100 68
+      contrast-multiplier: 1.2
+    tucan:
+      background-color: 50 1 6
+      primary-color: 24 97 58
+      negative-color: 209 88 54
+    dracula:
+      background-color: 231 15 21
+      primary-color: 265 89 79
+      contrast-multiplier: 1.2
+      positive-color: 135 94 66
+      negative-color: 0 100 67
+    shades-of-purple:
+      background-color: 243 33 25
+      contrast-multiplier: 1.2
+      primary-color: 50 100 49
+      positive-color: 98 82 71
+      negative-color: 12 77 52
+    neon-pink-:
+      background-color: 240 27 11
+      contrast-multiplier: 1.5
+      primary-color: 321 100 71
+      positive-color: 165 78 51
+      negative-color: 360 100 71
+    degoog-dark:
+      background-color: 227 11 16
+      contrast-multiplier: 1.2
+      primary-color: 220 34 51
+      positive-color: 136 53 43
+      negative-color: 5 81 56
+    catppuccin-latte:
+      light: true
+      background-color: 220 23 95
+      contrast-multiplier: 1.0
+      primary-color: 220 91 54
+      positive-color: 109 58 40
+      negative-color: 347 87 44
+    peachy:
+      light: true
+      background-color: 28 40 77
+      primary-color: 155 100 20
+      negative-color: 0 100 60
+      contrast-multiplier: 1.1
+      text-saturation-multiplier: 0.5
+    zebra:
+      light: true
+      background-color: 0 0 95
+      primary-color: 0 0 10
+      negative-color: 0 90 50
+    morning-paper:
+      light: true
+      background-color: 40 10 95
+      primary-color: 25 50 35
+      text-saturation-multiplier: 0.8
+    heather-mist:
+      light: true
+      background-color: 270 12 97
+      primary-color: 270 35 50
+    degoog-light:
+      light: true
+      background-color: 0 0 95
+      contrast-multiplier: 1.1
+      primary-color: 217 36 36
+      positive-color: 136 53 40
+      negative-color: 5 81 56
 pages:
-  - name: Home
-    columns:
-      - size: full
-        widgets: []
+- name: Operations
+  columns:
+  - size: small
+    widgets:
+    - type: monitor
+      title: Core services
+      style: compact
+      show-history: true
+      update-interval: 2m
+      sites:
+      - title: Komodo
+        url: https://komodo.graymatter.ch
+      - title: Authentik
+        url: https://authentik.graymatter.ch/if/admin/#/administration/overview
+      - title: Beszel
+        url: https://beszel.graymatter.ch
+      - title: Uptime Kuma
+        url: https://status.graymatter.ch/dashboard
+      - title: Proxmox
+        url: https://proxmox.graymatter.ch
+      - title: Proxmox Backup Server
+        url: https://pbs.graymatter.ch/
+      - title: Portainer
+        url: https://portainer.graymatter.ch
+      - title: Termix
+        url: https://termix.novoselec.ch
+  - size: full
+    widgets:
+    - type: bookmarks
+      groups:
+      - title: Control plane
+        color: 8 82 67
+        links:
+        - title: Authentik
+          url: https://authentik.graymatter.ch/if/admin/#/administration/overview
+          description: Identitiy and access management
+        - title: Backrest Komodo
+          url: https://backrest-komodo.graymatter.ch
+          description: Backup and restore
+        - title: Backrest Media Servers
+          url: https://backrest-mediaservers.graymatter.ch
+          description: Backup and restore
+        - title: Backrest Middleware
+          url: https://backrest-middleware.graymatter.ch
+          description: Backup and restore
+        - title: Backrest Pihole
+          url: https://backrest-pihole-master.graymatter.ch
+          description: Backup and restore
+        - title: Backrest Servarr
+          url: https://backrest-servarr.graymatter.ch
+          description: Backup and restore
+        - title: Backrest Synology
+          url: https://backrest-nas.graymatter.ch
+          description: Backup and restore
+        - title: Backrest Tools
+          url: https://backrest-tools.graymatter.ch
+          description: Backup and restore
+        - title: Heimdall
+          url: https://heimdall.graymatter.ch
+          description: Dashboard
+        - title: Hermes
+          url: https://hermes.novoselec.ch
+          description: Superpowered Agent
+        - title: IT Tools
+          url: https://tools.graymatter.ch
+          description: Developer tools
+        - title: Komodo
+          url: https://komodo.graymatter.ch
+          description: Manage servers and deploy containers
+        - title: Portainer
+          url: https://portainer.graymatter.ch
+          description: Docker container management
+        - title: Proxmox
+          url: https://proxmox.graymatter.ch
+          description: Server virtualization platform
+        - title: Proxmox Backup Server
+          url: https://pbs.graymatter.ch/
+          description: Proxmox Backups
+        - title: Synology
+          url: https://nas.graymatter.ch/?forceDesktop=stay_desktop#/signin
+          description: Network attached storage
+        - title: Termix
+          url: https://termix.novoselec.ch
+          description: SSH Server Management Platform
+      - title: Observability
+        color: 215 50 60
+        links:
+        - title: Beszel
+          url: https://beszel.graymatter.ch
+          description: Server status monitoring
+        - title: Dozzle
+          url: https://dozzle.graymatter.ch
+          description: Container log aggregator
+        - title: Uptime Kuma
+          url: https://status.graymatter.ch/dashboard
+          description: Monitoring and alerting
+- name: Media
+  columns:
+  - size: full
+    widgets:
+    - type: bookmarks
+      groups:
+      - title: Media platform
+        color: 222 74 74
+        links:
+        - title: Autobrr
+          url: https://autobrr.graymatter.ch
+          description: IRC & RSS download automation
+        - title: Bazarr
+          url: https://bazarr.graymatter.ch
+          description: Subtitle finder and downloader
+        - title: Castopod
+          url: https://podcast.novoselec.ch/cp-admin
+          description: Podcast Hosting Platform
+        - title: Crosswatch
+          url: https://crosswatch.novoselec.ch
+          description: Media watch state synchroniser
+        - title: Emby
+          url: https://emby.novoselec.ch
+          description: Media server
+        - title: Huntarr
+          url: https://huntarr.graymatter.ch
+          description: Missing media finder
+        - title: Jellyfin
+          url: https://jellyfin.novoselec.ch
+          description: Media server
+        - title: Lidarr
+          url: https://lidarr.graymatter.ch
+          description: Music manager and requester
+        - title: Maintainerr
+          url: https://maintainerr.graymatter.ch
+          description: Shit deleter
+        - title: Ombi
+          url: https://ombi.graymatter.ch
+          description: Multimedia requester
+        - title: Plex
+          url: https://plex.novoselec.ch
+          description: Media server
+        - title: Profilarr
+          url: https://profilarr.graymatter.ch
+          description: Crash guide sync
+        - title: Prowlarr
+          url: https://prowlarr.graymatter.ch
+          description: Indexer
+        - title: qBittorrent
+          url: https://qbittorrent.graymatter.ch/#/
+          description: Torrent downloader
+        - title: Radarr
+          url: https://radarr.graymatter.ch
+          description: Movie manager and requester
+        - title: Seerr
+          url: https://seerr.novoselec.ch
+          description: Media Requester
+        - title: Sonarr
+          url: https://sonarr.graymatter.ch
+          description: Series manager and requester
+        - title: Spotifux
+          url: https://spotifux.novoselec.ch
+          description: Spotify Ass Jockey
+        - title: Tautulli
+          url: https://tautulli.graymatter.ch
+          description: Plex management
+        - title: Tracearr
+          url: https://tracearr.novoselec.ch
+          description: Media server playback tracker
+        - title: Transmission
+          url: https://transmission.graymatter.ch
+          description: Legacy torrent downloader
+        - title: Wizarr
+          url: https://wizarr.graymatter.ch
+          description: Media server invite manager
+- name: Workspace
+  columns:
+  - size: full
+    widgets:
+    - type: bookmarks
+      groups:
+      - title: Workspace
+        color: 96 44 68
+        links:
+        - title: BentoPDF
+          url: https://pdf.novoselec.ch
+          description: PDF destroyer
+        - title: Codeflare
+          url: https://codeflare.ch
+          description: AI Coding Hosted on Cloudflare
+        - title: Minecraft
+          url: https://minecraft-controller.novoselec.ch
+          description: Minecraft controller
+        - title: News Digest
+          url: https://news.graymatter.ch
+          description: The only place without fake news
+        - title: Nextcloud
+          url: https://nextcloud.novoselec.ch/
+          description: Self-Hosted Office Stack
+        - title: NGINX Proxy Manager
+          url: https://npm.graymatter.ch/
+          description: Reverse proxy
+        - title: Open Notebook
+          url: https://opennotebook.novoselec.ch
+          description: LLM Powered Thought Organizer
+        - title: Openspeedtest
+          url: https://speedtest.graymatter.ch
+          description: Local speedtest
+        - title: Paperless
+          url: https://paperless.graymatter.ch
+          description: Document management system
+        - title: Pihole Master
+          url: https://pihole-master.graymatter.ch
+          description: DNS Resolver and ad blocker
+        - title: Pihole Slave
+          url: https://pihole-slave.graymatter.ch
+          description: DNS Resolver and ad blocker
+        - title: Pihole Storage
+          url: https://pihole-storage.graymatter.ch
+          description: DNS Resolver and ad blocker
+        - title: Zipline
+          url: https://novoselec.ch
+          description: Share anything and shorten URLs
+      - title: Productivity & Multimedia
+        color: 270 35 50
+        links:
+        - title: ChatGPT
+          url: https://chatgpt.com
+          description: ''
+        - title: Claude
+          url: https://claude.ai
+          description: ''
+        - title: Gemini
+          url: https://gemini.google.com
+          description: ''
+        - title: LinkedIn
+          url: https://www.linkedin.com
+          description: ''
+        - title: Microsoft 365
+          url: https://office.com
+          description: ''
+        - title: NotebookLM
+          url: https://notebooklm.google.com/?icid=home_maincta
+          description: ''
+        - title: Outlook
+          url: https://outlook.office.com/mail/
+          description: ''
+        - title: Podcast
+          url: https://podcast.novoselec.ch
+          description: ''
+        - title: Whiteboard
+          url: https://whiteboard.cloud.microsoft
+          description: ''
+        - title: YouTube
+          url: https://www.youtube.com
+          description: ''
+      - title: Utilities
+        color: 25 50 35
+        links:
+        - title: Cloudflare
+          url: https://dash.cloudflare.com/ab75f75941a21a81db27bf12e99c620b/home/overview
+          description: ''
+        - title: Codeflare Integration
+          url: https://codeflare.novoselec.ch
+          description: ''
+        - title: Draw.io
+          url: https://app.diagrams.net
+          description: ''
+        - title: Fast
+          url: https://fast.com
+          description: ''
+        - title: GitHub
+          url: https://github.com/nikolanovoselec
+          description: ''
+        - title: Hermes Browser
+          url: https://hermes.novoselec.ch/browser-app/
+          description: ''
+        - title: Renovate
+          url: https://developer.mend.io/github/nikolanovoselec
+          description: ''
+        - title: Resend
+          url: https://resend.com/emails
+          description: ''
+        - title: Torrentleech
+          url: https://www.torrentleech.org/torrents/top/index/added/-1%20day/orderby/completed/order/desc
+          description: ''
+        - title: Unifi
+          url: https://unifi.ui.com
+          description: ''
+- name: News & Shopping
+  columns:
+  - size: full
+    widgets:
+    - type: bookmarks
+      groups:
+      - title: News
+        color: 321 100 71
+        links:
+        - title: 20 Minuten
+          url: https://20min.ch
+          description: ''
+        - title: Gray Matter
+          url: https://graymatter.ch
+          description: ''
+        - title: Index.hr
+          url: https://www.index.hr
+          description: ''
+        - title: Net.hr
+          url: https://net.hr
+          description: ''
+        - title: Reddit
+          url: https://reddit.com
+          description: ''
+        - title: SRF
+          url: https://www.srf.ch
+          description: ''
+        - title: Watson
+          url: https://www.watson.ch
+          description: ''
+      - title: Shopping
+        color: 8 82 67
+        links:
+        - title: Amazon
+          url: https://amazon.de
+          description: ''
+        - title: Digitec
+          url: https://www.digitec.ch
+          description: ''
+        - title: Galaxus
+          url: https://www.galaxus.ch
+          description: ''
+        - title: Temu
+          url: https://www.temu.com/ch/
+          description: ''
