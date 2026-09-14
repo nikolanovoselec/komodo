@@ -1,22 +1,24 @@
-# Managed through nikolanovoselec/komodo. Cloudflare Access is the access boundary.
-# No Dynacat application authentication or Docker socket is configured.
-
 server:
   port: 8080
   assets-path: /app/assets
   cache-dir: /app/assets/.cache
   allow-editing: false
+  proxied: true
 branding:
-  app-name: Nikola Control Plane
+  app-name: Gray Matter Command Center
   hide-logo: false
   custom-footer: <span>Gray Matter · private operational workspace</span>
+  logo-text: GM
+  hide-footer: true
+  show-desktop-navigation-on-hover: true
+  center-desktop-navigation: true
 theme:
-  background-color: 220 12 12
-  primary-color: 8 82 67
-  positive-color: 150 48 57
-  negative-color: 350 83 66
-  contrast-multiplier: 1.2
-  text-saturation-multiplier: 0.8
+  background-color: 216 18 8
+  primary-color: 8 78 62
+  positive-color: 151 49 54
+  negative-color: 1 79 62
+  contrast-multiplier: 1.25
+  text-saturation-multiplier: 0.72
   disable-picker: false
   presets:
     teal-city:
@@ -122,33 +124,228 @@ theme:
       primary-color: 217 36 36
       positive-color: 136 53 40
       negative-color: 5 81 56
+  custom-css-file: /assets/command-center.css
 pages:
-- name: Operations
+- name: Command Center
+  name-icon: mdi:radar
+  width: wide
+  desktop-navigation-width: wide
+  key-bind: d h
+  head-widgets:
+  - type: html
+    frameless: true
+    css-class: command-banner
+    source: <div class="cc-eyebrow">GRAY MATTER · PRIVATE OPERATIONS</div><div class="cc-title">COMMAND CENTER <span>LIVE</span></div><div
+      class="cc-subtitle">Fleet telemetry · service health · container estate · media operations</div>
   columns:
   - size: small
     widgets:
+    - type: clock
+      hour-format: 24h
+      timezones:
+      - timezone: Europe/Zurich
+        label: Bern
+      - timezone: America/New_York
+        label: New York
+    - type: weather
+      location: Bern, Switzerland
+      units: metric
+      hour-format: 24h
+      show-area-name: false
     - type: monitor
-      title: Core services
+      title: Service health
+      title-icon: mdi:heart-pulse
       style: compact
       show-history: true
       update-interval: 2m
       sites:
       - title: Komodo
         url: https://komodo.graymatter.ch
-      - title: Authentik
-        url: https://authentik.graymatter.ch/if/admin/#/administration/overview
       - title: Beszel
         url: https://beszel.graymatter.ch
+      - title: Dozzle
+        url: https://dozzle.local.graymatter.ch
       - title: Uptime Kuma
         url: https://status.graymatter.ch/dashboard
       - title: Proxmox
         url: https://proxmox.graymatter.ch
-      - title: Proxmox Backup Server
-        url: https://pbs.graymatter.ch/
-      - title: Portainer
-        url: https://portainer.graymatter.ch
-      - title: Termix
-        url: https://termix.novoselec.ch
+      - title: Plex
+        url: https://plex.novoselec.ch
+    - type: bookmarks
+      css-class: quick-links
+      groups:
+      - title: Control plane
+        color: 8 78 62
+        links:
+        - title: Komodo
+          url: https://komodo.graymatter.ch
+          icon: si:komodo
+        - title: Beszel
+          url: https://beszel.graymatter.ch
+          icon: mdi:chart-areaspline
+        - title: Dozzle
+          url: https://dozzle.local.graymatter.ch
+          icon: mdi:docker
+        - title: Proxmox
+          url: https://proxmox.graymatter.ch
+          icon: si:proxmox
+  - size: full
+    widgets:
+    - type: html
+      frameless: true
+      css-class: section-label
+      source: <div><span class="status-dot"></span> LIVE FLEET TELEMETRY <small>Beszel · CPU / memory / disk / load
+        / network / alerts</small></div>
+    - type: iframe
+      source: https://beszel.local.graymatter.ch/
+      height: 700
+      css-class: telemetry-frame
+    - type: split-column
+      widgets:
+      - type: html
+        title: Virtualisation estate
+        title-icon: mdi:server-network
+        source: <div class="metric-grid"><a href="https://proxmox.graymatter.ch"><strong>Proxmox I</strong><span>Compute
+          & LXC</span></a><a href="https://proxmox.graymatter.ch"><strong>Proxmox II</strong><span>Compute & LXC</span></a><a
+          href="https://proxmox.graymatter.ch"><strong>Proxmox III</strong><span>Compute & LXC</span></a></div>
+      - type: releases
+        title: Critical releases
+        title-icon: mdi:package-variant-closed
+        show-source-icon: true
+        name-only: true
+        limit: 5
+        collapse-after: 5
+        repositories:
+        - Panonim/dynacat
+        - dockerhub:linuxserver/plex
+        - dockerhub:linuxserver/sonarr
+        - dockerhub:linuxserver/radarr
+        - dockerhub:qbittorrentofficial/qbittorrent-nox
+  - size: small
+    widgets:
+    - type: html
+      frameless: true
+      css-class: section-label
+      source: <div><span class="status-dot"></span> CONTAINER ESTATE <small>Dozzle · 12 hosts</small></div>
+    - type: iframe
+      source: https://dozzle.local.graymatter.ch/
+      height: 700
+      css-class: dozzle-frame
+    - type: rss
+      title: Infrastructure signal
+      title-icon: mdi:rss
+      style: vertical-list
+      limit: 8
+      collapse-after: 6
+      single-line-titles: true
+      feeds:
+      - title: Krebs on Security
+        url: https://krebsonsecurity.com/feed/
+      - title: The Register
+        url: https://www.theregister.com/headlines.atom
+- name: Media Ops
+  slug: media-ops
+  name-icon: mdi:play-circle
+  width: wide
+  desktop-navigation-width: wide
+  key-bind: d m
+  columns:
+  - size: small
+    widgets:
+    - type: torrenting
+      title: Active downloads
+      title-icon: mdi:download-network
+      update-interval: 30s
+      hide-completed: true
+      hide-inactive: true
+      wrap-text: true
+      collapse-after: 8
+      hosts:
+      - url: http://192.168.2.38:8080
+        username: ''
+        password: ''
+    - type: calendar
+      title: Release calendar
+      title-icon: mdi:calendar-star
+      show-release-state: true
+      update-interval: 30m
+      hosts:
+      - url: sonarr:http://192.168.2.38:8988
+        public-url: https://sonarr.graymatter.ch
+        token: ${SONARR_API_KEY}
+      - url: radarr:http://192.168.2.38:8309
+        public-url: https://radarr.graymatter.ch
+        token: ${RADARR_API_KEY}
+    - type: bookmarks
+      groups:
+      - title: Media control
+        color: 222 74 74
+        links:
+        - title: Plex
+          url: https://plex.novoselec.ch
+          icon: si:plex
+        - title: qBittorrent
+          url: https://qbittorrent.graymatter.ch
+          icon: si:qbittorrent
+        - title: Sonarr
+          url: https://sonarr.graymatter.ch
+          icon: si:sonarr
+        - title: Radarr
+          url: https://radarr.graymatter.ch
+          icon: si:radarr
+  - size: full
+    widgets:
+    - type: html
+      frameless: true
+      css-class: section-label
+      source: <div><span class="status-dot"></span> MEDIA CONTROL <small>Downloads · releases · servers · library</small></div>
+    - type: iframe
+      source: https://dozzle.local.graymatter.ch/
+      height: 500
+      css-class: dozzle-frame
+    - type: videos
+      title: Architecture & technology
+      title-icon: mdi:youtube
+      channels:
+      - UCXuqSBlHAE6Xw-yeJA0Tunw
+      - UCBJycsmduvYEL83R_U4JriQ
+      - UCHnyfMqiRRG1u-2MsSQLbXA
+      style: grid-cards
+      limit: 9
+      collapse-after-rows: 1
+  - size: small
+    widgets:
+    - type: monitor
+      title: Media services
+      style: compact
+      show-history: true
+      sites:
+      - title: Plex
+        url: https://plex.novoselec.ch
+      - title: Sonarr
+        url: https://sonarr.graymatter.ch
+      - title: Radarr
+        url: https://radarr.graymatter.ch
+      - title: qBittorrent
+        url: https://qbittorrent.graymatter.ch
+      - title: Tautulli
+        url: https://tautulli.graymatter.ch
+    - type: rss
+      title: Media signal
+      style: vertical-list
+      limit: 8
+      collapse-after: 6
+      single-line-titles: true
+      feeds:
+      - title: Ars Technica
+        url: https://feeds.arstechnica.com/arstechnica/index
+- name: Directory
+  slug: directory
+  name-icon: mdi:apps
+  width: wide
+  desktop-navigation-width: wide
+  key-bind: d d
+  columns:
   - size: full
     widgets:
     - type: bookmarks
@@ -219,12 +416,6 @@ pages:
         - title: Uptime Kuma
           url: https://status.graymatter.ch/dashboard
           description: Monitoring and alerting
-- name: Media
-  columns:
-  - size: full
-    widgets:
-    - type: bookmarks
-      groups:
       - title: Media platform
         color: 222 74 74
         links:
@@ -294,12 +485,6 @@ pages:
         - title: Wizarr
           url: https://wizarr.graymatter.ch
           description: Media server invite manager
-- name: Workspace
-  columns:
-  - size: full
-    widgets:
-    - type: bookmarks
-      groups:
       - title: Workspace
         color: 96 44 68
         links:
@@ -408,10 +593,27 @@ pages:
         - title: Unifi
           url: https://unifi.ui.com
           description: ''
-- name: News & Shopping
+- name: News
+  slug: news
+  name-icon: mdi:newspaper-variant-outline
+  width: wide
+  desktop-navigation-width: wide
+  key-bind: d n
   columns:
   - size: full
     widgets:
+    - type: rss
+      title: News desk
+      style: horizontal-cards-2
+      limit: 12
+      collapse-after: 8
+      feeds:
+      - title: SRF
+        url: https://www.srf.ch/feed/news/bnfz
+      - title: Watson
+        url: https://www.watson.ch/rss
+      - title: The Register
+        url: https://www.theregister.com/headlines.atom
     - type: bookmarks
       groups:
       - title: News
