@@ -1816,6 +1816,7 @@ auto_update = true
 auto_update_all_services = true
 git_account = "nikolanovoselec"
 repo = "nikolanovoselec/komodo"
+webhook_force_deploy = true
 run_directory = "tools/dynacat"
 environment = """
 SONARR_API_KEY = [[SONARR_API_KEY]]
