@@ -262,8 +262,8 @@ pages:
       collapse-after: 8
       hosts:
       - url: http://192.168.2.38:8080
-        username: ''
-        password: ''
+        username: dynacat
+        password: dynacat
     - type: calendar
       title: Release calendar
       title-icon: mdi:calendar-star
