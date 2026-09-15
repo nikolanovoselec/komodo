@@ -13,6 +13,8 @@ services:
       # Values are injected by Komodo, never committed in this repository.
       SONARR_API_KEY: ${SONARR_API_KEY}
       RADARR_API_KEY: ${RADARR_API_KEY}
+      DYNACAT_KOMODO_API_KEY: ${DYNACAT_KOMODO_API_KEY}
+      DYNACAT_KOMODO_API_SECRET: ${DYNACAT_KOMODO_API_SECRET}
     restart: unless-stopped
     read_only: true
     tmpfs:
