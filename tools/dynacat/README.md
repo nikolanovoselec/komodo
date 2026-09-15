@@ -242,8 +242,9 @@ unprivileged, read-only, private-network-only deployment.
 - All three use host networking. Docker `net_io=0B / 0B` is not a measured idle
   per-app bandwidth value. The page explicitly marks per-app traffic unavailable.
   Separate host traffic shows Periphery's received/transmitted bytes from the last
-  declared polling interval across all interfaces, **not bytes/second** and not
-  Plex-only traffic. `refresh_ts` must be younger than 30 seconds.
+  declared polling interval across all interfaces, normalized by the declared polling seconds to decimal Mbps, not
+  Plex-only traffic. The graph connects sampled interval rates, not packet-timed
+  continuous measurements; see the navigation and traffic notes below. `refresh_ts` must be younger than 30 seconds.
   Verified implementation: Komodo v2.3.2 `bin/periphery/src/stats/mod.rs` sums
   sysinfo `received()` / `transmitted()` (since the previous network refresh).
 - Sonarr/Radarr reuse their existing protected Komodo variables in the sidecar.
@@ -283,8 +284,9 @@ native themes, and four viewport widths; it never serves synthetic telemetry.
 The visible navigation is **Hardware & Workloads**, **Media**, and
 **Endpoints & Services**. Fixed hidden aliases preserve `/command-center`,
 `/media-ops`, `/directory`, and `/news` bookmarks. The launcher preserves all 86
-original links across eight categories and all three original news feeds in its
-secondary News desk, with client-local search and category filters. Start was
+original links across eight categories, with client-local search and category
+filters. The old News desk feeds are removed; News Digest article integration
+is pending authenticated feed/API access (see NEWS.md). Start was
 inspected read-only as the visual reference; no endpoint credentials are copied.
 
 The native Clock widget uses Europe/Zurich, Europe/London, America/Los_Angeles,
@@ -308,6 +310,48 @@ existing LAN access policy, verified from the collector. No login, controls or
 settings writes are used. Transfer speeds are measured API rates; Plex bandwidth
 is separately labeled reserved capacity with reported-session coverage, including
 partial coverage rather than silently treating unreported streams as zero.
+
+## Media navigation and sampled bandwidth
+
+Now-playing cards (including artwork/title) and all recent Plex posters/titles
+open Plex Web details using authenticated `/identity.machineIdentifier` plus the
+item's validated numeric `ratingKey`. Episodes link to the exact episode, never a
+season, show, session or remote player. The route is verified against
+[Tautulli info.html](https://github.com/Tautulli/Tautulli/blob/master/data/interfaces/default/info.html):
+`https://app.plex.tv/desktop/#!/server/{machineIdentifier}/details?key=%2Flibrary%2Fmetadata%2F{ratingKey}`.
+Tokens remain server-side. Plex/SSO authentication remains the destination's job;
+no playback commands or credentials are sent through dashboard links. Missing
+identity leaves telemetry intact and explicitly disables the exact link.
+Now-playing artwork uses the existing bounded JPEG proxy, cached by versioned
+Plex artwork path. Native 1s polling and focus restoration are unchanged.
+
+Sonarr and Radarr items use API `titleSlug` in the verified AppRoutes paths
+`/series/:titleSlug` and `/movie/:titleSlug`; IMDb stays a distinct secondary link.
+Arr-only imports link to Arr, never guessed Plex membership. The existing
+qBittorrent endpoint runs VueTorrent: its deployed router defines
+`#/torrent/:hash/:tab?`. Only validated torrent hashes are used; headings/status
+open the service root. Server cards open their existing service UI, retaining the
+Komodo container URL in the private projection.
+
+`media_traffic.py` keeps a bounded ten-minute window of real media-host observations.
+Periphery v2.3.2 `received()/transmitted()` are interval volumes, not cumulative
+counters: decimal Mbps = bytes × 8 / configured polling seconds / 1e6. Core's
+monitor cache publishes sampled intervals (~15s in live checks), distinct from
+Periphery's configured 5s interval. Lines connect real observed interval rates;
+they do not claim continuous full-time coverage. Missing/invalid/stale data and
+observation gaps >=30s break the lines. Duplicate timestamps do not add points;
+timestamp rollback clears history. Falling volumes remain valid, not resets.
+Current unavailable values are null, not zero. RX solid and TX dashed use one
+scale; the plot shows source age, sample count, observed span, warmup and restart
+semantics. No historical points are fabricated or persisted. Per-app bandwidth
+remains unavailable because all three applications use host networking. Plex
+reserved bandwidth remains separate from these measured host interval rates.
+
+Regression: `qa_media_navigation.py BASE_URL OUTPUT` checks every displayed
+primary item link, actual poster/title popup navigation and noopener, proxy
+images, native refresh/focus, growing real graph history, mobile/light/dark layouts
+and removal of the former News desk. It never starts playback or writes media
+state. Authentication redirects are recorded without their query/fragment state.
 
 ## Browser-local theme compatibility
 

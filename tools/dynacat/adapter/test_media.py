@@ -22,6 +22,50 @@ class MediaTests(unittest.TestCase):
         with patch.object(media,'plex',return_value={'Metadata':[row]}):
             d=media.sessions();self.assertEqual(d['transcoding'],1);self.assertEqual(d['bandwidth_mbps'],12)
             self.assertEqual(d['streams'][0]['progress'],25);self.assertNotIn('must-not-leak',json.dumps(d))
+    def test_session_links_exact_episode_not_parent_or_session(self):
+        machine = '89c59dcd4e98f6e113cb25eab9ea6e591d9b67ee'
+        item = {'title':'Episode 8','type':'episode','ratingKey':'147721',
+                'key':'/library/metadata/147721','parentRatingKey':'147720',
+                'sessionKey':'private-session','User':{'id':'private-user'}}
+        def response(path):
+            return {'machineIdentifier':machine} if path == '/identity' else {'Metadata':[item]}
+        with patch.object(media,'plex',side_effect=response):
+            row = media.sessions()['streams'][0]
+        self.assertEqual(row.get('plex_url'), 'https://app.plex.tv/desktop/#!/server/' + machine + '/details?key=%2Flibrary%2Fmetadata%2F147721')
+        self.assertNotIn('private-',json.dumps(row))
+    def test_plex_url_rejects_untrusted_identifiers(self):
+        machine='89c59dcd4e98f6e113cb25eab9ea6e591d9b67ee'
+        for key in ('147721?X-Plex-Token=secret','../1','١٢٣','',None):
+            self.assertEqual(media.plex_item_url({'ratingKey':key},machine),'')
+        for value in ('https://evil/','a'*40+'?secret',None):
+            self.assertEqual(media.plex_item_url({'ratingKey':'147721'},value),'')
+    def test_identity_failure_retains_playback_without_guessed_link(self):
+        def read(path):
+            if path=='/identity':raise ValueError('secret')
+            return {'Metadata':[{'title':'Fixture','ratingKey':'147721'}]}
+        with patch.object(media,'plex',side_effect=read):
+            result=media.sessions()
+        self.assertEqual(result['count'],1)
+        self.assertEqual(result['streams'][0]['plex_url'],'')
+        self.assertNotIn('secret',json.dumps(result))
+    def test_library_items_exact_links_and_imdb_remains_secondary(self):
+        machine='89c59dcd4e98f6e113cb25eab9ea6e591d9b67ee'
+        def read(path):
+            if path=='/identity':return {'machineIdentifier':machine}
+            if path=='/library/sections':return {'Directory':[{'key':'2','type':'show'}]}
+            if 'Container-Size=0' in path:return {'totalSize':1}
+            return {'Metadata':[{'ratingKey':'147721','title':'Episode 8','type':'episode','Guid':[{'id':'imdb://tt1234567'}]}]}
+        with patch.object(media,'plex',side_effect=read),patch.object(media,'poster',return_value=''):
+            result=media.library()['recent'][0]
+        self.assertTrue(result['url'].endswith('/details?key=%2Flibrary%2Fmetadata%2F147721'))
+        self.assertEqual(result['imdb'],'https://www.imdb.com/title/tt1234567/')
+    def test_session_poster_cached_and_proxy_only(self):
+        media.session_poster.cache_clear()
+        with patch.object(media,'poster',return_value='base64') as load:
+            self.assertEqual(media.session_poster('/library/metadata/1/thumb/123'),'base64')
+            self.assertEqual(media.session_poster('/library/metadata/1/thumb/123'),'base64')
+            self.assertEqual(load.call_count,1)
+        media.session_poster.cache_clear()
     def test_missing_bandwidth_not_zero(self):
         with patch.object(media,'plex',return_value={'Metadata':[{'title':'Fixture'}]}):
             self.assertIsNone(media.sessions()['bandwidth_mbps'])
