@@ -10,7 +10,7 @@ branding:
   custom-footer: <span>Gray Matter · private operational workspace</span>
   logo-text: GM
   hide-footer: true
-  show-desktop-navigation-on-hover: true
+  show-desktop-navigation-on-hover: false
   center-desktop-navigation: true
 theme:
   background-color: 216 18 8

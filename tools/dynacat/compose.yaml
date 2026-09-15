@@ -4,7 +4,7 @@ services:
     container_name: tools_dynacat
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "komodo-native-2"
+      ch.graymatter.config-revision: "komodo-native-3"
     ports:
       - "8080:8080"
     volumes:
