@@ -35,7 +35,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "construct-dashboard-followup-31"
+      ch.graymatter.config-revision: "construct-session-controls-header-32"
     expose: ["8080"]
     volumes:
       - ./config:/app/config

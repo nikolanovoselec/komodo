@@ -79,12 +79,15 @@
   if (typeof module !== 'undefined') module.exports = {createRadio};
   if (typeof window === 'undefined' || window.__plexRadioInstalled) return;
   window.__plexRadioInstalled=true;
-  let card=null, radio=null;
+  let card=null, radio=null, miniDismissed=false;
   const onMedia=() => /^\/media\/?$/.test(window.location.pathname);
   function placeCard() {
     const target=onMedia() ? document.querySelector('.page-columns > .page-column') : document.body;
     if(target && card.parentNode!==target) {if(onMedia())target.prepend(card);else target.append(card);}
     card.classList.toggle('pr-mini',!onMedia());
+    if(onMedia()) miniDismissed=false;
+    card.hidden=!onMedia() && miniDismissed;
+    card.querySelector('.pr-dismiss').hidden=onMedia();
   }
   function mount() {
     if (card) {placeCard();return;}
@@ -94,7 +97,7 @@
     card=document.createElement('section');card.id='plex-radio';card.className='plex-radio';
     card.setAttribute('aria-label','Plex Radio');
     // Static template only. All library metadata below is assigned via textContent.
-    card.innerHTML=`<header class="pr-heading"><span>PLEX RADIO</span><span class="pr-mode">YOUR MUSIC · ON SHUFFLE</span></header>
+    card.innerHTML=`<button type="button" class="pr-dismiss" data-action="dismiss" aria-label="Dismiss mini player" title="Hide mini player; music keeps playing" hidden>×</button><header class="pr-heading"><span>PLEX RADIO</span><span class="pr-mode">YOUR MUSIC · ON SHUFFLE</span></header>
       <div class="pr-body"><div class="pr-art"><span aria-hidden="true">♫</span><img alt="" hidden></div>
       <div class="pr-info"><h3 class="pr-title">Let your library play</h3><p class="pr-artist">A little discovery, from your own collection.</p><p class="pr-album"></p>
       <div class="pr-controls"><button type="button" data-action="previous" aria-label="Previous track">⏮</button><button type="button" data-action="play" class="pr-play">Play</button><button type="button" data-action="next" aria-label="Next track">⏭</button><button type="button" data-action="shuffle" title="Play a random track">Shuffle</button></div></div></div>
@@ -144,6 +147,7 @@
       const button=event.target.closest('button[data-action]');if (!button) return;
       const action=button.dataset.action;
       if (action==='play') {if(player.state.playing || player.state.busy) player.pause();else void player.play();}
+      else if(action==='dismiss') {miniDismissed=true;placeCard();}
       else if(action==='shuffle') player.shuffle();
       else if(action==='next') void player.next();
       else if(action==='previous') void player.previous();

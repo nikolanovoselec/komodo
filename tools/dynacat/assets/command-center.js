@@ -23,7 +23,7 @@
         const select = document.createElement('select');
         select.className = 'cc-page-select';
         select.setAttribute('aria-label', 'Navigate pages');
-        for (const [path, label] of [['/hardware-workloads','Hardware & Workloads'],['/media','Media'],['/endpoints-services','Endpoints & Services']]) {
+        for (const [path, label] of [['/hardware-workloads','HARDWARE & WORKLOADS'],['/media','MEDIA'],['/endpoints-services','ENDPOINTS & SERVICES']]) {
             select.add(new Option(label, path, false, location.pathname === path || (location.pathname === '/' && path === '/hardware-workloads')));
         }
         select.addEventListener('change', () => { location.assign(select.value); });

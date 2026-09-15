@@ -1,5 +1,5 @@
 document:
-  head: '<link rel="stylesheet" href="/assets/plex-radio.css?v=e8d2fbce0a90"><script src="/assets/plex-radio.js?v=ebd951a8f0dd" defer></script><link rel="stylesheet" href="/assets/workload-docker.css?v=a78b00b687a6"><link rel="stylesheet" href="/assets/endpoints.css?v=cf10b40960c3"><script src="/assets/endpoints.js?v=32889b1de226" defer></script><script src="/assets/bern-calendar.js?v=aa4be363a757" defer></script><link rel="stylesheet" href="/assets/bern-calendar.css?v=019088fb0348"><script src="/assets/workload-docker.js?v=d4b76a14fabd" defer></script><link rel="stylesheet" href="/assets/media-ops.css?v=9ba2f4d3697f"><script src="/assets/media-ops.js?v=4f9829b028d5" defer></script><script src="/assets/local-theme.js?v=f2e2d81779e8"></script><script src="/assets/command-center.js?v=76034b9266d6" defer></script>'
+  head: '<link rel="stylesheet" href="/assets/plex-radio.css?v=e8f85a4077c9"><script src="/assets/plex-radio.js?v=860145607202" defer></script><link rel="stylesheet" href="/assets/workload-docker.css?v=a78b00b687a6"><link rel="stylesheet" href="/assets/endpoints.css?v=cf10b40960c3"><script src="/assets/endpoints.js?v=32889b1de226" defer></script><script src="/assets/bern-calendar.js?v=aa4be363a757" defer></script><link rel="stylesheet" href="/assets/bern-calendar.css?v=019088fb0348"><script src="/assets/workload-docker.js?v=d4b76a14fabd" defer></script><link rel="stylesheet" href="/assets/media-ops.css?v=8fde081b4c00"><script src="/assets/media-ops.js?v=4f9829b028d5" defer></script><script src="/assets/local-theme.js?v=f2e2d81779e8"></script><script src="/assets/command-center.js?v=7c8ee0537837" defer></script>'
 server:
   port: 8080
   assets-path: /app/assets
@@ -10,7 +10,7 @@ branding:
   app-name: Gray Matter Command Center
   hide-logo: false
   custom-footer: <span>Gray Matter · private operational workspace</span>
-  logo-text: The Construct
+  logo-text: THE CONSTRUCT
   hide-footer: true
   show-desktop-navigation-on-hover: false
   center-desktop-navigation: true
@@ -128,9 +128,8 @@ theme:
       negative-color: 5 81 56
   custom-css-file: /assets/command-center.css
 pages:
-- name: Hardware & Workloads
+- name: HARDWARE & WORKLOADS
   slug: hardware-workloads
-  name-icon: mdi:server-network
   width: wide
   desktop-navigation-width: wide
   key-bind: d h
@@ -245,9 +244,8 @@ pages:
       update-interval: 1m
       url: http://workload-summary:8090/summary
       template: '{{ if .JSON.String "renovate.error" }}<div class="k-warning">{{ .JSON.String "renovate.error" }}</div>{{ else }}<div class="renovate-count"><b>{{ .JSON.Int "renovate.count" }}</b><span>{{ if .JSON.Bool "renovate.truncated" }}loaded open PRs · partial list{{ else }}open Renovate PRs{{ end }}</span></div><div class="k-note">nikolanovoselec / komodo</div>{{ range .JSON.Array "renovate.prs" }}<a class="renovate-pr" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><small>#{{ .Int "number" }} <span>↗</span></small><strong>{{ .String "title" }}</strong></a>{{ else }}<div class="k-note">No open Renovate PRs</div>{{ end }}<div class="k-fresh">GitHub API · checked <span data-dynamic-relative-time="{{ .JSON.Int "renovate.fetched_at" }}"></span> · UI refresh 1m · GitHub cache 10m</div>{{ end }}'
-- name: Media
+- name: MEDIA
   slug: media
-  name-icon: mdi:play-circle
   width: wide
   desktop-navigation-width: wide
   key-bind: d m
@@ -273,7 +271,7 @@ pages:
 
         <div class="mo-section"><h3>Now playing</h3><small>Plex sessions · {{ .JSON.Int "sessions.age" }}s since collection · UI 1s / source cache 5s</small></div>
 
-        <div class="mo-players">{{ range $index, $session := .JSON.Array "sessions.data.streams" }}<article class="mo-player">{{ if .String "plex_url" }}<a class="mo-player-link" href="{{ .String "plex_url" }}" target="_blank" rel="noopener noreferrer" aria-label="Open {{ .String "title" }} {{ .String "subtitle" }} in Plex">{{ else }}<div class="mo-player-link">{{ end }}<div class="mo-player-art">{{ if .String "poster" }}<img src="data:image/jpeg;base64,{{ .String "poster" }}" alt="{{ .String "title" }} poster" width="200" height="300">{{ else }}<span class="mo-art-placeholder">{{ .String "type" }}</span>{{ end }}</div><div class="mo-player-info"><h3>{{ .String "title" }} ↗</h3><p>{{ .String "subtitle" }}</p><div class="mo-player-top"><span class="mo-badge">{{ .String "state" }}</span><span>{{ .String "mode" }}</span><span class="mo-session-bandwidth">{{ if .Exists "bandwidth_kbps" }}{{ if ne (.String "bandwidth_kbps") "" }}{{ .Int "bandwidth_kbps" }} kbps{{ else }}BW —{{ end }}{{ else }}BW —{{ end }}</span></div><div class="mo-progress" aria-label="Playback {{ .Float "progress" | printf "%.0f" }} percent"><i style="width:{{ .Float "progress" }}%"></i></div></div>{{ if .String "plex_url" }}</a>{{ else }}</div>{{ end }}<div class="mo-session-meta"><button type="button" popovertarget="mo-session-info-{{ $index }}" aria-label="Session information for {{ .String "title" }}">ⓘ</button><div class="mo-session-tooltip" id="mo-session-info-{{ $index }}" popover><strong>{{ .String "title" }} · {{ .String "subtitle" }}</strong><p>{{ .String "user" }} · {{ .String "player" }}</p><p>{{ .String "resolution" }} · {{ .Float "progress" | printf "%.0f" }}% · {{ .String "location" }}</p><small>Bandwidth: Plex reserved, not measured throughput.</small>{{ if not (.String "plex_url") }}<p>Exact Plex link unavailable</p>{{ end }}{{ if .String "imdb" }}<a class="mo-imdb" href="{{ .String "imdb" }}" target="_blank" rel="noopener noreferrer">IMDb ↗</a>{{ end }}</div></div></article>{{ else }}<div class="mo-idle"><span>Ⅱ</span><div><h3>The room is quiet</h3><p>Plex reports no active playback. New sessions appear here automatically.</p></div></div>{{ end }}</div>{{ end }}
+        <div class="mo-players">{{ range $index, $session := .JSON.Array "sessions.data.streams" }}<article class="mo-player">{{ if .String "plex_url" }}<a class="mo-player-link" href="{{ .String "plex_url" }}" target="_blank" rel="noopener noreferrer" aria-label="Open {{ .String "title" }} {{ .String "subtitle" }} in Plex">{{ else }}<div class="mo-player-link">{{ end }}<div class="mo-player-art">{{ if .String "poster" }}<img src="data:image/jpeg;base64,{{ .String "poster" }}" alt="{{ .String "title" }} poster" width="200" height="300">{{ else }}<span class="mo-art-placeholder">{{ .String "type" }}</span>{{ end }}</div><div class="mo-player-info"><h3>{{ .String "title" }} ↗</h3><p>{{ .String "subtitle" }}</p><div class="mo-session-viewer"><strong>{{ if .String "user" }}{{ .String "user" }}{{ else }}Unknown viewer{{ end }}</strong><span>{{ if eq (.String "location") "wan" }}Remote · WAN{{ else if eq (.String "location") "lan" }}Local · LAN{{ else }}{{ if .String "location" }}{{ .String "location" }}{{ else }}Location unknown{{ end }}{{ end }}</span></div><div class="mo-session-origin">{{ if .String "player" }}{{ .String "player" }}{{ else }}Device unknown{{ end }}</div><div class="mo-player-top"><span class="mo-badge">{{ .String "state" }}</span><span>{{ .String "mode" }}</span><span class="mo-session-bandwidth">{{ if .Exists "bandwidth_kbps" }}{{ if ne (.String "bandwidth_kbps") "" }}{{ .Int "bandwidth_kbps" }} kbps{{ else }}BW —{{ end }}{{ else }}BW —{{ end }}</span></div><div class="mo-progress" aria-label="Playback {{ .Float "progress" | printf "%.0f" }} percent"><i style="width:{{ .Float "progress" }}%"></i></div></div>{{ if .String "plex_url" }}</a>{{ else }}</div>{{ end }}<div class="mo-session-meta"><button type="button" popovertarget="mo-session-info-{{ $index }}" aria-label="Session information for {{ .String "title" }}">ⓘ</button><div class="mo-session-tooltip" id="mo-session-info-{{ $index }}" popover><strong>{{ .String "title" }} · {{ .String "subtitle" }}</strong><p>{{ .String "user" }} · {{ .String "player" }}</p><p>{{ .String "resolution" }} · {{ .Float "progress" | printf "%.0f" }}% · {{ .String "location" }}</p><small>Bandwidth: Plex reserved, not measured throughput.</small>{{ if not (.String "plex_url") }}<p>Exact Plex link unavailable</p>{{ end }}{{ if .String "imdb" }}<a class="mo-imdb" href="{{ .String "imdb" }}" target="_blank" rel="noopener noreferrer">IMDb ↗</a>{{ end }}</div></div></article>{{ else }}<div class="mo-idle"><span>Ⅱ</span><div><h3>The room is quiet</h3><p>Plex reports no active playback. New sessions appear here automatically.</p></div></div>{{ end }}</div>{{ end }}
 
         <div class="mo-section"><h3>Media servers</h3><small>Komodo / Docker · {{ .JSON.Int "resources.age" }}s since collection</small></div>
 
@@ -314,9 +312,8 @@ pages:
       update-interval: 10s
       url: http://workload-summary:8090/media-arr
       template: <div class="mo-page mo-delivery"><div class="mo-section"><h3><a href="https://radarr.graymatter.ch/" target="_blank" rel="noopener noreferrer">Radarr · delivery ↗</a></h3><small>API · {{ .JSON.Int "radarr.age" }}s ago · cache 30s</small></div>{{ if .JSON.String "radarr.error" }}<div class="mo-notice">{{ .JSON.String "radarr.error" }}</div>{{ else }}<div class="mo-queue-heading"><span>DOWNLOAD QUEUE</span><b>{{ .JSON.Int "radarr.data.total" }}</b></div>{{ range .JSON.Array "radarr.data.queue" }}<article class="mo-download"><div><strong>{{ if .String "url" }}<a class="mo-item-title" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer">{{ .String "title" }} ↗</a>{{ else }}{{ .String "title" }}{{ end }}{{ if .String "imdb" }} <a class="mo-imdb" href="{{ .String "imdb" }}" target="_blank" rel="noopener noreferrer">IMDb ↗</a>{{ end }}</strong><span>{{ .Float "progress" }}%</span></div><div class="mo-progress"><i style="width:{{ .Float "progress" }}%"></i></div><small>{{ .String "status" }} · {{ .String "tracked" }} · {{ .Float "remaining_gb" }} GB left · {{ .String "eta" }}</small></article>{{ else }}<p class="mo-empty">Queue clear — no tracked downloads.</p>{{ end }}{{ if .JSON.Bool "radarr.data.truncated" }}<p class="mo-notice">Showing first 30 queued items.</p>{{ end }}<details class="mo-imports" open><summary>Recently imported <span>Latest 12 completed imports</span></summary>{{ range .JSON.Array "radarr.data.recent" }}<article class="mo-import"><span class="mo-check">✓</span><div><h4>{{ if .String "url" }}<a class="mo-item-title" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer">{{ .String "title" }} ↗</a>{{ else }}{{ .String "title" }}{{ end }}{{ if .String "imdb" }} <a class="mo-imdb" href="{{ .String "imdb" }}" target="_blank" rel="noopener noreferrer">IMDb ↗</a>{{ end }}</h4><p>{{ .String "subtitle" }}</p><small>{{ .String "quality" }} · {{ .String "date" }}</small></div></article>{{ else }}<p class="mo-empty">No completed imports returned.</p>{{ end }}</details>{{ end }}</div>
-- name: Endpoints & Services
+- name: ENDPOINTS & SERVICES
   slug: endpoints-services
-  name-icon: mdi:lan-connect
   width: wide
   desktop-navigation-width: wide
   key-bind: d e

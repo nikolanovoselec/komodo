@@ -93,6 +93,22 @@ function mountControls(t) {
   const card=w.document.querySelector('#plex-radio');
   return {w,card,audio:w.document.querySelector('#plex-radio-audio'),plays:()=>plays,requests:()=>requests};
 }
+test('dismiss hides only the mini player, preserves audio and stays dismissed until Media returns',async(t)=>{
+  const {w,card,audio,plays}=mountControls(t);
+  const dismiss=card.querySelector('[data-action="dismiss"]');
+  assert.ok(dismiss,'mini-player dismiss button missing');
+  assert.equal(dismiss.getAttribute('aria-label'),'Dismiss mini player');
+  assert.equal(dismiss.hidden,true);
+  card.querySelector('[data-action="play"]').click();await new Promise(setImmediate);
+  const src=audio.src;let pauses=0;audio.pause=()=>{pauses++;};
+  w.history.pushState({},'', '/hardware-workloads');
+  assert.equal(dismiss.hidden,false);dismiss.click();
+  assert.equal(card.hidden,true);assert.equal(audio.src,src);assert.equal(pauses,0);assert.equal(plays(),1);
+  w.document.dispatchEvent(new w.Event('dynacat:widget-updated'));
+  w.history.pushState({},'', '/endpoints-services');assert.equal(card.hidden,true);
+  w.history.pushState({},'', '/media');assert.equal(card.hidden,false);assert.equal(dismiss.hidden,true);
+  w.history.pushState({},'', '/hardware-workloads');assert.equal(card.hidden,false);
+});
 test('labeled seek control tracks media time and seeks without starting audio',async(t)=>{
   const {w,card,audio,plays,requests}=mountControls(t);
   const seek=card.querySelector('#pr-seek');

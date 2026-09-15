@@ -1,6 +1,9 @@
 :root{--cc-border:color-mix(in srgb,var(--color-primary) 18%,transparent)}
 body{letter-spacing:.015em}
 .header-container .logo{white-space:nowrap;flex-shrink:0}
+.header-container .nav-item{position:relative;padding-inline:16px}
+.header-container .nav-item+.nav-item::before{content:"|";position:absolute;left:-1px;top:50%;transform:translateY(-50%);font-weight:400;color:var(--color-text-subdue)}
+.header-container .nav-keybind-hint{display:none!important}
 @media(max-width:1100px){
  .header-container{display:block!important;position:static!important;transform:none!important;opacity:1!important}
  .header-container .header{height:auto;flex-wrap:wrap;gap:8px;padding-block:10px}

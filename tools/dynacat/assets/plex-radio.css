@@ -8,7 +8,12 @@
 .pr-mini .pr-heading,.pr-mini .pr-album,.pr-mini .pr-status,.pr-mini .pr-sliders{display:none}
 .pr-mini.pr-error .pr-status{display:block}
 .pr-mini .pr-art{flex-basis:52px}.pr-mini .pr-body{gap:12px}.pr-mini .pr-title{font-size:15px}.pr-mini .pr-artist{font-size:11px}.pr-mini .pr-controls{margin:8px 0 0;gap:5px}.pr-mini .pr-play{min-width:68px}
-body:has(.pr-mini){padding-bottom:180px}
+.plex-radio[hidden],.pr-dismiss[hidden]{display:none!important}
+.pr-dismiss{position:absolute;top:0;right:0;width:44px;height:44px;border:0;background:transparent;color:var(--color-text-base);font-size:22px;cursor:pointer;border-radius:6px}
+.pr-dismiss:hover{color:var(--color-primary);background:var(--pr-wash)}
+.pr-dismiss:focus-visible{outline:2px solid var(--color-primary);outline-offset:-4px}
+.pr-mini .pr-info{padding-right:32px}
+body:has(.pr-mini:not([hidden])){padding-bottom:180px}
 .cc-navigation-error{padding:12px;color:var(--color-negative)}
 @media(max-width:600px){.plex-radio.pr-mini{right:10px;bottom:10px;width:calc(100% - 20px)}.pr-mini .pr-art{display:none}.pr-mini .pr-body,.pr-mini .pr-info{display:block}.pr-mini .pr-controls{margin:8px 0 0}.pr-mini .pr-title{font-size:15px}}
 @media(max-width:600px){
