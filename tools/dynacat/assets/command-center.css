@@ -9,8 +9,19 @@ body{letter-spacing:.015em}
  .header-container .nav-item{font-size:12px;padding-inline:7px}
  .header-container .theme-picker{margin-left:auto}
 }
-/* Native bottom navigation remains the mobile navigation surface. */
-@media(max-width:700px){.header-container .nav{display:none}.header-container .header{min-height:54px}}
+/* Mobile has one native page chooser at the top; desktop navigation is unchanged. */
+.cc-page-select{display:none}
+@media(max-width:767px){
+ .header-container .nav,.mobile-navigation,.mobile-navigation-offset{display:none!important}
+ .header-container .header{min-height:54px;gap:8px}
+ .cc-page-select{display:block;order:2;flex:1 0 100%;width:100%;min-height:44px;border:1px solid var(--cc-border);border-radius:4px;padding:8px 10px;font:inherit;color:var(--color-text-highlight);background:var(--color-widget-background);color-scheme:var(--scheme)}
+ .cc-page-select:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}
+ .cc-rail-clock,.cc-bern-calendar,[data-bern-calendar],.widget-type-clock,.widget-type-calendar{display:none!important}
+ .page-columns:has(.cc-rail-weather){display:grid;grid-template-columns:minmax(0,1fr)}
+ .page-columns:has(.cc-rail-clock):has(.cc-rail-weather)>.page-column:has(.cc-rail-weather){display:contents}
+ .page-columns:has(.cc-rail-clock):has(.cc-rail-weather)>.page-column:has(.pve-resources){order:-1}
+ .page-columns .cc-rail-weather{order:-2;margin:0!important}
+}
 .komodo-widget .widget-content{padding:14px}
 .k-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
 .k-summary>div{padding:10px;border:1px solid var(--cc-border);border-radius:4px}
