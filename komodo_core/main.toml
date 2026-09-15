@@ -60,6 +60,19 @@ address = "https://docker-vi.lan:8120"
 ##
 
 [[server]]
+name = "hermes"
+tags = [
+  "sync",
+  "auto-update",
+  "auto-cleanup"
+]
+[server.config]
+address = "https://192.168.3.203:8120"
+enabled = true
+
+##
+
+[[server]]
 name = "komodo_core"
 tags = ["sync", "auto-cleanup"]
 [server.config]
@@ -99,19 +112,6 @@ tags = [
 ]
 [server.config]
 address = "https://192.168.3.12:8120"
-enabled = true
-
-##
-
-[[server]]
-name = "openclaw"
-tags = [
-  "sync",
-  "auto-update",
-  "auto-cleanup"
-]
-[server.config]
-address = "https://192.168.3.203:8120"
 enabled = true
 
 ##
