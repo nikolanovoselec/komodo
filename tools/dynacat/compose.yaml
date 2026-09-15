@@ -3,7 +3,7 @@ services:
     image: python:3.13-slim@sha256:9d2e5553305c7c7b0097999bb17187c69b921ccd6bc9d40e4bb5ebe652c00285
     container_name: tools_dynacat_workload_summary
     labels:
-      ch.graymatter.config-revision: "capacity-orphans-pve-3"
+      ch.graymatter.config-revision: "capacity-orphans-pve-4"
     command: ["python", "-B", "/app/adapter.py"]
     user: "65534:65534"
     volumes:
@@ -28,7 +28,7 @@ services:
     container_name: tools_dynacat
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "capacity-orphans-pve-3"
+      ch.graymatter.config-revision: "capacity-orphans-pve-4"
     ports:
       - "8080:8080"
     volumes:

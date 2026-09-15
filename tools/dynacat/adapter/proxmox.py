@@ -22,6 +22,10 @@ def _api(path):
     if parsed.scheme != 'https' or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment:
         raise ValueError('Verified HTTPS URL required')
     context = ssl.create_default_context(cafile=os.environ.get('PVE_CA_FILE', '/app/pve-root-ca.pem'))
+    # Legacy PVE cluster CAs lack the keyUsage extension required by Python 3.13's
+    # STRICT default. Relax only that context's RFC strictness, not trust or
+    # hostname verification: CERT_REQUIRED and check_hostname remain enabled.
+    context.verify_flags &= ~ssl.VERIFY_X509_STRICT
     token_id = os.environ['DYNACAT_PROXMOX_TOKEN_ID']
     secret = os.environ['DYNACAT_PROXMOX_SECRET']
     request = urllib.request.Request(base + path, method='GET',

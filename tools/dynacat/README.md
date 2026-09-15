@@ -34,7 +34,7 @@ Stage the actual two-service Compose application with isolated names/assets/port
 then inspect desktop/mobile screenshots before pushing. Bump the Compose revision
 label for tracked config changes so `BatchDeployStackIfChanged` redeploys them.
 
-## Proxmox Resources / VM-LXC overview: wired, network blocked
+## Proxmox Resources / VM-LXC overview
 
 Dynacat 3.0.0 has no native Proxmox widget. Its native `server-stats` expects a
 Dynacat sysinfo endpoint, not Proxmox, and does not supply the requested network
@@ -46,8 +46,10 @@ history or VM/LXC overview. A native `custom-api` template can render real PVE J
 - `/api2/json/nodes/{node}/{qemu|lxc}/{vmid}/rrddata`: guest history.
 - `/api2/json/nodes/{node}/storage/{storage}/status`: datastore capacity.
 
-Required: reachable HTTPS endpoint, trusted CA, dedicated PVE monitoring user and
-privilege-separated API token. Assign audit permissions to BOTH the user and token:
+Required: reachable HTTPS endpoint, trusted CA and dedicated PVE monitoring user.
+The deployed `dynacat@pam!dynacat` token inherits its dedicated user permissions
+(`privsep=0`); both effective permission sets are audit-only. If enabling token
+privilege separation later, assign audit permissions to BOTH the user and token:
 
 | Privilege | Scope (propagate when covering children) |
 | --- | --- |
@@ -64,12 +66,17 @@ Cluster resource responses are permission-filtered; HTTP 200 alone is insufficie
 Do not present cumulative netin/netout/diskread/diskwrite counters as rates. Use
 actual RRD rates or measured deltas. Guest filesystem usage may be unavailable:
 virtual disk capacity is not actual filesystem consumption. Do not double-count
-shared storage. No Proxmox metrics are fabricated. The collector and template are deployed, but
-tools-to-PVE TCP 8006 times out; authentication, permission coverage and live
-rendering remain unverified until the network allows it. The user-provided
+shared storage. No Proxmox metrics are fabricated. Tools-to-PVE TCP 8006 is now
+reachable on all three cluster nodes. The user-provided
 DYNACAT_PROXMOX_TOKEN_ID and DYNACAT_PROXMOX_SECRET variables are wired to
 Compose without modifying the token ID. TLS uses the public cluster CA from
 `/etc/pve/pve-root-ca.pem`, read over existing trusted SSH, never a private key.
+The legacy cluster CA lacks a keyUsage extension. The PVE-only TLS context clears
+`VERIFY_X509_STRICT` (enabled by Python 3.13), preserving `CERT_REQUIRED`, hostname
+verification and all other verification flags. This relaxes RFC certificate-profile
+strictness, not chain trust; no unverified context or global TLS override is used.
+Replace the legacy CA through normal cluster certificate maintenance to remove
+this compatibility exception in the future.
 Node/guest-count reads fail independently from Komodo. Network history remains
 unimplemented. Disk top 5 ranks enabled reporting Komodo hosts by aggregate
 filesystem capacity percent, not physical disks, per-container consumption or I/O.

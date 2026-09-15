@@ -60,6 +60,9 @@ class Proxmox(unittest.TestCase):
         pve = self.module()
         calls = []
         context = ssl.create_default_context()
+        # Python 3.13 enables STRICT by default; simulate it on older test hosts.
+        context.verify_flags |= ssl.VERIFY_X509_STRICT
+        original_flags = context.verify_flags
         def open_request(request, **kwargs):
             calls.append((request, kwargs))
             return io.BytesIO(b'{"data": []}')
@@ -70,6 +73,9 @@ class Proxmox(unittest.TestCase):
             build.return_value.open.side_effect = open_request
             result = pve.collect()
         self.assertIsNone(result['error'])
+        self.assertEqual(context.verify_flags, original_flags & ~ssl.VERIFY_X509_STRICT)
+        self.assertEqual(context.verify_mode, ssl.CERT_REQUIRED)
+        self.assertTrue(context.check_hostname)
         tls.assert_called_with(cafile='/app/pve-root-ca.pem')
         self.assertEqual(len(calls), 2)
         handlers = build.call_args.args
