@@ -21,7 +21,8 @@ class WorkloadUI(unittest.TestCase):
         self.assertIn('update-interval: 1s',workload)
     def test_status_color_and_control_contract(self):
         config=(Path(__file__).resolve().parents[1]/'config/dynacat.yml').read_text()
-        self.assertIn('data-cw-collapse',config)
+        self.assertNotIn('data-cw-collapse',config, 'Keep only the header collapse-all action; summaries already collapse individual sections')
+        self.assertNotIn('cw-hide-hint',config)
         self.assertIn('aria-controls="cw-containers-',config)
         self.assertIn('docker_exceptions.show_any',config)
         self.assertIn('docker_exceptions.show_unmatched',config)

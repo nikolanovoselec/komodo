@@ -19,7 +19,7 @@ async def main():
         await page.evaluate("window.workloadUpdates=[];document.addEventListener('dynacat:widget-updated',e=>{if(e.detail.widget.matches('.cw-merged'))workloadUpdates.push(performance.now())})")
         if mode=='candidate':
             # Template-only deletion mirrored on real responses, not fixture data.
-            await page.evaluate('''() => {const clean=()=>document.querySelectorAll('.cw-merged .cw-docker-stats').forEach(e=>e.remove());clean();document.addEventListener('dynacat:widget-updated',clean)}''')
+            await page.evaluate('''() => {const clean=()=>document.querySelectorAll('.cw-merged .cw-docker-stats,.cw-merged .cw-collapse-bar,.cw-merged .cw-hide-hint').forEach(e=>e.remove());clean();document.addEventListener('dynacat:widget-updated',clean)}''')
         measurements=[];cadence=[]
         for theme in ['midnight-navy','catppuccin-latte']:
             await page.locator('.header-container .theme-picker').hover()
@@ -30,6 +30,7 @@ async def main():
                 measurement=await page.evaluate(MEASURE);measurement['theme']=theme;measurements.append(measurement)
                 await page.locator('.cw-merged').screenshot(path=str(out/f'{mode}-{theme}-{width}.png'))
                 if mode!='baseline':
+                    assert await page.locator('.cw-overview').evaluate("e=>getComputedStyle(e).justifyContent==='flex-end' && getComputedStyle(e).textAlign==='right'"),'Workload totals must align right'
                     detail=page.locator('.cw-docker').filter(has=page.locator('.cw-container')).first
                     await detail.locator('summary').click();await page.wait_for_timeout(100)
                     assert await page.locator('[data-cw-collapse-all]').is_visible()
@@ -48,6 +49,7 @@ async def main():
             for i in range(2):await disclosures.nth(i).locator('summary').click()
             await page.wait_for_timeout(100)
             assert await button.is_visible()
+            assert await page.get_by_role('button',name='Hide containers ↑',exact=True).count()==1,'Duplicate Hide containers controls'
             expanded=await page.evaluate(MEASURE)
             assert all(abs(a['x']-b['x'])<2 for a,b in zip(expanded['columns'],expanded['headers'])),expanded
             assert await button.inner_text()=='Hide containers ↑'
@@ -65,11 +67,11 @@ async def main():
             await anchor.focus();href=await anchor.get_attribute('href');await page.wait_for_timeout(2300)
             assert await page.evaluate('document.activeElement.getAttribute("href")')==href
             assert await disclosures.first.evaluate('e=>e.open')
-            await disclosures.first.locator('[data-cw-collapse]').click()
+            await disclosures.first.locator('summary').click()
             assert not await disclosures.first.evaluate('e=>e.open')
             # Closing one disclosure must not hide the global control while another is open.
             for i in range(2):await disclosures.nth(i).locator('summary').click()
-            await disclosures.first.locator('[data-cw-collapse]').click();await page.wait_for_timeout(100)
+            await disclosures.first.locator('summary').click();await page.wait_for_timeout(100)
             assert await button.is_visible()
             await button.click();await page.wait_for_timeout(100)
             unmatched=page.locator('.cw-unmatched-host')
@@ -81,7 +83,7 @@ async def main():
                 assert not await unmatched.first.evaluate('e=>e.open')
             cadence=await page.evaluate('workloadUpdates.slice(1).map((v,i)=>v-workloadUpdates[i])')
             assert len(cadence)>4 and max(cadence)<2500,cadence
-            assert await page.locator('.cw-merged .cw-docker-stats').count()==0
+            assert await page.locator('.cw-merged .cw-docker-stats,.cw-merged .cw-collapse-bar,.cw-merged .cw-hide-hint').count()==0
             assert await page.locator('.cw-merged .cw-container').count()>0
             assert await page.locator('.cw-workload>a[title*="Proxmox"]').count()>0
             for m in measurements:
