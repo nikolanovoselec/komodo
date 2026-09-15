@@ -81,6 +81,7 @@ Node/guest-count reads fail independently from Komodo. Genuine one-hour CPU RRD
 history and the latest RRD-average ingress/egress rates are read through a narrow
 node-derived GET allowlist. Optional RRD failure never erases current resources.
 The central Resources cards are ordered proxmox-i, proxmox-ii, proxmox-iii.
+The cards show ZFS storage only; root-filesystem gauges are intentionally omitted.
 Physical ZFS pool allocation (alloc/size/free) is read from each node’s
 `/nodes/{node}/disks/zfs`; the existing audit token supports this without any new
 privileges. Root filesystem usage and ZFS pool allocation overlap and must never
@@ -89,7 +90,26 @@ If the pool endpoint is unavailable, an explicitly labeled ZFS-backed-storage
 fallback joins `/storage` and `/nodes/{node}/storage`, choosing one shallowest
 active dataset per pool rather than summing aliases or child datasets. Missing
 readings remain unavailable, not zero. No storage configuration is exposed.
-Compact Komodo cards below are Periphery guest/server telemetry, not hypervisors.
+Compact Proxmox guest cards below show running VM/LXC resources with stopped
+guests in a separate disclosure. VM RAM is explicitly host-accounted, not guest
+OS available memory; VM filesystem usage is unavailable, not virtual-disk capacity.
+Guest stopped status is not treated as a disable policy. Komodo remains the Docker
+container/stack source only. Top CPU/RAM entries link to the exact container route
+`/servers/{server_id}/container/{container_name}`; disk rankings link to host detail.
+Workload attention precedes Top 5 in document order.
+
+Network graphs use real per-direction RRD byte/second rates with a shared scale
+per node, timestamp-ordered one-minute buckets and visible gaps for missing data.
+The legend separates receive (solid blue) from transmit (dashed green), with actual
+history duration and scale. No cumulative counters are presented as rates.
+
+The right rail contains open `renovate[bot]` PRs for nikolanovoselec/komodo. The
+server-only `DYNACAT_GITHUB_TOKEN` comes from protected Komodo variables into the
+private adapter, never the frontend. HTTPS GET requests are hardcoded, redirect
+blocked, paginated at most five pages and cached for ten minutes. Counts represent
+actually returned PRs with an explicit truncated flag. API failures are unavailable,
+not empty-green. The repository was also verified readable anonymously; no broad
+personal OAuth credential is copied or needed. Mounted volumes/news are removed.
  Disk top 5 ranks enabled reporting Komodo hosts by aggregate
 filesystem capacity percent, not physical disks, per-container consumption or I/O.
 

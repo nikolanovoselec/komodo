@@ -20,6 +20,19 @@ class Filtering(unittest.TestCase):
         self.assertEqual(result['top_ram'][0]['name'], 'web')
         self.assertEqual(result['running_stacks'], 1)
 
+    def test_top_containers_link_to_encoded_server_and_container(self):
+        server_id = 'host /?#%'
+        name = 'web /?#% ü'
+        containers = [dict(name=name, server_id=server_id, server_name='Display host',
+                           state='running', stats={'cpu_perc':'1%', 'mem_usage':'1MiB'})]
+        result = adapter.project([], [], [], containers, set())
+        expected = 'https://komodo.graymatter.ch/servers/host%20%2F%3F%23%25/container/web%20%2F%3F%23%25%20%C3%BC'
+        for key in ('top_cpu', 'top_ram'):
+            with self.subTest(key=key):
+                self.assertEqual(result[key][0].get('url'), expected)
+                self.assertEqual(result[key][0].get('server_id'), server_id)
+                self.assertEqual(result[key][0]['name'], name)
+
     def test_collect_uses_deployed_membership_and_does_not_return_secrets(self):
         calls = []
         def api(kind, params):
@@ -29,7 +42,9 @@ class Filtering(unittest.TestCase):
                     'ListStacks':[{'id':'disabled','name':'old','tags':['d'],'info':{'server_id':'on'}}],
                     'ListAllDockerContainers':[],
                     'GetStack':{'info':{'deployed_services':[{'container_name':'exact'}]},'config':{'secret':'do-not-expose'}}}[kind]
-        result = adapter.collect(api)
+        from unittest.mock import patch
+        with patch('proxmox.collect', return_value={'nodes': []}), patch('renovate.collect', return_value={'prs': [], 'count': 0}):
+            result = adapter.collect(api)
         self.assertEqual(result['containers_total'],0)
         self.assertNotIn('do-not-expose',str(result))
         self.assertIn(('GetStack',{'stack':'disabled'}),calls)
@@ -47,6 +62,14 @@ class Filtering(unittest.TestCase):
         result = adapter.project(servers, [], [], [], set())
         self.assertEqual([s['name'] for s in result.get('top_disk', [])], ['a','b'])
         self.assertEqual(result['top_disk'][0]['percent'], 90)
+
+    def test_top_disk_links_to_encoded_server_id_not_display_name(self):
+        servers = [dict(id='host /?#% ü', name='Display host', info={
+            'state':'Ok', 'stats':{'disk_used_gb':10, 'disk_total_gb':100}})]
+        result = adapter.project(servers, [], [], [], set())
+        self.assertEqual(result['top_disk'][0].get('url'),
+                         'https://komodo.graymatter.ch/servers/host%20%2F%3F%23%25%20%C3%BC')
+        self.assertEqual(result['top_disk'][0]['name'], 'Display host')
 
     def test_http_failure_is_explicit_and_sanitized(self):
         import threading, urllib.request, urllib.error, json

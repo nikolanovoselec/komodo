@@ -5,6 +5,7 @@ import json
 import os
 import threading
 import urllib.request
+from urllib.parse import quote
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 
@@ -67,6 +68,14 @@ def memory_bytes(value):
     return float(match[1]) * (1024 if 'I' in unit else 1000) ** exponent
 
 
+def komodo_url(server_id, container_name=None):
+    # Komodo ui/src/router.tsx and components/docker/link.tsx.
+    url = 'https://komodo.graymatter.ch/servers/' + quote(server_id, safe='')
+    if container_name is not None:
+        url += '/container/' + quote(container_name, safe='')
+    return url
+
+
 def project(servers, stacks, tags, containers, disabled_members):
     visible = visible_stacks(servers, stacks, tags)
     disabled_hosts = {s['id'] for s in servers if s['info']['state'] == 'Disabled'}
@@ -81,7 +90,8 @@ def project(servers, stacks, tags, containers, disabled_members):
         if c['server_id'] in disabled_hosts or (c['server_id'], c['name']) in disabled_members:
             continue
         stats = c.get('stats') or {}
-        kept.append(dict(name=c['name'], host=c['server_name'], state=c.get('state', 'unknown'),
+        kept.append(dict(name=c['name'], host=c['server_name'], server_id=c['server_id'],
+                         url=komodo_url(c['server_id'], c['name']), state=c.get('state', 'unknown'),
                          status=c.get('status', ''), cpu=number(stats.get('cpu_perc')),
                          ram_bytes=memory_bytes(stats.get('mem_usage')), ram=stats['mem_usage'].split('/')[0].strip() if stats.get('mem_usage') else 'N/A'))
     problems = [c for c in kept if c['state'] != 'running' or 'unhealthy' in c['status'].lower()]
@@ -95,7 +105,8 @@ def project(servers, stacks, tags, containers, disabled_members):
         stats = s['info'].get('stats') or {}
         used, total = number(stats.get('disk_used_gb')), number(stats.get('disk_total_gb'))
         if s['info']['state'] == 'Ok' and used is not None and total is not None and 0 <= used <= total and 0 < total < float('inf'):
-            disks.append(dict(name=s.get('name', s['id']), used=used, total=total, percent=100*used/total))
+            disks.append(dict(name=s.get('name', s['id']), url=komodo_url(s['id']),
+                              used=used, total=total, percent=100*used/total))
     return dict(top_disk=sorted(disks, key=lambda d:d['percent'], reverse=True)[:5],
                 fetched_at=int(time.time()), stacks_total=len(workloads), containers_total=len(kept),
                 running_stacks=sum(s['state']=='running' for s in workloads),
@@ -123,6 +134,8 @@ def collect(api):
     import proxmox
     result = project(servers, stacks, tags, containers, members)
     result['pve'] = proxmox.collect()
+    import renovate
+    result['renovate'] = renovate.collect()
     return result
 
 

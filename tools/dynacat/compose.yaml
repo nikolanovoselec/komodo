@@ -3,12 +3,13 @@ services:
     image: python:3.13-slim@sha256:9d2e5553305c7c7b0097999bb17187c69b921ccd6bc9d40e4bb5ebe652c00285
     container_name: tools_dynacat_workload_summary
     labels:
-      ch.graymatter.config-revision: "proxmox-resources-zfs-5"
+      ch.graymatter.config-revision: "proxmox-guest-network-renovate-8"
     command: ["python", "-B", "/app/adapter.py"]
     user: "65534:65534"
     volumes:
       - ./adapter:/app:ro
     environment:
+      DYNACAT_GITHUB_TOKEN: ${DYNACAT_GITHUB_TOKEN}
       DYNACAT_KOMODO_API_KEY: ${DYNACAT_KOMODO_API_KEY}
       DYNACAT_KOMODO_API_SECRET: ${DYNACAT_KOMODO_API_SECRET}
       DYNACAT_PROXMOX_SECRET: ${DYNACAT_PROXMOX_SECRET}
@@ -28,7 +29,7 @@ services:
     container_name: tools_dynacat
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "proxmox-resources-zfs-5"
+      ch.graymatter.config-revision: "proxmox-guest-network-renovate-8"
     ports:
       - "8080:8080"
     volumes:

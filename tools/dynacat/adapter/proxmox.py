@@ -87,8 +87,42 @@ def _history(rows):
         start, end = valid[0]['time'], valid[-1]['time']
         points = ' '.join(f"{100 * (r['time'] - start) / (end - start) if end > start else 0:g},{30 * (1 - r['cpu']):g}"
                           for r in valid)
+    start = rows[0]['time'] if rows else None
+    end = rows[-1]['time'] if rows else None
+    duration = rows[-1]['time'] - rows[0]['time'] if rows else None
+    # Proxmox pvestatd sums physical NIC byte counters; pmxcfs/status.c
+    # stores netin/netout as DERIVE. RRD values are already bytes/second.
+    rates = [_number(r.get(key)) for r in rows for key in ('netin', 'netout')]
+    rates = [value for value in rates if value is not None]
+    scale = (max(rates) or 1) if rates else None
+
+    def segments(key):
+        result, segment = [], []
+        previous = None
+        for row in rows:
+            value = _number(row.get(key))
+            # The hour RRD uses one-minute buckets. Missing buckets and invalid
+            # values are gaps, not zero traffic or permission to interpolate.
+            if value is None or (previous is not None and row['time'] - previous != 60):
+                if len(segment) >= 2:
+                    result.append(' '.join(segment))
+                segment = []
+            if value is not None and scale is not None:
+                x = 100 * (row['time'] - start) / duration if duration else 0
+                segment.append(f'{x:g},{30 * (1 - value / scale):g}')
+            previous = row['time']
+        if len(segment) >= 2:
+            result.append(' '.join(segment))
+        return result
+
+    window = ('unavailable' if duration is None else
+              f'{duration / 3600:g}h' if duration >= 3600 and duration % 3600 == 0 else
+              f'{duration / 60:g}m' if duration >= 60 and duration % 60 == 0 else f'{duration:g}s')
     latest = rows[-1] if rows else {}
-    return {'history': {'cpu_points': points, 'samples': len(valid), 'window': '1h'},
+    return {'history': {'cpu_points': points, 'samples': len(valid), 'window': window,
+                        'start_time': start, 'end_time': end, 'duration_seconds': duration,
+                        'net_rx_segments': segments('netin'), 'net_tx_segments': segments('netout'),
+                        'net_scale_bytes_sec': scale},
             'net_in_bytes_sec': _number(latest.get('netin')),
             'net_out_bytes_sec': _number(latest.get('netout'))}
 
@@ -163,8 +197,27 @@ def _zfs(node, api):
         return unavailable
 
 
+def _guest_inventory(guests):
+    result = []
+    for guest in guests:
+        if guest.get('type') not in ('qemu', 'lxc'):
+            continue
+        running = guest.get('status') == 'running'
+        cpu = _number(guest.get('cpu')) if running else None
+        # VM disk is allocated virtual capacity, not guest filesystem usage.
+        disk_valid = running and guest['type'] == 'lxc' and (_number(guest.get('disk')) or 0) > 0
+        result.append({'id': guest.get('vmid'), 'name': guest.get('name') or str(guest.get('vmid')),
+                       'node': guest.get('node', 'unknown'), 'type': guest['type'],
+                       'status': guest.get('status', 'unknown'),
+                       'cpu_percent': cpu * 100 if cpu is not None and cpu <= 1 else None,
+                       'ram': _capacity(guest.get('mem') if running else None, guest.get('maxmem')),
+                       'disk': _capacity(guest.get('disk') if disk_valid else None, guest.get('maxdisk')),
+                       'memory_scope': 'Host-accounted VM memory' if guest['type'] == 'qemu' else 'Container memory'})
+    return sorted(result, key=lambda g: (g['id'] or 0, g['name']))
+
+
 def _collect(api):
-    """Return only node metrics and aggregate guest counts, never guest configuration."""
+    """Return allowlisted node/guest metrics, never guest configuration."""
     nodes = api('/nodes')
     # Explicit per-collection allowlist, derived only from safe discovered node names.
     rrd_paths = {n['node']: '/nodes/' + n['node'] + '/rrddata?timeframe=hour&cf=AVERAGE'
@@ -190,4 +243,5 @@ def _collect(api):
                           'ram': _capacity(node.get('mem'), node.get('maxmem')),
                           'root_disk': _capacity(node.get('disk'), node.get('maxdisk')),
                           'guests': _counts([g for g in guests if g.get('node') == node['node']])})
-    return {'error': None, 'fetched_at': int(time.time()), 'nodes': projected, 'guests': _counts(guests)}
+    return {'error': None, 'fetched_at': int(time.time()), 'nodes': projected,
+            'guests': _counts(guests), 'guest_inventory': _guest_inventory(guests)}
