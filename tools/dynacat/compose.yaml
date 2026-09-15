@@ -1,13 +1,18 @@
 services:
   workload-summary:
-    image: python:3.13-slim@sha256:9d2e5553305c7c7b0097999bb17187c69b921ccd6bc9d40e4bb5ebe652c00285
+    image: local/dynacat-geoip:1
+    build:
+      context: ./adapter
+      dockerfile: Dockerfile.geoip
+    pull_policy: build
     container_name: tools_dynacat_workload_summary
     labels:
-      ch.graymatter.config-revision: "construct-dashboard-followup-31"
+      ch.graymatter.config-revision: "construct-offline-location-35"
     command: ["python", "-B", "/app/adapter.py"]
     user: "65534:65534"
     volumes:
       - ./adapter:/app:ro
+      - geoip-city:/geoip:ro
     environment:
       SONARR_API_KEY: ${SONARR_API_KEY}
       RADARR_API_KEY: ${RADARR_API_KEY}
@@ -35,7 +40,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "construct-radio-identity-34"
+      ch.graymatter.config-revision: "construct-offline-location-35"
     expose: ["8080"]
     volumes:
       - ./config:/app/config
@@ -74,6 +79,23 @@ services:
     read_only: true
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
+  geoip-update:
+    image: local/dynacat-geoip:1
+    build:
+      context: ./adapter
+      dockerfile: Dockerfile.geoip
+    pull_policy: build
+    container_name: tools_dynacat_geoip_update
+    command: ["python", "-B", "/app/geoip_update.py", "--month", "2026-09"]
+    user: "65534:65534"
+    volumes:
+      - geoip-city:/geoip
+    restart: "no"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m
+    pids_limit: 32
   gateway:
     image: nginxinc/nginx-unprivileged:1.28.0-alpine@sha256:c97ff0bf7cbae369953c6da1232ec14ad9f971d66360c5698db0856a4cd657a0
     container_name: tools_dynacat_gateway
@@ -88,3 +110,6 @@ services:
     tmpfs: [/tmp]
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
+
+volumes:
+  geoip-city:

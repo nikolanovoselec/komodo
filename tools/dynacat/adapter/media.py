@@ -11,6 +11,9 @@ import urllib.request
 from urllib.parse import urlencode, quote
 from functools import lru_cache
 from media_traffic import TrafficHistory
+from media_geo import GeoLocator
+
+MEDIA_GEO = GeoLocator(os.environ.get('DYNACAT_GEO_DB', '/geoip/dbip-city-lite.mmdb'))
 
 PLEX = 'http://192.168.2.205:32400'
 ARR = {'sonarr': 'http://192.168.2.38:8988', 'radarr': 'http://192.168.2.38:8309'}
@@ -84,6 +87,8 @@ def sessions():
                    decision=decision or 'direct play', resolution=media.get('videoResolution', '—'),
                    progress=min(100, max(0, 100 * item.get('viewOffset', 0) / item['duration'])) if item.get('duration') else None,
                    bandwidth_kbps=session.get('bandwidth'), location=session.get('location', 'unknown'))
+        geo = MEDIA_GEO.locate(player.get('address'), player.get('relayed', False))
+        row.update(geo_label=geo['label'], geo_status=geo['status'])
         if transcode:
             row['mode'] = 'Transcode' if 'transcode' in (transcode.get('videoDecision'), transcode.get('audioDecision')) else 'Direct stream'
         rows.append(row)
