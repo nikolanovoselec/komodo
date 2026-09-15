@@ -59,6 +59,51 @@ meter::-webkit-meter-bar{border:0;background:color-mix(in srgb,var(--color-prima
 
 .pve-guest-source{font-size:8px;color:var(--color-text-subdue);margin-top:8px}.pve-guests .k-metrics small{font-size:8px;white-space:nowrap}
 
+/* Compact resource cards: three metric columns, one shared network history row.
+   Keep every metric/source visible; do not shrink type to manufacture density. */
+.pve-resources .widget-content,.pve-guests .widget-content{padding:12px}
+.pve-resources .widget-content{container-type:inline-size}
+@container(max-width:930px){.pve-grid{grid-template-columns:1fr}}
+.pve-resources .k-note{margin:4px 0 8px}
+.pve-heading{margin-bottom:8px;letter-spacing:.06em}
+.pve-grid{gap:8px}
+.pve-node.cc-resource-link{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px;padding:10px;border-radius:4px;background:color-mix(in srgb,var(--color-primary) 3%,transparent)}
+.pve-node header,.pve-node .pve-network,.pve-node footer{grid-column:1/-1}
+.pve-node header{margin:0 0 2px;font-size:13px}
+.pve-cpu{min-width:0}
+.pve-cpu strong{font-size:22px;line-height:1.1;margin:4px 0}
+.pve-cpu em{font-size:12px}
+.pve-node meter{margin-top:5px;height:4px}
+.pve-node meter::-webkit-meter-bar{height:4px}
+.pve-spark{height:24px;margin-top:6px}
+.pve-caption{flex-wrap:wrap;gap:2px;font-size:9px;line-height:1.3}
+.pve-no-history{height:36px}
+.pve-capacities{display:block;margin:0}
+.pve-capacity label{display:block;font-size:10px;letter-spacing:0}
+.pve-capacity label b{display:block;font-size:22px;line-height:1.1;margin:4px 0}
+.pve-capacity small,.pve-zfs>small{font-size:10px;line-height:1.35;margin-top:4px;overflow-wrap:anywhere}
+.pve-zfs{padding:0;border:0;min-width:0}
+.pve-network{padding:8px 0 0;border-top:1px solid var(--cc-border)}
+.pve-network>.pve-label{font-size:10px;letter-spacing:.02em;gap:5px;flex-wrap:wrap}
+.pve-netgraph{height:38px;margin-top:6px}
+.pve-network .pve-netaxis{font-size:9px;margin-top:3px}
+.pve-network>div{margin-top:5px}
+.pve-network b{font-size:11px}
+.pve-node footer{padding-top:7px;gap:10px;font-size:10px}
+.pve-node footer small{font-size:9px}
+.pve-source{margin-top:8px!important}
+.pve-guests .k-host-grid{gap:6px;margin-top:8px}
+.pve-guests .k-host{padding:7px 9px;line-height:1.2}
+.pve-guests .k-host header{font-size:12px;margin-bottom:3px}
+.pve-guest-meta{font-size:9px;margin:0 0 5px}
+.pve-guests .k-metrics{gap:8px}
+.pve-guests .k-metrics label{display:flex;font-size:10px;gap:3px}
+.pve-guests .k-metrics b{float:none;display:inline;font-size:10px}
+.pve-guests meter,.pve-guests .k-unavailable-bar{margin-top:4px}
+.pve-guests .k-metrics small{margin-top:3px;font-size:9px;white-space:normal}
+.pve-guest-source{margin-top:5px;font-size:9px}
+@media(max-width:700px){.pve-grid{gap:8px}.pve-node{padding:10px;gap:8px}.pve-guests .k-host-grid{grid-template-columns:1fr}.pve-network>div{justify-content:space-between;gap:8px}}
+
 /* A single live date / dual-timezone / Bern weather strip precedes telemetry. */
 .page-columns:has(.cc-top-clock){display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:20px;align-items:start}
 .page-columns:has(.cc-top-clock)>.page-column{min-width:0;width:auto;max-width:none;order:0}
