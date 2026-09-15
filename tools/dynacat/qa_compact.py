@@ -60,7 +60,11 @@ async def main():
                         return Math.abs(cpu.y-ram.y)<1 && Math.abs(ram.y-zfs.y)<1 && cpu.right<=ram.x && ram.right<=zfs.x && net.width>cpu.width*2.5;
                     })'''), 'Resource columns or network span changed'
                     assert max(x['height'] for x in sizes['.pve-node']) <= 330, sizes
-                    assert max(x['height'] for x in sizes['.pve-guests .k-host']) <= 80, sizes
+                    assert max(x['height'] for x in sizes['.pve-guests .k-host']) <= (82 if width == 390 else 58), sizes
+                    rows = await page.locator('.pve-guests .k-host').evaluate_all('es=>es.map(e=>({x:e.getBoundingClientRect().x,y:e.getBoundingClientRect().y,w:e.getBoundingClientRect().width,metricX:e.querySelector(".k-metrics").getBoundingClientRect().x}))')
+                    assert len({r['x'] for r in rows}) == 1 and len({r['w'] for r in rows}) == 1, rows
+                    assert len({r['metricX'] for r in rows}) == 1, rows
+                    assert all(b['y']>a['y'] for a,b in zip(rows,rows[1:])), rows
                     assert min(x['height'] for x in sizes['.pve-guests .k-host']) >= 44
                     assert await page.locator('.pve-guests .k-host meter').count() == 27
                     assert await page.locator('.pve-guests .pve-guest-meta').count() == 9

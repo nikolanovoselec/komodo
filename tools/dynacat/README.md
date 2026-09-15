@@ -182,18 +182,31 @@ wrapping above resources on mobile. No date, timezone offset or weather is hardc
 `command-center.js` uses the native `dynacat:widget-updated` event to preserve
 open disclosures and focused links across refreshes; it adds no polling.
 
-## Compact guest presentation
+## Guest resource matrix and independent physical refresh
 
-The workload overview alone uses minimal, border-separated tiles with a shared
-identity line and inline CPU/RAM/disk bars. Node/VMID, type/state, measured values,
-RAM denominator, used disk and per-metric sources remain visible. Source and
-capacity text is 10px (larger than the previous 9px); names remain 12px. Running
-links are about 77px high, and stopped disclosure/links retain 44px touch targets.
-Three desktop columns reduce to two when the widget is narrower than 1000px and
-one below 600px, favouring readable identities/sources over cramming tablet cards.
-Physical node cards and all other pages are unchanged. Run `qa_compact.py URL
-OUTPUT` for the four-viewport light/dark regression and use `--baseline` before
-future changes to retain measured bounds and screenshots.
+The workload overview is a resource matrix, not a grid of boxed guest cards. Each
+linked row shares CPU/RAM/disk bullet-meter columns, with identity/node/type on
+the left and per-metric sources on the right. Node/VMID, measured values, RAM
+denominator and disk usage remain visible. Names are 12px, numeric readings 12px,
+and sources/capacity text 10px. Rows are 48px on desktop/tablet; below 680px widget
+width they stack to approximately 81px. Stopped disclosure/links retain 44px touch
+targets. One row per guest is deliberately a different diagram: individual rows
+are smaller, but the whole desktop matrix is taller than the former 3-column grid.
+
+Physical node visuals are unchanged. They now read `/pve-current`, an independent
+nonblocking bounded-age PVE snapshot, so slow/failing Komodo or GitHub reads cannot
+hold back physical-node updates. General `/current` and `/pve-current` share one
+PVE singleflight/cache (five seconds between completed attempts), without a second
+upstream polling loop. Optional RRD/ZFS caches remain 60 seconds. Failures clear
+old healthy readings; snapshots expire 30 seconds from collection start.
+
+Live diagnosis measured UI updates around 1.02s, PVE publications around 6s, and
+actual upstream node changes around 10s (uptime advances in 10-second steps). RRD
+graphs contain 60-second buckets. `fetched_at` is explicitly collection time, not
+a source measurement timestamp: polling cannot invent 1Hz PVE measurements.
+
+Run `qa_compact.py URL OUTPUT` for four-viewport light/dark matrix alignment and
+metric preservation; use `--baseline` before future changes for bounds/screenshots.
 
 ## Browser-local theme compatibility
 

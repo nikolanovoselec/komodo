@@ -21,6 +21,63 @@ def api(kind, params):
         return json.load(response)
 
 
+class PveSnapshot:
+    """One process-wide, demand-driven PVE flight, independent of general I/O.
+
+    Five seconds between completed attempts (including failures). Age is measured
+    from collection start, not completion or the source's unknown sample time.
+    The collector's existing 60s optional-read caches are left untouched.
+    """
+    def __init__(self, loader=None, clock=None):
+        self.loader = loader or self._collect
+        self.clock = clock or time.monotonic
+        self.lock = threading.Condition()
+        self.at = self.started = None
+        self.data = None
+        self.collecting = self.failed = False
+
+    @staticmethod
+    def _collect():
+        import proxmox
+        return proxmox.collect()
+
+    def _refresh(self, started):
+        try:
+            data = self.loader()
+            json.dumps(data)
+            failed = bool(data.get('error'))
+        except Exception:
+            data, failed = None, True
+        with self.lock:
+            self.at, self.started = self.clock(), started
+            self.data, self.failed, self.collecting = data, failed, False
+            self.lock.notify_all()
+
+    def snapshot(self, wait=False):
+        with self.lock:
+            now = self.clock()
+            if not self.collecting and (self.at is None or now - self.at >= 5):
+                self.collecting = True
+                threading.Thread(target=self._refresh, args=(now,), daemon=True).start()
+            if wait:
+                while self.collecting:
+                    self.lock.wait()
+            age = None if self.started is None else self.clock() - self.started
+            state = ('unavailable' if self.failed else 'starting' if self.data is None else
+                     'expired' if age >= 30 else 'collecting' if self.collecting else 'cached')
+            freshness = dict(state=state, collecting=self.collecting, age_seconds=age,
+                             max_age_seconds=30, age_basis='collection_started',
+                             fetched_at_basis='collection_completed_not_source_sample')
+            if state in ('unavailable', 'starting', 'expired'):
+                return {'error': 'Proxmox telemetry unavailable; verify TLS, network and read API access',
+                        'fetched_at': (self.data or {}).get('fetched_at'),
+                        'nodes': [], 'guests': None}, freshness, 503
+            return self.data, freshness, 200
+
+
+_pve_cache = PveSnapshot()
+
+
 def make_server(address, loader):
     """Share one demand-driven collection, never blocking /current on upstream I/O.
 
@@ -52,6 +109,13 @@ def make_server(address, loader):
         def log_message(self, format, *args):
             pass
         def do_GET(self):
+            if self.path == '/pve-current':
+                pve, freshness, status = _pve_cache.snapshot()
+                data = dict(pve=pve, freshness=freshness)
+                if status != 200:
+                    data['error'] = pve['error']
+                self.send_json(status, json.dumps(data).encode())
+                return
             if self.path not in ('/summary', '/health', '/current'):
                 self.send_error(404)
                 return
@@ -85,6 +149,9 @@ def make_server(address, loader):
                 # Fail closed rather than showing an old healthy response or logging secrets.
                 payload = b'{"error":"Komodo telemetry unavailable; verify read API access"}'
                 status = 503
+            self.send_json(status, payload)
+
+        def send_json(self, status, payload):
             self.send_response(status)
             self.send_header('Content-Type', 'application/json')
             self.send_header('Cache-Control', 'no-store')
@@ -174,10 +241,10 @@ def collect(api):
     members = {(s['info'].get('server_id'), item['container_name'])
                for s, detail in zip(hidden, details)
                for item in detail['info'].get('deployed_services', []) if item.get('container_name')}
-    import proxmox
     result = project(servers, stacks, tags, containers, members)
     import vm_metrics
-    result['pve'] = vm_metrics.enrich(proxmox.collect(), servers)
+    pve, _, _ = _pve_cache.snapshot(wait=True)
+    result['pve'] = vm_metrics.enrich(pve, servers)
     import navigation
     navigation.link_ranked_hosts(result, servers)
     import renovate

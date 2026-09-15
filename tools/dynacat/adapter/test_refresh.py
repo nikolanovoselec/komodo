@@ -23,7 +23,8 @@ class Refresh(unittest.TestCase):
             with self.subTest(widget=index):
                 self.assertRegex(widget, r'(?m)^      update-interval: 1s$')
                 self.assertRegex(widget, r'(?m)^      cache: 1s$')
-                self.assertIn('url: http://workload-summary:8090/current', widget)
+                route = 'pve-current' if 'pve-resources' in widget else 'current'
+                self.assertIn('url: http://workload-summary:8090/' + route, widget)
                 self.assertIn('.JSON.String "freshness.state"', widget)
                 self.assertIn('.JSON.Float "freshness.age_seconds"', widget)
                 self.assertIn('snapshot age', widget)

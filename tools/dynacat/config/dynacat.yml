@@ -157,7 +157,7 @@ pages:
       css-class: komodo-widget pve-resources
       cache: 1s
       update-interval: 1s
-      url: http://workload-summary:8090/current
+      url: http://workload-summary:8090/pve-current
       template: '{{ if .JSON.String "error" }}<div class="k-warning">{{ .JSON.String "error" }}</div>{{ else }}<div class="k-note">{{ .JSON.String "freshness.state" }} · snapshot age {{ printf "%.0f" (.JSON.Float "freshness.age_seconds") }}s · max 30s</div>{{ if .JSON.String "pve.error" }}<div class="k-warning">{{ .JSON.String "pve.error" }}</div>{{ else }}
 
         <div class="pve-heading"><span>PHYSICAL HYPERVISORS</span><span class="pve-live">● UI 1s · collector 5s · PVE ~10s · RRD 1m</span></div>
@@ -214,7 +214,7 @@ pages:
       update-interval: 1s
       url: http://workload-summary:8090/current
       template: '{{ if .JSON.String "error" }}<div class="k-warning">{{ .JSON.String "error" }}</div>{{ else }}<div class="k-note">{{ .JSON.String "freshness.state" }} · snapshot age {{ printf "%.0f" (.JSON.Float "freshness.age_seconds") }}s · max 30s</div>{{ if .JSON.String "pve.error" }}<div class="k-warning">{{ .JSON.String "pve.error" }}</div>{{ else }}<div class="k-inventory-head"><span>{{ len (.JSON.Array `pve.guest_inventory.#(status=="running")#`)
-        }} running guests · Proxmox API</span><span>VM / LXC</span></div><div class="k-host-grid">{{ range .JSON.Array `pve.guest_inventory.#(status=="running")#` }}<a class="k-host cc-resource-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><header><strong>{{
+        }} running guests · Proxmox API</span><span>RESOURCE MATRIX · VM / LXC</span></div><div class="pve-matrix-head" aria-hidden="true"><span>WORKLOAD / NODE</span><div><span>CPU</span><span>RAM</span><span>DISK USED</span></div><span>METRIC SOURCES</span></div><div class="k-host-grid">{{ range .JSON.Array `pve.guest_inventory.#(status=="running")#` }}<a class="k-host cc-resource-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><header><strong>{{
         .String "name" }}</strong><span class="pve-guest-meta">{{ .String "node" }} · #{{ .Int "id" }}</span><span class="k-state">● {{ if eq (.String "type") "qemu" }}VM{{ else }}LXC{{ end }}</span></header><div class="k-metrics"><div><label>CPU {{ if ne (.String "cpu_percent") "" }}<b>{{ printf "%.1f" (.Float "cpu_percent") }}%</b></label><meter min="0"
         max="100" value="{{ .Float "cpu_percent" }}"></meter>{{ else }}<b>N/A</b></label><div class="k-unavailable-bar"></div>{{ end }}</div><div class="pve-guest-ram" title="{{ .String
         "memory_scope" }}"><label>RAM {{ if ne (.String "ram.percent") "" }}<b>{{ printf "%.0f" (.Float "ram.percent") }}%</b></label><meter min="0" max="100" value="{{ .Float "ram.percent"

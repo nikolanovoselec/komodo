@@ -92,24 +92,34 @@ meter::-webkit-meter-bar{border:0;background:color-mix(in srgb,var(--color-prima
 .pve-node footer{padding-top:7px;gap:10px;font-size:10px}
 .pve-node footer small{font-size:9px}
 .pve-source{margin-top:8px!important}
-/* Guest-only minimal tiles: identity shares a line, all live values and sources stay visible. */
+/* Guest-only resource matrix: shared metric columns, one linked workload per row. */
 .pve-guests .widget-content{container-type:inline-size}
-.pve-guests .k-host-grid{gap:3px 12px;margin-top:6px}
-.pve-guests .k-host{padding:5px 0;line-height:1.2;border:0;border-top:1px solid var(--cc-border);border-radius:0;background:transparent;min-height:72px}
-.pve-guests .k-host header{align-items:center;flex-wrap:wrap;gap:2px 7px;font-size:12px;margin-bottom:4px}
-.pve-guests .k-host header strong{margin-right:auto}
-.pve-guests .pve-guest-meta{font-size:10px;margin:0;color:var(--color-text-subdue);white-space:nowrap}
+.pve-guests .k-host-grid{display:block;margin-top:0}
+.pve-guests .pve-matrix-head,.pve-guests .k-host.cc-resource-link{display:grid;grid-template-columns:minmax(200px,1.2fr) minmax(0,3fr) minmax(130px,.9fr);column-gap:18px;align-items:center}
+.pve-guests .pve-matrix-head{padding:7px 6px;font-size:10px;color:var(--color-text-subdue);letter-spacing:.06em}
+.pve-guests .pve-matrix-head>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.pve-guests .k-host{padding:6px;line-height:1.2;border:0;border-top:1px solid var(--cc-border);border-radius:0;background:transparent;min-height:48px}
+.pve-guests .k-host:nth-child(even){background:color-mix(in srgb,var(--color-primary) 2%,transparent)}
+.pve-guests .k-host header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:3px 8px;font-size:12px;margin:0}
+.pve-guests .k-host header strong{overflow-wrap:anywhere;overflow:visible;white-space:normal;text-overflow:clip}
+.pve-guests .pve-guest-meta{grid-column:1/-1;grid-row:2;font-size:10px;margin:0;color:var(--color-text-subdue);white-space:nowrap}
 .pve-guests .k-state{font-size:10px;white-space:nowrap}
-.pve-guests .k-metrics{gap:10px}
+.pve-guests .k-metrics{gap:18px;align-items:start}
 .pve-guests .k-metrics label{display:flex;font-size:10px;gap:3px}
-.pve-guests .k-metrics b{float:none;display:inline;font-size:11px}
+.pve-guests .k-metrics b{float:none;display:inline;font-size:12px}
 .pve-guests meter,.pve-guests .k-unavailable-bar{height:3px;margin-top:2px}
 .pve-guests meter::-webkit-meter-bar{height:3px}
 .pve-guests .k-metrics small{margin-top:2px;font-size:10px;white-space:normal}
-.pve-guests .pve-guest-source{margin-top:3px;font-size:10px;line-height:1.2}
-@container(max-width:1000px){.pve-guests .k-host-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@container(max-width:600px){.pve-guests .k-host-grid{grid-template-columns:1fr}}
+.pve-guests .pve-guest-source{margin:0;font-size:10px;line-height:1.45}
 .pve-guests .pve-stopped summary,.pve-guests .pve-stopped .cc-resource-link{min-height:44px;align-items:center}
+@container(max-width:680px){
+ .pve-guests .pve-matrix-head{display:none}
+ .pve-guests .k-host.cc-resource-link{grid-template-columns:1fr;gap:4px;padding:6px;min-height:80px}
+ .pve-guests .k-host header{display:flex;flex-wrap:wrap;gap:3px 7px}
+ .pve-guests .k-host header strong{margin-right:auto}
+ .pve-guests .k-metrics{gap:12px}
+ .pve-guests .pve-guest-source{line-height:1.2}
+}
 @media(max-width:700px){.pve-grid{gap:8px}.pve-node{padding:10px;gap:8px}.pve-guests .k-host-grid{grid-template-columns:1fr}.pve-network>div{justify-content:space-between;gap:8px}}
 
 /* A single live date / dual-timezone / Bern weather strip precedes telemetry. */
