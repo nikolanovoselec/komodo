@@ -27,7 +27,11 @@ Only `ListServers`, `ListStacks`, `ListTags`, `ListAllDockerContainers(limit=0)`
 `GetStack` are called. `GetStack` includes configuration; it is never logged,
 persisted, or forwarded. Only deployed container names are retained for filtering.
 Credentials are protected Komodo environment variables shared with the dashboard.
-The summary cache lasts 5 seconds; operational widgets refresh every 5 seconds.
+The summary cache lasts 5 seconds; operational widgets refresh one second after
+completion of their previous request while the page is visible (`cache: 1s` and
+`update-interval: 1s`). This is a one-second UI polling interval, not a promise of
+new measurements every second. The shared single-flight collector cache keeps the
+four widget reads from multiplying expensive integration collections.
 PVE current CPU/RAM samples originate from pvestatd approximately every 10 seconds.
 Native one-minute RRD graph samples and ZFS/storage reads are cached for 60 seconds;
 GitHub retains its ten-minute cache. Faster polling does not invent graph samples.
@@ -170,3 +174,28 @@ plus Bern/New York IANA zones) and Bern Weather now form a top horizontal strip,
 wrapping above resources on mobile. No date, timezone offset or weather is hardcoded.
 `command-center.js` uses the native `dynacat:widget-updated` event to preserve
 open disclosures and focused links across refreshes; it adds no polling.
+
+## Browser-local theme compatibility
+
+The public URL's native theme POST returned HTTP 403 with `cross-origin request
+rejected`, while the identical LAN browser action returned 200. Dynacat's
+same-origin middleware compares the browser Origin host with the forwarded Host;
+this deployment's proxy path does not preserve a matching Host. This is unrelated
+to editor permissions or filesystem writes: upstream `theme.go` only sets a cookie
+and returns preset CSS. Do not weaken that middleware or enable the editor.
+
+`local-theme.js` uses the existing non-HttpOnly `theme` cookie and Dynacat's native
+GET page rendering to obtain the selected preset CSS, without executing returned
+scripts. It stores the same `{key, css, scheme}` under `dynacat-theme` used by
+upstream's before-paint restore and cross-tab synchronization. Only the theme picker
+is intercepted; widgets, controls, config and write APIs are untouched. A failed
+read restores the previous cookie and leaves the picker retryable, with a useful
+error message. No preset CSS is duplicated or removed. Local cookie reconciliation
+also avoids the native stale-cookie POST on reload.
+
+Browser regression (with Playwright installed):
+`python qa_themes.py http://192.168.2.72:8080 /tmp/dynacat-theme` from this directory.
+The regression forwards actual theme POSTs with the observed Origin mismatch;
+it does not fake the error response. `--staged` loads only the local candidate
+asset/head before deployment. Confirm the public URL separately with its existing
+Cloudflare Access browser session. Runtime and config remain Git-managed.

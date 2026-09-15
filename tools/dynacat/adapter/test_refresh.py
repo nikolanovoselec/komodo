@@ -1,5 +1,7 @@
 import concurrent.futures
 import json
+from pathlib import Path
+import re
 import threading
 import unittest
 import urllib.error
@@ -11,6 +13,25 @@ import proxmox
 
 
 class Refresh(unittest.TestCase):
+    def test_stats_widgets_poll_and_refresh_render_cache_every_second(self):
+        config = (Path(__file__).resolve().parents[1] / 'config/dynacat.yml').read_text()
+        widgets = re.split(r'(?m)^    - type: ', config)
+        stats = [widget for widget in widgets if re.search(
+            r'^      css-class: .*\b(?:pve-resources|pve-guests|workload-attention|top-consumers)\b', widget, re.M)]
+        self.assertEqual(len(stats), 4)
+        for index, widget in enumerate(stats):
+            with self.subTest(widget=index):
+                self.assertRegex(widget, r'(?m)^      update-interval: 1s$')
+                self.assertRegex(widget, r'(?m)^      cache: 1s$')
+
+    def test_cadence_labels_distinguish_ui_collection_and_source(self):
+        config = (Path(__file__).resolve().parents[1] / 'config/dynacat.yml').read_text()
+        self.assertIn('UI 1s · collector 5s · PVE ~10s · RRD 1m', config)
+        self.assertIn('UI refresh 1s; collector cache 5s; PVE samples ~10s.', config)
+        self.assertIn('UI refresh 1s · collector cache 5s', config)
+        self.assertNotIn('5s refresh', config)
+        self.assertNotIn('refresh 5s', config.lower())
+
     def test_summary_refreshes_at_five_seconds_single_flight(self):
         clock = [0.0]
         calls = []
@@ -26,8 +47,13 @@ class Refresh(unittest.TestCase):
         try:
             with patch('adapter.time.monotonic', side_effect=lambda: clock[0]):
                 self.assertEqual(get(), {'generation': 1})
-                clock[0] = 4.9
-                self.assertEqual(get(), {'generation': 1})
+                # Four independently refreshed widgets read at 1 Hz, but the
+                # shared collector must still run only once per five seconds.
+                with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+                    for now in (1, 2, 3, 4, 4.9):
+                        clock[0] = now
+                        self.assertEqual(list(pool.map(get, range(4))), [{'generation': 1}] * 4)
+                self.assertEqual(len(calls), 1)
                 clock[0] = 5
                 with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
                     results = list(pool.map(get, range(8)))

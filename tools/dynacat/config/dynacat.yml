@@ -1,5 +1,5 @@
 document:
-  head: '<script src="/assets/command-center.js" defer></script>'
+  head: '<script src="/assets/local-theme.js"></script><script src="/assets/command-center.js" defer></script>'
 server:
   port: 8080
   assets-path: /app/assets
@@ -155,12 +155,12 @@ pages:
     - type: custom-api
       title: Resources · Proxmox
       css-class: komodo-widget pve-resources
-      cache: 5s
-      update-interval: 5s
+      cache: 1s
+      update-interval: 1s
       url: http://workload-summary:8090/summary
       template: '{{ if .JSON.String "pve.error" }}<div class="k-warning">{{ .JSON.String "pve.error" }}</div>{{ else }}
 
-        <div class="pve-heading"><span>PHYSICAL HYPERVISORS</span><span class="pve-live">● PVE ~10s samples · 5s refresh</span></div>
+        <div class="pve-heading"><span>PHYSICAL HYPERVISORS</span><span class="pve-live">● UI 1s · collector 5s · PVE ~10s · RRD 1m</span></div>
 
         <div class="pve-grid">{{ range .JSON.Array "pve.nodes" }}<a class="pve-node cc-resource-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer">
 
@@ -210,8 +210,8 @@ pages:
       title: Proxmox · workload overview
       title-url: https://proxmox.graymatter.ch
       css-class: komodo-widget komodo-hosts pve-guests
-      cache: 5s
-      update-interval: 5s
+      cache: 1s
+      update-interval: 1s
       url: http://workload-summary:8090/summary
       template: '{{ if .JSON.String "pve.error" }}<div class="k-warning">{{ .JSON.String "pve.error" }}</div>{{ else }}<div class="k-inventory-head"><span>{{ len (.JSON.Array `pve.guest_inventory.#(status=="running")#`)
         }} running guests · Proxmox API</span><span>VM / LXC</span></div><div class="k-host-grid">{{ range .JSON.Array `pve.guest_inventory.#(status=="running")#` }}<a class="k-host cc-resource-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><header><strong>{{
@@ -229,19 +229,19 @@ pages:
         }} stopped / other guests</strong><span>show inventory</span></summary>{{ range .JSON.Array `pve.guest_inventory.#(status!="running")#` }}<a class="k-top-row cc-resource-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><strong>{{ .String
         "name" }}</strong><small>{{ .String "node" }} · {{ .String "type" }} #{{ .Int "id" }} · {{ .String "status" }}</small></a>{{ end }}</details><div class="k-note">Inventory /
         CPU and LXC metrics: Proxmox. VM RAM / aggregate filesystem usage: identity-verified Komodo guests. PVE host RAM is used only if guest readings are unavailable (QEMU overhead
-        may exceed configured RAM). Allocated disk ≠ used space; mounts may overlap. Stopped ≠ disabled; no guest disable policy applied. Refresh 5s; PVE samples ~10s.</div>{{ end }}'
+        may exceed configured RAM). Allocated disk ≠ used space; mounts may overlap. Stopped ≠ disabled; no guest disable policy applied. UI refresh 1s; collector cache 5s; PVE samples ~10s.</div>{{ end }}'
     - type: custom-api
       title: Workloads · attention first
       title-url: https://komodo.graymatter.ch
       css-class: komodo-widget workload-attention
-      cache: 5s
-      update-interval: 5s
+      cache: 1s
+      update-interval: 1s
       url: http://workload-summary:8090/summary
       template: '<div class="k-summary"><div><strong>{{ .JSON.Int "running_stacks" }}</strong><span>RUNNING STACKS</span></div><div><strong>{{ .JSON.Int "running_containers" }}</strong><span>RUNNING
         CONTAINERS</span></div><div><strong>{{ len (.JSON.Array "stack_problems") }}</strong><span>RUNTIME STACK ISSUES</span></div><div><strong>{{ len (.JSON.Array "container_problems")
         }}</strong><span>CONTAINER ISSUES</span></div></div>
 
-        <div class="k-note">Enabled workloads only · {{ .JSON.Int "stacks_total" }} stacks / {{ .JSON.Int "containers_total" }} containers · fetched <span data-dynamic-relative-time="{{
+        <div class="k-note">Enabled workloads only · UI refresh 1s · collector cache 5s · {{ .JSON.Int "stacks_total" }} stacks / {{ .JSON.Int "containers_total" }} containers · fetched <span data-dynamic-relative-time="{{
         .JSON.Int "fetched_at" }}"></span></div>
 
         {{ range .JSON.Array "stack_problems" }}<div class="k-problem"><a href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ .String "name" }}</a><span>{{ .String "host"
@@ -259,15 +259,15 @@ pages:
     - type: custom-api
       title: Top 5 · CPU / RAM / disk capacity
       css-class: komodo-widget top-consumers
-      cache: 5s
-      update-interval: 5s
+      cache: 1s
+      update-interval: 1s
       url: http://workload-summary:8090/summary
       template: '<div class="k-top-grid"><section><h3>CPU · top 5</h3>{{ range .JSON.Array "top_cpu" }}<div class="k-top-row"><div><a class="k-rank-link" href="{{ .String "url" }}" target="_blank"
         rel="noopener noreferrer">{{ .String "name" }}</a><small>{{ .String "host" }}</small></div><b>{{ printf "%.1f" (.Float "cpu") }}%</b></div>{{ else }}<p>CPU metrics unavailable</p>{{
         end }}</section><section><h3>RAM · top 5</h3>{{ range .JSON.Array "top_ram" }}<div class="k-top-row"><div><a class="k-rank-link" href="{{ .String "url" }}" target="_blank" rel="noopener
         noreferrer">{{ .String "name" }}</a><small>{{ .String "host" }}</small></div><b>{{ .String "ram" }}</b></div>{{ else }}<p>RAM metrics unavailable</p>{{ end }}</section><section><h3>Disk
         capacity · top 5 hosts</h3>{{ range .JSON.Array "top_disk" }}<div class="k-top-row"><div>{{ if .String "url" }}<a class="k-rank-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer">{{ .String "name" }}</a>{{ else }}<strong title="Proxmox identity not verified">{{ .String "name" }}</strong>{{ end }}<small>{{ printf "%.1f" (.Float "used") }} / {{ printf "%.1f" (.Float "total") }} GiB</small></div><b>{{ printf "%.1f" (.Float "percent") }}%</b></div>{{
-        else }}<p>Disk metrics unavailable</p>{{ end }}</section></div><div class="k-note">Measured by Docker via Komodo · running enabled workloads · refresh 5s</div><div class="k-note">Disk:
+        else }}<p>Disk metrics unavailable</p>{{ end }}</section></div><div class="k-note">Measured by Docker via Komodo · running enabled workloads · UI refresh 1s · collector cache 5s</div><div class="k-note">Disk:
         enabled reporting Komodo hosts ranked by aggregate filesystem % used. Not container size, physical HDD usage or I/O rate; mounts may overlap. CPU/RAM: running containers; Docker
         CPU may exceed 100%.</div>'
   - size: small
@@ -283,7 +283,7 @@ pages:
         }}</b><span>{{ if .JSON.Bool "renovate.truncated" }}loaded open PRs · partial list{{ else }}open Renovate PRs{{ end }}</span></div><div class="k-note">nikolanovoselec / komodo</div>{{
         range .JSON.Array "renovate.prs" }}<a class="renovate-pr" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><small>#{{ .Int "number" }} <span>↗</span></small><strong>{{
         .String "title" }}</strong></a>{{ else }}<div class="k-note">No open Renovate PRs</div>{{ end }}<div class="k-fresh">GitHub API · checked <span data-dynamic-relative-time="{{
-        .JSON.Int "renovate.fetched_at" }}"></span> · refresh 10m</div>{{ end }}'
+        .JSON.Int "renovate.fetched_at" }}"></span> · UI refresh 1m · GitHub cache 10m</div>{{ end }}'
 - name: Media Ops
   slug: media-ops
   name-icon: mdi:play-circle
