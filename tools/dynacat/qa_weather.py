@@ -28,7 +28,7 @@ async def main():
                 assert await page.locator('.pve-node').count()==3
             assert await page.locator('.widget-type-bookmarks,.widget-type-releases').count()==0
             await weather.screenshot(path=prefix+'-'+mode+'-weather.png')
-            await page.evaluate('scrollTo(0,0)')
+            await page.evaluate('document.documentElement.style.scrollBehavior="auto";scrollTo({top:0,behavior:"instant"})')
             await page.screenshot(path=prefix+'-'+mode+'.png',full_page=True)
             await page.screenshot(path=prefix+'-'+mode+'-viewport.png')
             themes = []
@@ -36,7 +36,7 @@ async def main():
                 keys = await page.locator('.header-container .theme-choices [data-key]').evaluate_all('(es)=>es.map(e=>e.dataset.key)')
                 assert len(keys)==22, keys
                 for key in keys:
-                    await page.evaluate('scrollTo(0,0)')
+                    await page.evaluate('document.documentElement.style.scrollBehavior="auto";scrollTo({top:0,behavior:"instant"})')
                     await page.locator('.header-container .theme-picker').hover()
                     if await page.locator('html').get_attribute('data-theme') == key:
                         themes.append(key)
@@ -48,10 +48,11 @@ async def main():
                     assert await page.locator('.weather-columns').is_visible()
                     assert await page.locator('.weather-bar').first.evaluate('e=>e.getBoundingClientRect().height>0')
                     themes.append(key)
-                await page.evaluate('scrollTo(0,0)')
+                await page.evaluate('document.documentElement.style.scrollBehavior="auto";scrollTo({top:0,behavior:"instant"})')
                 await page.locator('.header-container .theme-picker').hover()
                 await page.locator('.theme-choices [data-key="catppuccin-latte"]:visible').first.click()
-                await page.wait_for_timeout(300)
+                await page.mouse.move(0,0)
+                await page.wait_for_timeout(400)
                 await weather.screenshot(path=prefix+'-light-weather.png')
             report[mode]={'text':text,'bars':bars,'themes':themes,'overflow':False,'branding':'The Construct'}
             await page.close()
