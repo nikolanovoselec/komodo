@@ -208,9 +208,7 @@ pages:
         end }}</section><section><h3>RAM · top 5</h3>{{ range .JSON.Array "top_ram" }}<div class="k-top-row"><div><a class="k-rank-link" href="{{ .String "url" }}" target="_blank" rel="noopener
         noreferrer">{{ .String "name" }}</a><small>{{ .String "host" }}</small></div><b>{{ .String "ram" }}</b></div>{{ else }}<p>RAM metrics unavailable</p>{{ end }}</section><section><h3>Disk
         capacity · top 5 hosts</h3>{{ range .JSON.Array "top_disk" }}<div class="k-top-row"><div>{{ if .String "url" }}<a class="k-rank-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer">{{ .String "name" }}</a>{{ else }}<strong title="Proxmox identity not verified">{{ .String "name" }}</strong>{{ end }}<small>{{ printf "%.1f" (.Float "used") }} / {{ printf "%.1f" (.Float "total") }} GiB</small></div><b>{{ printf "%.1f" (.Float "percent") }}%</b></div>{{
-        else }}<p>Disk metrics unavailable</p>{{ end }}</section></div><div class="k-note">Disk:
-        enabled reporting Komodo hosts ranked by aggregate filesystem % used. Not container size, physical HDD usage or I/O rate; mounts may overlap. CPU/RAM: running containers; Docker
-        CPU may exceed 100%.</div>{{ end }}'
+        else }}<p>Disk metrics unavailable</p>{{ end }}</section></div>{{ end }}'
   - size: small
     widgets:
     - type: clock
