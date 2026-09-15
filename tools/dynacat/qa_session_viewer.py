@@ -36,7 +36,8 @@ async def main():
             await page.mouse.move(5,890)
             await page.keyboard.press('Escape')
             await page.wait_for_timeout(500)
-            await page.locator('.mo-players').screenshot(path=str(out/f'sessions-{width}.png'))
+            # Native one-second refresh can detach a locator during capture.
+            await page.screenshot(path=str(out/f'sessions-{width}.png'),full_page=True)
             results.append({'width':width,'sessions':rows});await page.close()
         await browser.close()
     (out/'report.json').write_text(json.dumps(results,indent=2));print(json.dumps(results))
