@@ -33,7 +33,7 @@ async def main():
             report.append({'width':width,'sizes':sizes,'sessions':await page.locator('.mo-player').count()})
             if check in ['sessions','all']:
                 if not sizes['.mo-player']:failures.append('No actual sessions; session size unverified')
-                elif max(x['height'] for x in sizes['.mo-player'])>66:failures.append(f'{width}: session height exceeds 66px')
+                elif not all(123<=x['height']<=125 for x in sizes['.mo-player']):failures.append(f'{width}: session cards must be 124px (twice the prior 62px)')
             if check in ['graph','all']:
                 if sizes['.mo-traffic'][0]['height']>195:failures.append(f'{width}: graph widget exceeds 195px')
                 assert await page.locator('.mo-traffic svg').count()==1

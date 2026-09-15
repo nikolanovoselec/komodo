@@ -8,4 +8,10 @@ class MobileDeliveryTests(unittest.TestCase):
         paths=re.findall(r'(?:href|src)="(/assets/[^"]+)"',head)
         self.assertGreater(len(paths),5)
         self.assertTrue(all('?v=' in p for p in paths),paths)
+        import hashlib
+        from urllib.parse import urlsplit,parse_qs
+        for path in paths:
+            url=urlsplit(path)
+            expected=hashlib.sha256((ROOT/url.path.lstrip('/')).read_bytes()).hexdigest()[:12]
+            self.assertEqual(parse_qs(url.query)['v'],[expected],f'Changed asset must invalidate browser cache: {url.path}')
 if __name__=='__main__':unittest.main()

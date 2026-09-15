@@ -3,7 +3,7 @@ services:
     image: python:3.13-slim@sha256:9d2e5553305c7c7b0097999bb17187c69b921ccd6bc9d40e4bb5ebe652c00285
     container_name: tools_dynacat_workload_summary
     labels:
-      ch.graymatter.config-revision: "construct-verified-vm-rename-28"
+      ch.graymatter.config-revision: "construct-dashboard-followup-31"
     command: ["python", "-B", "/app/adapter.py"]
     user: "65534:65534"
     volumes:
@@ -35,7 +35,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "construct-workload-controls-30"
+      ch.graymatter.config-revision: "construct-dashboard-followup-31"
     expose: ["8080"]
     volumes:
       - ./config:/app/config
@@ -76,7 +76,7 @@ services:
     image: nginxinc/nginx-unprivileged:1.28.0-alpine@sha256:c97ff0bf7cbae369953c6da1232ec14ad9f971d66360c5698db0856a4cd657a0
     container_name: tools_dynacat_gateway
     labels:
-      ch.graymatter.config-revision: "construct-radio-persistent-29"
+      ch.graymatter.config-revision: "construct-dashboard-followup-31"
     depends_on: [dynacat, radio]
     ports: ["8080:8080"]
     volumes:

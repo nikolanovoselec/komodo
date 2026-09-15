@@ -49,6 +49,18 @@ class VMMetricsTests(unittest.TestCase):
             self.assertEqual(guest['memory_source'], 'Komodo')
             self.assertEqual(guest['name'], name)
 
+    def test_reaudited_hermes_server_restores_guest_metrics(self):
+        import vm_metrics
+        pve, servers = self.fixture()
+        pve['guest_inventory'][0].update(id=100, name='hermes')
+        servers[0].update(id='6aa9aec93b8fb630ffb9f88c', name='hermes')
+        servers[0]['info']['address']='https://192.168.3.203:8120'
+        guest=vm_metrics.enrich(pve,servers)['guest_inventory'][0]
+        self.assertEqual(guest['disk']['percent'],25)
+        self.assertEqual(guest['memory_source'],'Komodo')
+        servers[0]['id']='6a9adf2e489ba7b3562cb584'
+        self.assertEqual(vm_metrics.enrich(pve,servers),pve)
+
     def test_fail_closed_identity_state_and_freshness(self):
         import vm_metrics
         mutations = [

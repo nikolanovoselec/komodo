@@ -15,14 +15,14 @@
 
 /* Compact existing Plex sessions; deliberately scoped away from traffic and radio. */
 .mo-players .mo-player{position:relative}
-.mo-players .mo-player-link{grid-template-columns:30px minmax(0,1fr);gap:9px;padding:5px 9px}
-.mo-players .mo-player-art{width:30px;border-radius:3px}
-.mo-players .mo-player h3{font-size:14px;line-height:17px;margin:0 34px 1px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mo-players .mo-player-info>p{font-size:11px;line-height:13px;margin:0 30px 2px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mo-players .mo-player-top{justify-content:flex-start;align-items:center;gap:3px 8px;font-size:10px;line-height:12px}
+.mo-players .mo-player-link{grid-template-columns:56px minmax(0,1fr);gap:12px;padding:12px;min-height:122px;align-items:center}
+.mo-players .mo-player-art{width:56px;border-radius:4px}
+.mo-players .mo-player h3{font-size:16px;line-height:21px;margin:0 34px 4px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mo-players .mo-player-info>p{font-size:12px;line-height:16px;margin:0 30px 8px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mo-players .mo-player-top{justify-content:flex-start;align-items:center;gap:4px 8px;font-size:11px;line-height:15px}
 .mo-players .mo-badge{font-size:10px}
 .mo-players .mo-session-bandwidth{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--color-text-subdue)}
-.mo-players .mo-progress{height:2px;margin-top:3px}
+.mo-players .mo-progress{height:3px;margin-top:8px}
 .mo-session-meta{position:absolute;top:0;right:0;anchor-scope:--mo-info}
 .mo-session-meta button{anchor-name:--mo-info;display:grid;place-items:center;width:44px;height:44px;cursor:pointer;color:var(--color-text-subdue);font-size:15px;background:none;border:0;padding:0}
 .mo-session-meta button:focus-visible{outline:2px solid var(--color-primary);outline-offset:-4px;border-radius:5px}

@@ -20,8 +20,10 @@ import time
 # Display names are mutable labels, not identity. Runtime joins require the exact
 # audited VMID + immutable server ID + endpoint, with healthy/fresh telemetry.
 # MAC/IP evidence is audited out-of-band; this is not automatic VM discovery.
+# VM 100's replacement Komodo resource was re-audited against PVE net0 and
+# local eth0 MAC/IP; do not retain the retired resource ID as an alias.
 VERIFIED_BINDINGS = {
-    100: ('hermes', '6a9adf2e489ba7b3562cb584', 'https://192.168.3.203:8120', 'bc:24:11:2c:af:40'),
+    100: ('hermes', '6aa9aec93b8fb630ffb9f88c', 'https://192.168.3.203:8120', 'bc:24:11:2c:af:40'),
     102: ('servarr', '680f79d06a6313ac1f9f2aba', 'https://192.168.2.38:8120', '02:e7:d8:db:ce:6c'),
     110: ('middleware', '680f79cf6a6313ac1f9f2ab7', 'https://192.168.5.148:8120', 'bc:24:11:a2:3b:7a'),
     111: ('pihole-master', '68153670e9fea328ad8cc7a0', 'https://192.168.5.162:8120', 'bc:24:11:69:01:02'),
