@@ -17,7 +17,7 @@ async def main():
   for width in [1600,390]:
    await page.set_viewport_size({'width':width,'height':1100 if width>500 else 844});assert not await page.evaluate('document.documentElement.scrollWidth>innerWidth');await page.screenshot(path=str(out/f'endpoints-{width}.png'),full_page=True)
   await page.set_viewport_size({'width':1600,'height':1100})
-  aliases={'/directory':'/endpoints-services','/news':'/endpoints-services#news-desk','/media-ops':'/media','/command-center':'/'}
+  aliases={'/directory':'/endpoints-services','/news':'/endpoints-services','/media-ops':'/media','/command-center':'/'}
   for oldpath,newpath in aliases.items():
    await page.goto(base+oldpath);await page.wait_for_url(base+newpath)
   await page.goto(base+'/');await page.wait_for_selector('[data-bern-calendar] [aria-current=date]')

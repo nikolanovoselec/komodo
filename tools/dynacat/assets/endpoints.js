@@ -1,6 +1,6 @@
 /* Local-only launcher filtering and fixed legacy-route aliases. No network calls. */
 (() => {
- const aliases={'/command-center':'/','/media-ops':'/media','/directory':'/endpoints-services','/news':'/endpoints-services#news-desk'};
+ const aliases={'/command-center':'/','/media-ops':'/media','/directory':'/endpoints-services','/news':'/endpoints-services'};
  if(aliases[location.pathname]){location.replace(aliases[location.pathname]);return;}
  const boot=()=>{
  const root=document.querySelector('.es-launcher');if(!root||root.dataset.ready)return;root.dataset.ready='true';

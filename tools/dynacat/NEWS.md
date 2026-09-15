@@ -1,4 +1,9 @@
-# News Digest integration
+# News Digest integration — cancelled
+
+The user declined this integration. The bottom widget, pending-access notice and
+jump link are removed. Do not request credentials or resume implementation.
+The ordinary service-launcher bookmark is retained with the other endpoints.
+The following investigation is historical only.
 
 The Endpoints & Services page intentionally shows a compact link to
 https://news.graymatter.ch/ and a pending-integration notice, not sample articles.

@@ -111,8 +111,9 @@ async def main():
         assert imgs['loaded']==imgs['count'] and imgs['safe'],imgs
         await page.goto(base+'/endpoints-services');await page.wait_for_selector('.es-launcher')
         text=await page.locator('body').inner_text()
-        assert 'News desk' not in text and 'Article integration pending' in text,text[-1500:]
-        await page.screenshot(path=str(out/'news-pending.png'),full_page=True)
+        assert all(s not in text for s in ['News desk', 'Article integration pending']),text[-1500:]
+        assert await page.locator('.endpoints-news-title,#news-digest').count()==0
+        await page.screenshot(path=str(out/'endpoints-no-news.png'),full_page=True)
         assert not errors,errors
         assert not writes,writes
         result=dict(counts=counts,links=link_records,clicks=clicks,images=imgs,graph_before=before,graph_after=after,graph_changed=True,focus_preserved=True,cadence_ms=cadence,variants=variants,errors=errors,writes=writes)
