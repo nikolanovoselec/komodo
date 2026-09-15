@@ -40,7 +40,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "construct-offline-location-35"
+      ch.graymatter.config-revision: "construct-delivery-39"
     expose: ["8080"]
     volumes:
       - ./config:/app/config

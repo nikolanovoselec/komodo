@@ -29,7 +29,7 @@ async def main():
                 assert await page.locator('.mo-session-tooltip').first.evaluate('e=>e.matches(":popover-open")')
                 await page.keyboard.press('Escape')
                 assert not await page.locator('.mo-session-tooltip').first.evaluate('e=>e.matches(":popover-open")')
-                await page.locator('.mo-players').scroll_into_view_if_needed()
+                await page.evaluate('scrollTo(0,0)')  # Avoid a stale locator during native one-second refresh.
                 await page.screenshot(path=str(out/f'{theme}-{width}.png'),full_page=True)
                 results.append({'theme':theme,'width':width,'rows':rows});await page.close()
         await browser.close()
