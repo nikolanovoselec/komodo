@@ -4,6 +4,16 @@ from pathlib import Path
 import yaml
 ROOT=Path(__file__).parent
 class DeliveryScope(unittest.TestCase):
+    def test_history_is_secondary_and_collapsed(self):
+        d=yaml.safe_load((ROOT/'config/dynacat.yml').read_text())
+        for p in d['pages']:
+            for c in p['columns']:
+                for w in c['widgets']:
+                    if w.get('title') in ('Sonarr delivery','Radarr delivery'):
+                        t=w['template']
+                        self.assertNotIn('class="mo-imports" open',t)
+                        self.assertIn('class="mo-delivery-summary"',t)
+                        self.assertIn('class="mo-import-meta"',t)
     def test_arr_only_scope(self):
         d=yaml.safe_load((ROOT/'config/dynacat.yml').read_text())
         widgets={w.get('title'):w for p in d['pages'] for c in p['columns'] for w in c['widgets']}

@@ -40,7 +40,7 @@ def prepare():
             extra['css-class'] = f'delivery-qa-{state}'
             state_widgets.append(extra)
     config['pages'] = [dict(name='Delivery QA', slug='media', columns=[dict(size='full', widgets=[dict(type='html', source='<p>SYNTHETIC DELIVERY QA · sidebar layout · no playback or download controls</p>')]), dict(size='small', widgets=widgets + state_widgets)])]
-    config['document']['head'] = '<link rel="stylesheet" href="/assets/media-ops.css">'
+    config['document']['head'] = '<link rel="stylesheet" href="/assets/media-ops.css"><script defer src="/assets/media-ops.js"></script>'
     config['theme'].pop('custom-css-file', None)
     config['server']['port'] = 8080
     config['server']['cache-dir'] = '/tmp/cache'
@@ -66,6 +66,10 @@ async def verify():
                 if light:
                     await page.locator('.theme-choices [data-key="catppuccin-latte"]').first.evaluate('e=>e.click()')
                 assert not await page.evaluate('document.documentElement.scrollWidth > innerWidth'), 'Page overflows'
+                assert await page.locator('.mo-imports summary>span').first.evaluate('e=>parseFloat(getComputedStyle(e).fontSize)>=13'), 'History label too small'
+                assert not await page.locator('.mo-imports').first.evaluate('e=>e.open')
+                await page.screenshot(path=str(OUT / f'collapsed-{width}-{"light" if light else "dark"}.png'), full_page=True)
+                await page.locator('.mo-imports').evaluate_all('els=>els.forEach(e=>e.open=true)')
                 queue = page.locator('.mo-download').first
                 assert await queue.locator('.mo-download-meta').count() == 1, 'Status, remaining and ETA need a distinct readable metadata row'
                 assert await queue.locator('.mo-download-progress').inner_text() == '37.5%'
@@ -104,7 +108,7 @@ async def verify():
                 assert await page.locator('.delivery-qa-empty .mo-download, .delivery-qa-error .mo-download').count() == 0
                 assert await page.locator('.delivery-qa-empty .mo-empty').count() == 4
                 assert await page.locator('.delivery-qa-error .mo-notice').all_text_contents() == ['SYNTHETIC API unavailable'] * 2
-                assert await page.locator('.mo-delivery .mo-section small').all_text_contents() == ['API · 17s ago · cache 30s'] * 6
+                assert await page.locator('.mo-arr-delivery .mo-section small').count() == 0
                 await page.screenshot(path=str(OUT / f'delivery-{width}-{"light" if light else "dark"}.png'), full_page=True)
                 await page.close()
         await browser.close()

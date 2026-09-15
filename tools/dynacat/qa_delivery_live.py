@@ -15,6 +15,8 @@ async def main():
                 for i,app in enumerate(['sonarr','radarr']):
                     widget=page.locator('.mo-arr-delivery').nth(i)
                     queue=await widget.locator('.mo-download').count();imports=await widget.locator('.mo-import').count()
+                    details=widget.locator('.mo-imports')
+                    await details.evaluate('e=>e.open=true')
                     row=widget.locator('.mo-import').first
                     assert imports>0,'No live imports to verify'
                     await row.evaluate('e=>e.scrollIntoView({block:"center",behavior:"instant"})')
@@ -30,6 +32,8 @@ async def main():
                     assert await row.locator('.mo-item-title').evaluate('e=>e===document.activeElement && getComputedStyle(e,"::after").outlineStyle!=="none"')
                     report.append({'app':app,'width':width,'light':light,'liveQueue':queue,'liveImports':imports,'fullRowHit':True,'keyboard':True})
                 assert not await page.evaluate('document.documentElement.scrollWidth>innerWidth')
+                await page.screenshot(path=str(out/f'expanded-{width}-{"light" if light else "dark"}.png'),full_page=True)
+                await page.locator('.mo-imports').evaluate_all('els=>els.forEach(e=>e.open=false)')
                 await page.evaluate('scrollTo(0,0)')
                 await page.screenshot(path=str(out/f'delivery-{width}-{"light" if light else "dark"}.png'),full_page=True)
                 await page.close()

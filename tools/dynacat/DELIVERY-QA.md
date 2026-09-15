@@ -16,6 +16,14 @@ All fixture content is labelled **SYNTHETIC · NOT LIVE**. The browser suite che
 
 RED runs demonstrated missing full-cell hit targets and missing metadata hierarchy before implementation. Evidence is stored outside Git under `/srv/hermes/workspaces/delivery-qa-evidence/`.
 
+## Structural redesign acceptance
+
+The second pass separates the compact queue total from collapsed import history, removes routine API-age boilerplate, reserves accent color for active progress, and aligns import metadata without repeated green checkmarks. Default empty widgets measure about 216px versus 564px previously, using the same captured real data and native renderer. All 12 imports remain accessible in each disclosure. Source URLs, independent IMDb actions, error/empty/truncation states, real percentages, remaining sizes and ETA remain intact.
+
+`qa_delivery_redesign.py` renders deployed baseline and candidate against the same captured ARR response. Evidence: `/srv/hermes/workspaces/delivery-redesign-evidence/`, with six desktop/mobile theme combinations, default and expanded screenshots, and geometry JSON. Expanded and collapsed state are asserted after both widgets actually render a changed local refresh fixture, then restore captured content. The fixture source is local and never changes operational downloads.
+
+Secret-scanned deployed baseline: `/srv/hermes/workspaces/delivery-redesign-baseline/deployed.tar.gz` and `manifest.json`, revision `c554389b0849388ceee299081c63c6e48a91f5b1`; archive CSS hash matched live served CSS before edits. Baseline live screenshots: `/srv/hermes/workspaces/delivery-redesign-before/`. This is staged acceptance, not proof of deployment. Parent coordinates the shared release and must rerun live QA and stack health verification.
+
 ## Live read-only QA
 
 ```sh
