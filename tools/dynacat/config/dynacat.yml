@@ -14,7 +14,7 @@ branding:
   center-desktop-navigation: true
 theme:
   background-color: 216 18 8
-  primary-color: 8 78 62
+  primary-color: 215 50 60
   positive-color: 151 49 54
   negative-color: 1 79 62
   contrast-multiplier: 1.25
@@ -131,12 +131,6 @@ pages:
   width: wide
   desktop-navigation-width: wide
   key-bind: d h
-  head-widgets:
-  - type: html
-    frameless: true
-    css-class: command-banner
-    source: <div class="cc-eyebrow">GRAY MATTER · PRIVATE OPERATIONS</div><div class="cc-title">COMMAND CENTER <span>LIVE</span></div><div
-      class="cc-subtitle">Fleet telemetry · service health · container estate · media operations</div>
   columns:
   - size: small
     widgets:
@@ -152,28 +146,11 @@ pages:
       units: metric
       hour-format: 24h
       show-area-name: false
-    - type: monitor
-      title: Service health
-      title-icon: mdi:heart-pulse
-      style: compact
-      show-history: true
-      update-interval: 2m
-      sites:
-      - title: Komodo
-        url: https://komodo.graymatter.ch
-      - title: Beszel
-        url: https://beszel.graymatter.ch
-      - title: Dozzle
-        url: https://dozzle.local.graymatter.ch
-      - title: Uptime Kuma
-        url: https://status.graymatter.ch/dashboard
-      - title: Proxmox
-        url: https://proxmox.graymatter.ch
     - type: bookmarks
       css-class: quick-links
       groups:
       - title: Control plane
-        color: 8 78 62
+        color: 215 50 60
         links:
         - title: Komodo
           url: https://komodo.graymatter.ch
@@ -187,72 +164,115 @@ pages:
         - title: Proxmox
           url: https://proxmox.graymatter.ch
           icon: si:proxmox
+    - type: releases
+      title: Critical releases
+      title-icon: mdi:package-variant-closed
+      show-source-icon: true
+      name-only: true
+      limit: 7
+      collapse-after: 7
+      repositories:
+      - Panonim/dynacat
+      - dockerhub:linuxserver/plex
+      - dockerhub:linuxserver/sonarr
+      - dockerhub:linuxserver/radarr
+      - dockerhub:qbittorrentofficial/qbittorrent-nox
   - size: full
     widgets:
-    - type: html
-      frameless: true
-      css-class: section-label
-      source: <div><span class="status-dot"></span> LIVE FLEET TELEMETRY <small>Beszel · CPU / memory / disk / load
-        / network / alerts</small></div>
-    - type: server-stats
-      title: Tools node · live capacity
-      title-icon: mdi:server
-      servers:
-      - type: local
-        name: tools.lan
-        compact: false
-        hide-swap: true
-        hide-mountpoints-by-default: true
-        mountpoints:
-          /:
-            name: System volume
-            hide: false
-    - type: monitor
-      title: Fleet telemetry entrypoints
-      title-icon: mdi:server-network
-      style: compact
-      show-history: true
-      update-interval: 2m
-      sites:
-      - title: Proxmox cluster
-        url: https://proxmox.graymatter.ch
-      - title: Proxmox Backup Server
-        url: https://pbs.graymatter.ch/
-      - title: Komodo control plane
-        url: https://komodo.graymatter.ch
-    - type: split-column
-      widgets:
-      - type: html
-        title: Virtualisation estate
-        title-icon: mdi:server-network
-        source: <div class="metric-grid"><a href="https://proxmox.graymatter.ch"><strong>Proxmox I</strong><span>Compute
-          & LXC</span></a><a href="https://proxmox.graymatter.ch"><strong>Proxmox II</strong><span>Compute & LXC</span></a><a
-          href="https://proxmox.graymatter.ch"><strong>Proxmox III</strong><span>Compute & LXC</span></a></div>
-      - type: releases
-        title: Critical releases
-        title-icon: mdi:package-variant-closed
-        show-source-icon: true
-        name-only: true
-        limit: 5
-        collapse-after: 5
-        repositories:
-        - Panonim/dynacat
-        - dockerhub:linuxserver/plex
-        - dockerhub:linuxserver/sonarr
-        - dockerhub:linuxserver/radarr
-        - dockerhub:qbittorrentofficial/qbittorrent-nox
+    - type: custom-api
+      title: Komodo · enrolled servers
+      title-url: https://komodo.graymatter.ch
+      css-class: komodo-widget
+      cache: 15s
+      update-interval: 30s
+      url: http://192.168.5.53:9120/read
+      method: POST
+      headers:
+        X-Api-Key: ${DYNACAT_KOMODO_API_KEY}
+        X-Api-Secret: ${DYNACAT_KOMODO_API_SECRET}
+      body:
+        type: ListServers
+        params:
+          limit: 0
+      template: |-
+        {{ $all := .JSON.Array "" }}{{ $ok := .JSON.Array `#(info.state=="Ok")#` }}
+        <div class="k-summary"><div><strong>{{ len $all }}</strong><span>ENROLLED</span></div><div><strong>{{ len $ok }}</strong><span>REPORTING</span></div><div><strong>{{ len (.JSON.Array `#(info.state=="Disabled")#`) }}</strong><span>DISABLED</span></div><div><strong>{{ len (.JSON.Array `#(info.state!="Ok")#|#(info.state!="Disabled")#`) }}</strong><span>OTHER STATES</span></div></div>
+        <div class="k-note">Komodo Periphery guests / servers · not Proxmox hypervisor metrics · refresh 30s</div>
+        <div class="k-host-grid">{{ range $all }}{{ if ne (.String "info.state") "Disabled" }}
+        <article class="k-host"><header><a href="https://komodo.graymatter.ch/servers/{{ .String "id" }}">{{ .String "name" }}</a><span class="k-state {{ if ne (.String "info.state") "Ok" }}k-warning{{ end }}">{{ .String "info.state" }}</span></header>
+        {{ if and (.Exists "info.stats.cpu_perc") (eq (.String "info.state") "Ok") }}
+        {{ $cpu := .Float "info.stats.cpu_perc" }}{{ $ram := mul (div (.Float "info.stats.mem_used_gb") (.Float "info.stats.mem_total_gb")) 100 }}{{ $disk := mul (div (.Float "info.stats.disk_used_gb") (.Float "info.stats.disk_total_gb")) 100 }}
+        <div class="k-metrics"><div><label>CPU <b>{{ printf "%.1f" $cpu }}%</b></label><meter min="0" max="100" value="{{ $cpu }}"></meter><small>{{ .Int "info.logical_core_count" }} logical cores</small></div><div><label>RAM <b>{{ printf "%.1f" $ram }}%</b></label><meter min="0" max="100" value="{{ $ram }}"></meter><small>{{ printf "%.1f" (.Float "info.stats.mem_used_gb") }} / {{ printf "%.1f" (.Float "info.stats.mem_total_gb") }} GiB</small></div><div><label>DISK <b>{{ printf "%.1f" $disk }}%</b></label><meter min="0" max="100" value="{{ $disk }}"></meter><small>{{ printf "%.1f" (.Float "info.stats.disk_used_gb") }} / {{ printf "%.1f" (.Float "info.stats.disk_total_gb") }} GiB</small></div></div>
+        {{ if eq (.Float "info.stats.mem_used_gb") 0.0 }}<div class="k-warning k-note">RAM: source reports zero; usage may be unavailable.</div>{{ end }}
+        <div class="k-fresh">Source sample <span data-dynamic-relative-time="{{ div (.Int "info.stats.refresh_ts") 1000 }}"></span> · load {{ printf "%.2f" (.Float "info.stats.load_average.one") }}</div>
+        {{ else }}<p class="k-warning">Telemetry unavailable · {{ .String "info.state" }}</p>{{ end }}</article>{{ end }}{{ end }}</div>
+        <details class="k-disabled"><summary>Disabled enrollment · no live metrics</summary><div>{{ range .JSON.Array `#(info.state=="Disabled")#` }}<span>{{ .String "name" }}</span>{{ end }}</div></details>
+    - type: custom-api
+      title: Container inventory · by host
+      title-url: https://komodo.graymatter.ch
+      css-class: komodo-widget
+      cache: 15s
+      update-interval: 30s
+      url: http://192.168.5.53:9120/read
+      method: POST
+      headers:
+        X-Api-Key: ${DYNACAT_KOMODO_API_KEY}
+        X-Api-Secret: ${DYNACAT_KOMODO_API_SECRET}
+      body:
+        type: ListAllDockerContainers
+        params:
+          limit: 0
+      template: |-
+        {{ $all := .JSON.Array "" }}<div class="k-inventory-head"><strong>{{ len $all }} containers</strong><span>{{ len (.JSON.Array `#(state=="running")#`) }} running · {{ len (.JSON.Array `#(state!="running")#`) }} other</span></div>
+        <div class="k-note">Reported by Komodo · fetched <span {{ now | toRelativeTime }}></span> · refresh 30s</div>
+        <div class="k-container-grid">{{ range unique "server_name" $all | sortByString "server_name" "asc" }}{{ $host := .String "server_name" }}
+        <section class="k-container-host"><header><a href="https://komodo.graymatter.ch/servers/{{ .String "server_id" }}">{{ $host }}</a></header>
+        {{ range $all }}{{ if eq (.String "server_name") $host }}<div class="k-container-row"><span class="k-dot {{ if ne (.String "state") "running" }}k-bad{{ end }}" title="{{ .String "state" }}"></span><div class="k-container-name"><strong title="{{ .String "image" }}">{{ trimPrefix (concat $host "_") (.String "name") }}</strong><small>{{ .String "status" }}</small></div><span class="k-container-usage">{{ if .Exists "stats.cpu_perc" }}{{ .String "stats.cpu_perc" }}<small>{{ .String "stats.mem_perc" }} RAM</small>{{ else }}{{ .String "state" }}{{ end }}</span></div>{{ end }}{{ end }}</section>{{ end }}</div>
   - size: small
     widgets:
-    - type: html
-      frameless: true
-      css-class: section-label
-      source: <div><span class="status-dot"></span> CONTAINER ESTATE <small>Dozzle · 12 hosts</small></div>
+    - type: custom-api
+      title: Tools · mounted volumes
+      title-url: https://komodo.graymatter.ch
+      css-class: komodo-widget
+      cache: 15s
+      update-interval: 30s
+      url: http://192.168.5.53:9120/read
+      method: POST
+      headers:
+        X-Api-Key: ${DYNACAT_KOMODO_API_KEY}
+        X-Api-Secret: ${DYNACAT_KOMODO_API_SECRET}
+      body:
+        type: GetSystemStats
+        params:
+          server: tools
+      template: '{{ range .JSON.Array "disks" }}<div class="k-volume"><label>{{ .String "mount" }} <b>{{ printf "%.0f" (mul (div (.Float "used_gb")
+        (.Float "total_gb")) 100) }}%</b></label><meter min="0" max="{{ .Float "total_gb" }}" value="{{ .Float "used_gb" }}"></meter><small>{{
+        printf "%.2f" (.Float "used_gb") }} / {{ printf "%.2f" (.Float "total_gb") }} GiB · {{ .String "file_system" }}</small></div>{{ end }}<div
+        class="k-fresh">Source sample <span data-dynamic-relative-time="{{ div (.JSON.Int "refresh_ts") 1000 }}"></span></div>'
+    - type: custom-api
+      title: Stack state · Komodo
+      title-url: https://komodo.graymatter.ch
+      css-class: komodo-widget
+      cache: 15s
+      update-interval: 30s
+      url: http://192.168.5.53:9120/read
+      method: POST
+      headers:
+        X-Api-Key: ${DYNACAT_KOMODO_API_KEY}
+        X-Api-Secret: ${DYNACAT_KOMODO_API_SECRET}
+      body:
+        type: ListStacks
+        params:
+          limit: 0
+      template: |-
+        <div class="k-inventory-head"><strong>{{ len (.JSON.Array "") }} stacks</strong></div><div class="k-note">Includes templates / inactive definitions · fetched <span {{ now | toRelativeTime }}></span></div>
+        {{ $all := .JSON.Array "" }}{{ range unique "info.server_name" $all | sortByString "info.server_name" "asc" }}{{ $host := .String "info.server_name" }}<details class="k-stack-group"><summary>{{ if $host }}{{ $host }}{{ else }}Unassigned{{ end }}</summary>{{ range $all }}{{ if eq (.String "info.server_name") $host }}<div class="k-stack"><a href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ trimPrefix (concat $host "_") (.String "name") }}</a><small>{{ .String "info.status" }}{{ if .Bool "template" }} · template{{ end }}</small></div>{{ end }}{{ end }}</details>{{ end }}
     - type: rss
       title: Infrastructure signal
       title-icon: mdi:rss
       style: vertical-list
-      limit: 8
-      collapse-after: 6
+      limit: 5
+      collapse-after: 4
       single-line-titles: true
       feeds:
       - title: Krebs on Security
