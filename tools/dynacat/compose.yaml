@@ -29,7 +29,7 @@ services:
     container_name: tools_dynacat
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "spoon-branding-18"
+      ch.graymatter.config-revision: "spoon-branding-19"
     ports:
       - "8080:8080"
     volumes:

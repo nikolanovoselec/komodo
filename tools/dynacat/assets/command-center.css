@@ -9,6 +9,8 @@ body{letter-spacing:.015em}
  .header-container .nav-item{font-size:12px;padding-inline:7px}
  .header-container .theme-picker{margin-left:auto}
 }
+/* Native bottom navigation remains the mobile navigation surface. */
+@media(max-width:700px){.header-container .nav{display:none}.header-container .header{min-height:54px}}
 .komodo-widget .widget-content{padding:14px}
 .k-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
 .k-summary>div{padding:10px;border:1px solid var(--cc-border);border-radius:4px}
