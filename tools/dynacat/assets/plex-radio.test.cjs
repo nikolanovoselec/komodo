@@ -24,9 +24,16 @@ test('next follows shuffle, previous uses history, paused skips never start audi
   const {radio,audio}=make();await radio.play();
   await radio.next();assert.equal(audio.src,'/radio/stream/2');
   await radio.previous();assert.equal(audio.src,'/radio/stream/1');
-  radio.toggleShuffle();assert.equal(radio.state.shuffle,false);
+  assert.equal(radio.state.shuffle,true);
   radio.pause();await radio.next();assert.equal(audio.src,'/radio/stream/2');assert.equal(audio.paused,true);
   const idle=make();await idle.radio.next();assert.equal(idle.audio.plays,0);assert.equal(idle.calls(),0);
+});
+test('Shuffle immediately plays a different random track, including from paused and idle',async()=>{
+  const {radio,audio}=make();await radio.play();radio.pause();
+  const first=audio.src;await radio.shuffle();
+  assert.notEqual(audio.src,first);assert.equal(audio.paused,false);assert.equal(radio.state.shuffle,true);
+  await radio.previous();assert.equal(audio.src,first);
+  const idle=make();await idle.radio.shuffle();assert.equal(idle.audio.plays,1);
 });
 test('pending queue is single flight and stop cancels even a late response',async()=>{
   let resolve,signal,calls=0;
@@ -48,7 +55,7 @@ test('ended advances only after Play; media errors stop rather than skip forever
   assert.equal(audio.src,'/radio/stream/2');
   audio.dispatchEvent(new Event('error'));assert.equal(radio.state.playing,false);assert.ok(radio.state.error);
 });
-test('persistent media card survives widget replacement and stops on navigation',async()=>{
+test('persistent media card survives widget replacement and internal navigation',async()=>{
   const {JSDOM}=require('jsdom');
   const dom=new JSDOM('<div class="page-columns"><div class="page-column"><div class="media-ops-widget">old</div></div></div>',{url:'https://test/media',runScripts:'outside-only'});
   const w=dom.window;let plays=0,requests=0;
@@ -58,6 +65,7 @@ test('persistent media card survives widget replacement and stops on navigation'
   w.fetch=async()=>{requests++;return {ok:true,json:async()=>({tracks:[{id:'1',stream:'/radio/stream/1',title:'<script>bad</script>',poster:'https://evil/poster'}]})};};
   w.eval(fs.readFileSync(source,'utf8'));w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
   const card=w.document.querySelector('#plex-radio');assert.ok(card);
+  assert.ok(card.closest('.page-column'),'full radio retains original Media column layout');
   assert.equal(card.closest('.media-ops-widget'),null);assert.equal(requests,0);assert.equal(plays,0);
   card.querySelector('[data-action="play"]').click();await new Promise(setImmediate);
   assert.equal(plays,1);assert.equal(card.querySelector('.pr-title').textContent,'<script>bad</script>');assert.equal(card.querySelector('img').hasAttribute('src'),false);
@@ -65,8 +73,11 @@ test('persistent media card survives widget replacement and stops on navigation'
   w.document.querySelector('.media-ops-widget').outerHTML='<div class="media-ops-widget">new</div>';
   w.document.dispatchEvent(new w.Event('dynacat:widget-updated'));
   assert.equal(w.document.querySelector('#plex-radio'),card);
-  w.history.pushState({},'', '/home');await new Promise(setImmediate);
-  assert.equal(card.isConnected,false);assert.equal(card.querySelector('audio').hasAttribute('src'),false);
+  w.history.pushState({},'', '/hardware-workloads');w.document.dispatchEvent(new w.Event('construct:route'));await new Promise(setImmediate);
+  assert.equal(card.isConnected,true);assert.equal(w.document.querySelector('#plex-radio-audio').hasAttribute('src'),true);
+  assert.equal(card.classList.contains('pr-mini'),true);
+  assert.equal(card.querySelector('[data-action="shuffle"]').hasAttribute('aria-pressed'),false);
+  card.querySelector('[data-action="play"]').click();assert.equal(card.querySelector('[data-action="play"]').textContent,'Play');
   w.dispatchEvent(new w.Event('pagehide'));w.close();
 });
 function mountControls(t) {
@@ -80,7 +91,7 @@ function mountControls(t) {
   w.eval(fs.readFileSync(source,'utf8'));
   t.after(()=>{w.dispatchEvent(new w.Event('pagehide'));w.close();});
   const card=w.document.querySelector('#plex-radio');
-  return {w,card,audio:card.querySelector('audio'),plays:()=>plays,requests:()=>requests};
+  return {w,card,audio:w.document.querySelector('#plex-radio-audio'),plays:()=>plays,requests:()=>requests};
 }
 test('labeled seek control tracks media time and seeks without starting audio',async(t)=>{
   const {w,card,audio,plays,requests}=mountControls(t);
@@ -119,6 +130,8 @@ test('labeled volume slider changes audio and survives widget refresh without au
 test('card stylesheet follows theme tokens and accessible responsive controls',()=>{
   const cssPath=`${__dirname}/plex-radio.css`;assert.ok(fs.existsSync(cssPath));
   const css=fs.readFileSync(cssPath,'utf8');
+  assert.match(css,/data-action=previous[^}]+font-size:24px/);
+  assert.ok(css.includes('.pr-mini'));
   for(const token of ['--color-primary','--color-text-base','--color-text-highlight','--color-text-subdue',':focus-visible','44px','@media']) assert.ok(css.includes(token),token);
 });
 test('sliders have compact responsive layout and visible keyboard focus',()=>{

@@ -63,23 +63,32 @@
         emit();
       });
     }
-    function toggleShuffle() {state.shuffle=!state.shuffle;emit();}
+    async function shuffle() {
+      if (state.busy) return;
+      if (state.index<0) return play();
+      await next();
+      if (!state.playing) await play();
+    }
     audio.addEventListener('ended', () => {if (state.playing) void next();});
     audio.addEventListener('error', () => {
       if (!audio.src) return;
       pause();state.error='This track could not be played. Try Next or Play.';emit();
     });
-    return {state,play,pause,stop,next,previous,toggleShuffle,seek};
+    return {state,play,pause,stop,next,previous,shuffle,seek};
   }
   if (typeof module !== 'undefined') module.exports = {createRadio};
   if (typeof window === 'undefined' || window.__plexRadioInstalled) return;
   window.__plexRadioInstalled=true;
   let card=null, radio=null;
   const onMedia=() => /^\/media\/?$/.test(window.location.pathname);
+  function placeCard() {
+    const target=onMedia() ? document.querySelector('.page-columns > .page-column') : document.body;
+    if(target && card.parentNode!==target) {if(onMedia())target.prepend(card);else target.append(card);}
+    card.classList.toggle('pr-mini',!onMedia());
+  }
   function mount() {
-    if (!onMedia()) {if (radio) radio.stop();card?.remove();card=null;radio=null;return;}
-    if (card?.isConnected) return;
-    if (radio) radio.stop();
+    if (card) {placeCard();return;}
+    if (!onMedia()) return;
     const column=document.querySelector('.page-columns > .page-column');
     if (!column) return;
     card=document.createElement('section');card.id='plex-radio';card.className='plex-radio';
@@ -88,11 +97,14 @@
     card.innerHTML=`<header class="pr-heading"><span>PLEX RADIO</span><span class="pr-mode">YOUR MUSIC · ON SHUFFLE</span></header>
       <div class="pr-body"><div class="pr-art"><span aria-hidden="true">♫</span><img alt="" hidden></div>
       <div class="pr-info"><h3 class="pr-title">Let your library play</h3><p class="pr-artist">A little discovery, from your own collection.</p><p class="pr-album"></p>
-      <div class="pr-controls"><button type="button" data-action="previous" aria-label="Previous track">⏮</button><button type="button" data-action="play" class="pr-play">Play</button><button type="button" data-action="next" aria-label="Next track">⏭</button><button type="button" data-action="shuffle" aria-pressed="true">Shuffle</button></div></div></div>
+      <div class="pr-controls"><button type="button" data-action="previous" aria-label="Previous track">⏮</button><button type="button" data-action="play" class="pr-play">Play</button><button type="button" data-action="next" aria-label="Next track">⏭</button><button type="button" data-action="shuffle" title="Play a random track">Shuffle</button></div></div></div>
       <div class="pr-sliders"><div class="pr-seek"><label for="pr-seek">Seek</label><input id="pr-seek" type="range" min="0" max="0" step="1" value="0" disabled><span class="pr-time">0:00 / 0:00</span></div><div class="pr-volume"><label for="pr-volume">Volume</label><input id="pr-volume" type="range" min="0" max="100" step="1" value="100" aria-valuetext="100%"></div></div>
-      <p class="pr-status" role="status" aria-live="polite">Press Play to begin. Audio stays off until you do.</p><audio preload="none"></audio>`;
-    column.prepend(card);
-    const root=card, audio=root.querySelector('audio');
+      <p class="pr-status" role="status" aria-live="polite">Press Play to begin. Audio stays off until you do.</p>`;
+    // Never reparent a playing media element: even a same-document DOM move
+    // can reset browser playback. Only the controls move to the mini player.
+    const audio=document.createElement('audio');audio.id='plex-radio-audio';audio.hidden=true;audio.preload='none';
+    document.body.append(audio);placeCard();
+    const root=card;
     const get=selector=>root.querySelector(selector);
     const clock=value=>`${Math.floor(value/60)}:${String(Math.floor(value%60)).padStart(2,'0')}`;
     function render(state) {
@@ -114,7 +126,7 @@
       play.setAttribute('aria-label',state.busy ? 'Cancel loading' : play.textContent);
       get('[data-action="previous"]').disabled=state.busy || !state.history.length;
       get('[data-action="next"]').disabled=state.busy || state.index<0;
-      get('[data-action="shuffle"]').setAttribute('aria-pressed',String(state.shuffle));
+      get('[data-action="shuffle"]').disabled=state.busy;
       get('.pr-mode').textContent=state.shuffle ? 'YOUR MUSIC · ON SHUFFLE' : 'YOUR MUSIC · IN ORDER';
       get('.pr-status').textContent=state.error || (state.busy ? 'Tuning in…' : state.playing ? 'Playing from your Plex library' : track ? 'Paused · ready when you are' : 'Press Play to begin. Audio stays off until you do.');
       root.classList.toggle('pr-error',Boolean(state.error));root.classList.toggle('pr-playing',state.playing);
@@ -129,10 +141,10 @@
     audio.addEventListener('volumechange',renderVolume);
     renderVolume();
     root.addEventListener('click',event=>{
-      const button=event.target.closest('button[data-action]');if (!button || !onMedia()) return;
+      const button=event.target.closest('button[data-action]');if (!button) return;
       const action=button.dataset.action;
       if (action==='play') {if(player.state.playing || player.state.busy) player.pause();else void player.play();}
-      else if(action==='shuffle') player.toggleShuffle();
+      else if(action==='shuffle') player.shuffle();
       else if(action==='next') void player.next();
       else if(action==='previous') void player.previous();
     });
@@ -143,13 +155,13 @@
   window.addEventListener('pagehide',()=>{radio?.stop();observer.disconnect();});
   window.addEventListener('popstate',mount);
   window.addEventListener('pageshow',()=>{observer.observe(document.documentElement,{childList:true,subtree:true});mount();});
-  window.navigation?.addEventListener('navigate',()=>radio?.stop());
+  document.addEventListener('construct:route',mount);
   for (const method of ['pushState','replaceState']) {
     const original=window.history[method];
     window.history[method]=function(...args) {const result=original.apply(this,args);mount();return result;};
   }
   // Reattach only if the page layout itself is replaced, not on normal widget refreshes.
-  const observer=new MutationObserver(()=>{if (!onMedia() || !card?.isConnected) mount();});
+  const observer=new MutationObserver(()=>{if (!card?.isConnected) mount();});
   observer.observe(document.documentElement,{childList:true,subtree:true});
   mount();
 })();

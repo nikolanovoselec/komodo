@@ -3,10 +3,16 @@
 ## Plex browser radio
 
 The Media page now offers explicit Play/Pause, Previous/Next, shuffle, seek and
-volume controls with real Plex artwork. Nothing is fetched or played until Play;
-widget refresh preserves the audio element, navigation away stops it, and a fresh
-page never resumes automatically. This is local browser playback, not remote Plex
-player control. Volume is session-only.
+volume controls with real Plex artwork. Nothing is fetched or played until an
+explicit Play or Shuffle action; Shuffle immediately plays another random track.
+Widget refresh and navigation among Hardware & Workloads, Media and Endpoints &
+Services preserve the same attached audio element. Controls become a compact
+mini-player outside Media. Background-tab playback is supported while the browser
+keeps the document alive; full-page reload, leaving the dashboard or closing the
+tab stops playback, and a fresh page never resumes automatically. The narrowly
+scoped gateway lifecycle hook targets pinned Dynacat 3.0 and must be revalidated
+on upgrades. This is local browser playback, not remote Plex player control or
+Plex session/timeline reporting. Volume is session-only.
 
 A digest-pinned unprivileged nginx gateway owns host port 8080. Dynacat and the
 radio sidecar have no published ports. Only `/radio/queue` and numeric
@@ -32,7 +38,11 @@ QA: `python3 -m unittest discover -s adapter -q` and
 using credentials held only in process memory; `QA_DEPLOYED=1` tests the deployed
 gateway directly without retrieving a token. Evidence is saved outside Git under
 `/srv/hermes/workspaces/radio-qa/`. Tests cover decoded playback, HTTP framing,
-controls, refresh preservation, navigation stop and dark/light desktop/mobile.
+controls, refresh preservation, persistent three-route navigation, native polling
+and dark/light desktop/mobile. For live hidden-tab proof run
+`QA_DEPLOYED=1 QA_REAL_BACKGROUND=1 xvfb-run -a /srv/hermes/workspaces/dynacat-qa-venv/bin/python qa_radio.py`;
+this uses the real gateway (no staged routes), an owned process-muted Chromium,
+and checks hidden visibility, advancing playback time and decoded bytes.
 
 The private `workload-summary` sidecar joins Komodo read responses and returns a
 small allowlisted JSON projection to Dynacat. It has no published port, Docker
