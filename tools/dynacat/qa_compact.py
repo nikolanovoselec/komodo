@@ -37,6 +37,32 @@ async def main():
                     [...document.querySelectorAll(s)].map(e => {
                         const b=e.getBoundingClientRect();return {width:b.width,height:b.height};
                     })]))''')
+                rail = await page.locator('.page-column:has(.cc-rail-clock)').bounding_box()
+                resource = await page.locator('.pve-resources').bounding_box()
+                clock = await page.locator('.cc-rail-clock').bounding_box()
+                weather = await page.locator('.cc-rail-weather').bounding_box()
+                renovate = await page.locator('.renovate-prs').bounding_box()
+                assert await page.locator('.page-columns > .page-column').count() == 2
+                assert await page.locator('.cc-top-clock,.cc-top-weather').count() == 0
+                assert clock['y']+clock['height'] <= weather['y']
+                assert weather['y']+weather['height'] <= renovate['y']
+                assert clock['x'] == weather['x'] == renovate['x']
+                assert clock['width'] == weather['width'] == renovate['width'] == rail['width']
+                if width == 1600:
+                    assert rail['width'] == 286
+                    assert abs(resource['y']-rail['y']) < 1
+                    assert rail['x'] >= resource['x']+resource['width']
+                    assert len(set(await page.locator('.pve-node').evaluate_all('es=>es.map(e=>e.getBoundingClientRect().y)'))) == 1
+                else:
+                    assert rail['y'] > resource['y']+resource['height']
+                assert await page.locator('.cc-rail-clock [data-time-in-zone]').count() == 2
+                assert await page.locator('.cc-rail-clock [data-date]').inner_text()
+                assert 'Bern' in await page.locator('.cc-rail-weather').inner_text()
+                assert await page.locator('.cc-rail-clock,.cc-rail-weather').evaluate_all('es=>es.every(e=>e.scrollWidth<=e.clientWidth)')
+                await page.locator('.page-column:has(.cc-rail-clock)').screenshot(path=f'{prefix}-{width}-{theme}-rail.png')
+                await page.evaluate('window.scrollTo(0,0)')
+                sizes['rail'] = [rail]
+                sizes['resources'] = [resource]
                 assert len(sizes['.pve-node']) == 3
                 assert len(sizes['.pve-guests .k-host']) == 9
                 assert not await page.evaluate('document.documentElement.scrollWidth > innerWidth')

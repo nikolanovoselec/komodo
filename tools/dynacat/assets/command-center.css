@@ -122,29 +122,25 @@ meter::-webkit-meter-bar{border:0;background:color-mix(in srgb,var(--color-prima
 }
 @media(max-width:700px){.pve-grid{gap:8px}.pve-node{padding:10px;gap:8px}.pve-guests .k-host-grid{grid-template-columns:1fr}.pve-network>div{justify-content:space-between;gap:8px}}
 
-/* A single live date / dual-timezone / Bern weather strip precedes telemetry. */
-.page-columns:has(.cc-top-clock){display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:20px;align-items:start}
-.page-columns:has(.cc-top-clock)>.page-column{min-width:0;width:auto;max-width:none;order:0}
-.page-columns:has(.cc-top-clock)>.page-column:has(.pve-resources){order:0}
-.page-columns:has(.cc-top-clock)>.page-column:has(.cc-top-clock){grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,.65fr);align-items:stretch;gap:18px}
-.cc-top-clock,.cc-top-weather{margin:0!important}
-.cc-top-clock .widget-header,.cc-top-weather .widget-header{display:none}
-.cc-top-clock .widget-content,.cc-top-weather .widget-content{padding:14px 18px;height:100%}
-.cc-top-clock .clock{display:flex;align-items:center;justify-content:space-between;gap:24px}
-.cc-top-clock [data-local-time]{gap:26px;flex-shrink:0}
-.cc-top-clock .clock>hr{display:none}
-.cc-top-clock .clock>ul{display:flex;gap:26px;flex:1;justify-content:flex-end}
-.cc-top-clock .clock>ul>li{gap:12px;min-width:135px}
-.cc-top-clock .clock-time{font-variant-numeric:tabular-nums}
-.cc-top-weather .widget-small-content-bounds{display:flex;align-items:center;justify-content:center;gap:15px;max-width:none;height:100%}
-.cc-top-weather .weather-columns{display:none}
-.cc-top-weather .widget-small-content-bounds>div:last-child{margin:0;order:-1}
-.cc-top-weather .size-h2{font-size:16px}
-.cc-top-weather .size-h4{font-size:12px}
+/* Native date, clocks and weather lead the right rail; 286px = 220px × 1.3.
+   Stack the entire rail below telemetry at tablet/mobile widths, not an empty strip. */
+.page-columns:has(.cc-rail-clock){display:grid;grid-template-columns:minmax(0,1fr) 286px;gap:20px;align-items:start}
+.page-columns:has(.cc-rail-clock)>.page-column{display:block;min-width:0;width:auto;max-width:none;order:0}
+.page-columns:has(.cc-rail-clock)>.page-column:has(.pve-resources){order:0}
+.cc-rail-clock,.cc-rail-weather{margin:0 0 20px!important}
+.cc-rail-clock .widget-header,.cc-rail-weather .widget-header{display:none}
+.cc-rail-clock .widget-content,.cc-rail-weather .widget-content{padding:14px 16px}
+.cc-rail-clock [data-local-time]{gap:12px}
+.cc-rail-clock .clock>ul>li{gap:12px}
+.cc-rail-clock .clock-time{font-variant-numeric:tabular-nums}
+.cc-rail-weather .weather-columns{display:none}
+.cc-rail-weather .widget-small-content-bounds{max-width:none}
+.cc-rail-weather .size-h2{font-size:16px}
+.cc-rail-weather .size-h4{font-size:12px}
 .cc-resource-link{color:inherit;text-decoration:none;display:block;transition:border-color .15s,background .15s}
 .cc-resource-link:hover{border-color:var(--color-primary);background:color-mix(in srgb,var(--color-primary) 7%,transparent)}
 .pve-stopped .cc-resource-link{display:flex}
 .komodo-widget a:focus-visible,.komodo-widget summary:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px;border-radius:3px}
 .cc-container-link:hover{text-decoration:underline}
-@media(max-width:1000px){.page-columns:has(.cc-top-clock){grid-template-columns:1fr}.page-columns:has(.cc-top-clock)>.page-column:has(.cc-top-clock){grid-template-columns:1fr}.cc-top-clock .clock{gap:15px}.cc-top-clock .clock>ul{gap:16px}.cc-top-weather .widget-content{padding:12px 16px}}
-@media(max-width:550px){.cc-top-clock .clock{flex-wrap:wrap}.cc-top-clock [data-local-time]{width:100%}.cc-top-clock .clock>ul{justify-content:space-between;width:100%;gap:12px}.cc-top-clock .clock>ul>li{min-width:0;gap:8px}.cc-top-weather .widget-small-content-bounds{flex-wrap:wrap;gap:6px 12px}.cc-top-weather .widget-small-content-bounds>div:last-child{font-size:10px}.cc-top-weather .size-h2{font-size:14px}.pve-heading{flex-wrap:wrap}}
+@media(max-width:1100px){.page-columns:has(.cc-rail-clock){grid-template-columns:minmax(0,1fr)}}
+@media(max-width:550px){.pve-heading{flex-wrap:wrap}}

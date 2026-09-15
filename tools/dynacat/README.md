@@ -177,8 +177,10 @@ All current ranked hosts have verified mappings.
 
 The landing Control plane/Bookmarks and Critical releases widgets are removed;
 Directory, Media Ops and News are preserved. Native live Clock (browser-local date
-plus Bern/New York IANA zones) and Bern Weather now form a top horizontal strip,
-wrapping above resources on mobile. No date, timezone offset or weather is hardcoded.
+plus Bern/New York IANA zones) and Bern Weather lead the right rail directly above
+Renovate. The desktop rail is 286px (30% wider than the previous 220px). Below
+1100px it stacks after telemetry, with date/clocks, weather, Renovate in that order.
+No date, timezone offset or weather is hardcoded; the former top-strip wrapper is removed.
 `command-center.js` uses the native `dynacat:widget-updated` event to preserve
 open disclosures and focused links across refreshes; it adds no polling.
 

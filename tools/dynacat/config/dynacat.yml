@@ -134,22 +134,6 @@ pages:
   desktop-navigation-width: wide
   key-bind: d h
   columns:
-  - size: small
-    widgets:
-    - type: clock
-      css-class: cc-top-clock
-      hour-format: 24h
-      timezones:
-      - timezone: Europe/Zurich
-        label: Bern
-      - timezone: America/New_York
-        label: New York
-    - type: weather
-      css-class: cc-top-weather
-      location: Bern, Switzerland
-      units: metric
-      hour-format: 24h
-      show-area-name: false
   - size: full
     widgets:
     - type: custom-api
@@ -271,6 +255,20 @@ pages:
         CPU may exceed 100%.</div>{{ end }}'
   - size: small
     widgets:
+    - type: clock
+      css-class: cc-rail-clock
+      hour-format: 24h
+      timezones:
+      - timezone: Europe/Zurich
+        label: Bern
+      - timezone: America/New_York
+        label: New York
+    - type: weather
+      css-class: cc-rail-weather
+      location: Bern, Switzerland
+      units: metric
+      hour-format: 24h
+      show-area-name: false
     - type: custom-api
       title: Renovate · open PRs
       title-url: https://github.com/nikolanovoselec/komodo/pulls?q=is%3Apr+is%3Aopen+author%3Aapp%2Frenovate

@@ -26,10 +26,14 @@ async def main():
    assert await page.locator('.pve-node').count()==3
    assert await page.locator('.pve-guests .cc-resource-link').count()==19
    assert await page.locator('.widget-type-bookmarks,.widget-type-releases').count()==0
-   assert await page.locator('.cc-top-clock,.cc-top-weather').count()==2
-   box=await page.locator('.page-column:has(.cc-top-clock)').bounding_box()
+   assert await page.locator('.cc-rail-clock,.cc-rail-weather').count()==2
+   box=await page.locator('.page-column:has(.cc-rail-clock)').bounding_box()
    resource=await page.locator('.pve-resources').bounding_box()
-   assert box['y']+box['height']<=resource['y']
+   if mode=='desktop':
+    assert box['x'] > resource['x']+resource['width']
+    assert abs(box['y']-resource['y'])<1
+    assert box['width']==286
+   assert await page.locator('.cc-rail-clock').evaluate('e=>e.parentElement===document.querySelector(".renovate-prs").parentElement')
    assert not await page.evaluate('document.documentElement.scrollWidth>innerWidth')
    await page.locator('.pve-stopped summary').click()
    await page.evaluate('window.scrollTo(0,0)')
