@@ -14,7 +14,7 @@ These are approximate network locations, not a person's precise location. VPN, p
 
 ## Deployment
 
-`adapter/Dockerfile.geoip` retains the pinned Python base and adds `maxminddb==3.2.0`. The collector mounts the `geoip-city` named volume read-only. A credential-free one-shot `geoip-update` service writes the same volume and has no exposed ports. It normally exits with status 0. Collector availability does not depend on updater success.
+`adapter/Dockerfile.geoip` retains the pinned Python base and adds `maxminddb==3.2.0`. The collector mounts the `geoip-city` named volume read-only. A credential-free `geoip-update` maintenance service writes the same volume and has no exposed ports. It validates or repairs the cache hourly and stays supervised with an offline database health check. A current cache causes no download. Collector availability does not depend on updater success.
 
 The updater uses a fixed HTTPS origin, rejects redirects, bounds transfer time and compressed/expanded sizes, validates MMDB type, and publishes atomically. Failures retain the previous database. Valid same-month cache avoids another download. Docker initializes a new volume from an image directory owned by UID 65534.
 
@@ -24,7 +24,7 @@ All builds and deployment changes go through the tracked repository and Komodo. 
 
 1. Update the explicit `--month YYYY-MM` in the tracked updater command.
 2. Validate Compose, commit and push through the normal Komodo workflow.
-3. Verify the updater exited 0 and the database build month is the intended release.
+3. Verify the updater is healthy and the database build month is the intended release.
 4. Verify a public session has an approximate label and private sessions remain local. Never print source addresses during verification.
 
 The collector detects atomic database replacements without restart. Preserve the named volume during upgrades. There is no automatic monthly scheduler: a failed or missed update leaves the last downloaded database, which may become stale. Reserve approximately 500 MB free disk for the old database plus temporary download files.

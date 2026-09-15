@@ -7,7 +7,7 @@ services:
     pull_policy: build
     container_name: tools_dynacat_workload_summary
     labels:
-      ch.graymatter.config-revision: "construct-completed-maintenance-36"
+      ch.graymatter.config-revision: "construct-supervised-geoip-38"
     command: ["python", "-B", "/app/adapter.py"]
     user: "65534:65534"
     volumes:
@@ -86,11 +86,18 @@ services:
       dockerfile: Dockerfile.geoip
     pull_policy: build
     container_name: tools_dynacat_geoip_update
-    command: ["python", "-B", "/app/geoip_update.py", "--month", "2026-09"]
+    command: ["python", "-B", "/app/geoip_update.py", "--month", "2026-09", "--watch"]
     user: "65534:65534"
     volumes:
       - geoip-city:/geoip
-    restart: "no"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-B", "/app/geoip_update.py", "--month", "2026-09", "--check"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 180s
+      start_interval: 5s
     read_only: true
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]

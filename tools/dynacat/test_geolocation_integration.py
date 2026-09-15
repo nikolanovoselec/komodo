@@ -7,7 +7,9 @@ class GeoIntegration(unittest.TestCase):
         d=yaml.safe_load((ROOT/'compose.yaml').read_text());services=d['services']
         self.assertIn('geoip-city:/geoip:ro',services['workload-summary']['volumes'])
         updater=services['geoip-update']
-        self.assertEqual(updater['restart'],'no')
+        self.assertEqual(updater['restart'],'unless-stopped')
+        self.assertIn('--watch',updater['command'])
+        self.assertIn('--check',updater['healthcheck']['test'])
         self.assertNotIn('ports',updater)
         self.assertNotIn('environment',updater)
         self.assertNotIn('geoip-update',services['dynacat']['depends_on'])

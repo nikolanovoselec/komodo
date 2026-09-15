@@ -200,15 +200,8 @@ def project(servers, stacks, tags, containers, disabled_members):
                               state=i.get('state', 'unknown'), status=i.get('status') or i.get('state', 'unknown'),
                               unassigned=not i.get('server_id') and not i.get('swarm_id')))
     kept = []
-    completed_jobs = []
     for c in containers:
         if c['server_id'] in disabled_hosts or (c['server_id'], c['name']) in disabled_members:
-            continue
-        # This exact tracked one-shot is complete only after a verified zero exit.
-        # Failures, unknown status and same-name containers on other hosts stay visible.
-        if ((c['server_id'], c['name']) == ('6819f646d0f8c95b939cbf2f', 'tools_dynacat_geoip_update')
-                and c.get('state') == 'exited' and re.match(r'^Exited \(0\)(?: |$)', c.get('status', ''))):
-            completed_jobs.append({k:c[k] for k in ('name','server_id','server_name','state','status')})
             continue
         stats = c.get('stats') or {}
         kept.append(dict(name=c['name'], host=c['server_name'], server_id=c['server_id'],
@@ -234,7 +227,7 @@ def project(servers, stacks, tags, containers, disabled_members):
                 running_containers=sum(c['state']=='running' for c in kept),
                 definition_issues=[s for s in workloads if s['unassigned']],
                 stack_problems=[s for s in workloads if s['state']!='running' and not s['unassigned']],
-                container_problems=problems, completed_jobs=completed_jobs, container_inventory=kept, groups=groups,
+                container_problems=problems, container_inventory=kept, groups=groups,
                 top_cpu=sorted([c for c in kept if c['state']=='running' and c['cpu'] is not None], key=lambda c:c['cpu'], reverse=True)[:5],
                 top_ram=sorted([c for c in kept if c['state']=='running' and c['ram_bytes'] is not None], key=lambda c:c['ram_bytes'], reverse=True)[:5])
 

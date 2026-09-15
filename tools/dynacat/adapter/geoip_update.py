@@ -1,4 +1,4 @@
-"""One-shot DB-IP Lite updater; only the database URL is fetched, never an IP."""
+"""DB-IP Lite maintenance; only the database URL is fetched, never a viewer IP."""
 import gzip
 import os
 from pathlib import Path
@@ -71,15 +71,51 @@ def update_database(directory, month, *, fetch=OPENER.open,
                 path.unlink(missing_ok=True)
 
 
+def database_current(directory, month):
+    """Offline health predicate for the explicitly requested monthly database."""
+    import maxminddb
+    try:
+        with maxminddb.open_database(str(Path(directory) / 'dbip-city-lite.mmdb')) as reader:
+            metadata = reader.metadata()
+            return (metadata.database_type == 'DBIP-City-Lite'
+                    and datetime.fromtimestamp(metadata.build_epoch, timezone.utc).strftime('%Y-%m') == month)
+    except Exception:
+        return False
+
+
+def watch_database(directory, month, *, stop=None, updater=None, emit=None):
+    """Periodically validate/repair the cache; successful checks do not download."""
+    import threading
+    stop = stop or threading.Event()
+    updater = updater or update_database
+    emit = emit or (lambda message: print(message, flush=True))
+    while not stop.is_set():
+        try:
+            emit('Database ' + updater(directory, month))
+        except Exception:
+            emit('Database update failed; previous database retained if present')
+        stop.wait(3600)
+
+
 if __name__ == '__main__':
     import argparse
     import sys
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--month', required=True, help='Explicit DB-IP release YYYY-MM')
     parser.add_argument('--directory', default='/geoip')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--watch', action='store_true')
+    mode.add_argument('--check', action='store_true')
     args = parser.parse_args()
     try:
-        print('Database ' + update_database(args.directory, args.month))
+        if args.check:
+            healthy = database_current(args.directory, args.month)
+            print('Database current' if healthy else 'Current database unavailable')
+            sys.exit(0 if healthy else 1)
+        elif args.watch:
+            watch_database(args.directory, args.month)
+        else:
+            print('Database ' + update_database(args.directory, args.month))
     except Exception:
         print('Database update failed; previous database retained if present', file=sys.stderr)
         sys.exit(1)
