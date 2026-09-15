@@ -158,7 +158,13 @@ def chart(points, now, gap=90):
         path.append(f"{'L' if previous is not None and ts-previous < gap else 'M'}{x:.3f},{y:.3f}")
         dots.append({'x': x, 'y': y})
         previous = ts
-    return dict(path=' '.join(path), dots=dots, samples=len(dots), scale=scale,
+    # Close each existing line segment independently: nulls and time gaps remain empty.
+    areas = []
+    for segment in ' '.join(path).split('M')[1:]:
+        first_x = segment.split(',')[0]
+        last_x = segment.strip().split(' ')[-1].lstrip('L').split(',')[0]
+        areas.append(f'M{segment.strip()} L{last_x},30.000 L{first_x},30.000 Z')
+    return dict(path=' '.join(path), area_path=' '.join(areas), dots=dots, samples=len(dots), scale=scale,
                 start=now-WINDOW, end=now, window_seconds=WINDOW,
                 state='collecting' if len(dots)<2 else 'ready')
 

@@ -1,11 +1,18 @@
-/* Thirty-minute telemetry only; inherits the existing light/dark palette. */
-.cw-merged .cw-history-metric{min-width:0}
-.cw-merged .cw-history-chart{position:relative;height:38px;margin-top:3px;overflow:hidden}
+/* Workloads only: real thirty-minute segments, compact shaded resource charts. */
+.cw-merged .cw-history-metric{min-width:0;color-scheme:dark;--history-color:var(--color-primary)}
+[data-scheme="light"] .cw-merged .cw-history-metric{color-scheme:light}
+.cw-merged .pve-guest-ram{--history-color:light-dark(#197568,#66c6ad)}
+.cw-merged .pve-guest-disk{--history-color:light-dark(#976118,#dcb36d)}
+.cw-merged .pve-guest-cpu{--history-color:light-dark(#2866ad,#83b9f4)}
+.cw-merged .cw-history-chart{position:relative;height:24px;margin-top:1px;overflow:hidden}
 .cw-merged .cw-history-chart svg{display:block;width:100%;height:100%;overflow:visible}
-.cw-merged .cw-history-grid{stroke:var(--color-text-base);stroke-opacity:.12;stroke-width:.6;fill:none;vector-effect:non-scaling-stroke}
-.cw-merged .cw-history-line{stroke:var(--color-primary);stroke-width:1.4;fill:none;vector-effect:non-scaling-stroke}
-.cw-merged .cw-history-chart circle{fill:var(--color-primary)}
-.cw-merged .cw-history-axis{display:flex;justify-content:space-between;gap:3px;font-size:10px;line-height:1.4;color:var(--color-text-subdue);font-variant-numeric:tabular-nums;white-space:nowrap}
+.cw-merged .cw-history-grid{stroke:var(--color-text-base);stroke-opacity:.16;stroke-width:.6;fill:none;vector-effect:non-scaling-stroke}
+.cw-merged .cw-history-area{fill:var(--history-color);fill-opacity:.27;stroke:none}
+.cw-merged .cw-history-line{stroke:var(--history-color);stroke-width:1.8;fill:none;vector-effect:non-scaling-stroke}
+.cw-merged .cw-history-chart circle{fill:var(--history-color)}
+.cw-merged .cw-history-metric label b{color:var(--history-color);font-weight:600}
+.cw-merged .cw-history-axis{display:flex;justify-content:space-between;gap:3px;font-size:10px;line-height:1.1;color:var(--color-text-base);font-variant-numeric:tabular-nums;white-space:nowrap}
 .cw-merged .cw-history-empty{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;color:var(--color-text-base)}
-.cw-merged .cw-history-metric>small{white-space:normal;min-height:14px}
-@media(max-width:550px){.cw-merged .cw-history-chart{height:42px}.cw-merged .cw-history-axis{font-size:10px}}
+.cw-merged .cw-history-metric>small{white-space:normal;min-height:12px;line-height:1.2}
+.cw-merged .cw-workload>.k-host{padding-top:3px;padding-bottom:3px;min-height:44px}
+@media(max-width:550px){.cw-merged .cw-history-chart{height:24px}.cw-merged .cw-history-axis{font-size:10px}}
