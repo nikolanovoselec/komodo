@@ -16,9 +16,12 @@ from copy import deepcopy
 import math
 import time
 
-# VMID: (exact PVE name guard, immutable Komodo server ID, verified endpoint, MAC)
+# VMID: (last audited display name, immutable Komodo server ID, verified endpoint, MAC)
+# Display names are mutable labels, not identity. Runtime joins require the exact
+# audited VMID + immutable server ID + endpoint, with healthy/fresh telemetry.
+# MAC/IP evidence is audited out-of-band; this is not automatic VM discovery.
 VERIFIED_BINDINGS = {
-    100: ('openclaw', '6a9adf2e489ba7b3562cb584', 'https://192.168.3.203:8120', 'bc:24:11:2c:af:40'),
+    100: ('hermes', '6a9adf2e489ba7b3562cb584', 'https://192.168.3.203:8120', 'bc:24:11:2c:af:40'),
     102: ('servarr', '680f79d06a6313ac1f9f2aba', 'https://192.168.2.38:8120', '02:e7:d8:db:ce:6c'),
     110: ('middleware', '680f79cf6a6313ac1f9f2ab7', 'https://192.168.5.148:8120', 'bc:24:11:a2:3b:7a'),
     111: ('pihole-master', '68153670e9fea328ad8cc7a0', 'https://192.168.5.162:8120', 'bc:24:11:69:01:02'),
@@ -44,8 +47,9 @@ def enrich(pve_result, servers):
     for guest in result.get('guest_inventory') or []:
         if guest.get('type') != 'qemu' or guest.get('status') != 'running':
             continue
-        binding = VERIFIED_BINDINGS.get(guest.get('id'))
-        if not binding or guest.get('name') != binding[0]:
+        guest_id = guest.get('id')
+        binding = VERIFIED_BINDINGS.get(guest_id) if type(guest_id) is int else None
+        if not binding:
             continue
         info = (by_id.get(binding[1]) or {}).get('info') or {}
         if info.get('state') != 'Ok' or info.get('address') != binding[2]:

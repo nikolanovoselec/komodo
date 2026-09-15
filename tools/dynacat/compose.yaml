@@ -3,7 +3,7 @@ services:
     image: python:3.13-slim@sha256:9d2e5553305c7c7b0097999bb17187c69b921ccd6bc9d40e4bb5ebe652c00285
     container_name: tools_dynacat_workload_summary
     labels:
-      ch.graymatter.config-revision: "construct-compact-workloads-media-27"
+      ch.graymatter.config-revision: "construct-verified-vm-rename-28"
     command: ["python", "-B", "/app/adapter.py"]
     user: "65534:65534"
     volumes:
@@ -35,7 +35,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "construct-compact-workloads-media-27"
+      ch.graymatter.config-revision: "construct-verified-vm-rename-28"
     expose: ["8080"]
     volumes:
       - ./config:/app/config

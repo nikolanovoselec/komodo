@@ -36,13 +36,27 @@ class VMMetricsTests(unittest.TestCase):
         for key in ('id', 'name', 'node', 'type', 'status'):
             self.assertEqual(guest[key], before['guest_inventory'][0][key])
 
+    def test_display_renames_preserve_verified_vm_metrics(self):
+        import vm_metrics
+        for vmid, name in ((100, 'hermes'), (126, 'renamed-komodo-core')):
+            pve, servers = self.fixture()
+            binding = vm_metrics.VERIFIED_BINDINGS[vmid]
+            pve['guest_inventory'][0].update(id=vmid, name=name)
+            servers[0].update(id=binding[1], name='renamed-in-komodo')
+            servers[0]['info']['address'] = binding[2]
+            guest = vm_metrics.enrich(pve, servers)['guest_inventory'][0]
+            self.assertEqual(guest['disk']['percent'], 25)
+            self.assertEqual(guest['memory_source'], 'Komodo')
+            self.assertEqual(guest['name'], name)
+
     def test_fail_closed_identity_state_and_freshness(self):
         import vm_metrics
         mutations = [
             lambda g, s: g.update(type='lxc'),
             lambda g, s: g.update(status='stopped'),
             lambda g, s: g.update(id=100, name='openclaw'),
-            lambda g, s: g.update(name='recreated-tools'),
+            lambda g, s: g.update(id=131.0),
+            lambda g, s: g.update(id='131'),
             lambda g, s: s.update(id='other-id'),
             lambda g, s: s['info'].update(state='Disabled'),
             lambda g, s: s['info'].update(state='NotOk'),
