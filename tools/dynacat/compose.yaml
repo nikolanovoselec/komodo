@@ -2,6 +2,9 @@ services:
   dynacat:
     image: panonim/dynacat:3.0.0
     container_name: tools_dynacat
+    labels:
+      # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
+      ch.graymatter.config-revision: "komodo-native-1"
     ports:
       - "8080:8080"
     volumes:
