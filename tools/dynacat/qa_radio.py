@@ -47,6 +47,14 @@ def main():
         browser=pw.chromium.launch(headless=True,args=['--mute-audio'])
         ctx=browser.new_context(viewport={'width':1440,'height':1100})
         page=ctx.new_page();page.on('pageerror',lambda e: result['errors'].append(str(e)))
+        def wait_expression(expression,timeout=30000,arg=None):
+            deadline=time.monotonic()+timeout/1000
+            while time.monotonic()<deadline:
+                if page.evaluate(expression,arg): return
+                page.wait_for_timeout(100)
+            raise AssertionError('Timed out waiting for browser state')
+        # Poll via CDP evaluation; Playwright string predicates use eval blocked by CSP.
+        page.wait_for_function=wait_expression
         requests=[];page.on('request',lambda r: requests.append(r.url) if '/radio/' in r.url else None)
         page.goto(url+'/media',wait_until='networkidle');page.locator('#plex-radio').wait_for()
         page.evaluate("document.querySelector('#plex-radio audio').muted=true")
