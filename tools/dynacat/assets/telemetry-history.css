@@ -1,0 +1,11 @@
+/* Thirty-minute telemetry only; inherits the existing light/dark palette. */
+.cw-merged .cw-history-metric{min-width:0}
+.cw-merged .cw-history-chart{position:relative;height:38px;margin-top:3px;overflow:hidden}
+.cw-merged .cw-history-chart svg{display:block;width:100%;height:100%;overflow:visible}
+.cw-merged .cw-history-grid{stroke:var(--color-text-base);stroke-opacity:.12;stroke-width:.6;fill:none;vector-effect:non-scaling-stroke}
+.cw-merged .cw-history-line{stroke:var(--color-primary);stroke-width:1.4;fill:none;vector-effect:non-scaling-stroke}
+.cw-merged .cw-history-chart circle{fill:var(--color-primary)}
+.cw-merged .cw-history-axis{display:flex;justify-content:space-between;gap:3px;font-size:10px;line-height:1.4;color:var(--color-text-subdue);font-variant-numeric:tabular-nums;white-space:nowrap}
+.cw-merged .cw-history-empty{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;color:var(--color-text-base)}
+.cw-merged .cw-history-metric>small{white-space:normal;min-height:14px}
+@media(max-width:550px){.cw-merged .cw-history-chart{height:42px}.cw-merged .cw-history-axis{font-size:10px}}

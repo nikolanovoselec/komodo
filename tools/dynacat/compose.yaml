@@ -7,17 +7,21 @@ services:
     pull_policy: build
     container_name: tools_dynacat_workload_summary
     labels:
-      ch.graymatter.config-revision: "construct-supervised-geoip-38"
+      ch.graymatter.config-revision: "construct-30min-history-45"
     command: ["python", "-B", "/app/adapter.py"]
     user: "65534:65534"
     volumes:
       - ./adapter:/app:ro
       - geoip-city:/geoip:ro
+      - telemetry-history:/history
     environment:
+      WORKLOAD_HISTORY_PATH: /history/workloads.sqlite
+      MEDIA_HISTORY_PATH: /history/media.sqlite
       SONARR_API_KEY: ${SONARR_API_KEY}
       RADARR_API_KEY: ${RADARR_API_KEY}
       DYNACAT_PLEX_TOKEN: ${DYNACAT_PLEX_TOKEN}
       DYNACAT_GITHUB_TOKEN: ${DYNACAT_GITHUB_TOKEN}
+      DYNACAT_UNIFI_TOKEN: ${DYNACAT_UNIFI_TOKEN}
       DYNACAT_KOMODO_API_KEY: ${DYNACAT_KOMODO_API_KEY}
       DYNACAT_KOMODO_API_SECRET: ${DYNACAT_KOMODO_API_SECRET}
       DYNACAT_PROXMOX_SECRET: ${DYNACAT_PROXMOX_SECRET}
@@ -40,7 +44,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "construct-arr-redesign-44"
+      ch.graymatter.config-revision: "construct-30min-history-45"
     expose: ["8080"]
     volumes:
       - ./config:/app/config
@@ -120,3 +124,4 @@ services:
 
 volumes:
   geoip-city:
+  telemetry-history:

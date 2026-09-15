@@ -8,6 +8,43 @@ def sample(ts=100000, rx=5_000_000, tx=2_500_000, interval='5-sec'):
 
 
 class TrafficHistoryTests(unittest.TestCase):
+    def test_default_window_retains_thirty_minutes_and_ages_against_wallclock(self):
+        history = TrafficHistory()
+        for ts in range(1000, 2201, 5):
+            result = history.observe(sample(ts * 1000), now=ts)
+        self.assertEqual(result['window_seconds'], 1800)
+        self.assertEqual(len(result['points']), 241)
+        aged = history.observe(sample(2200000), now=2210)
+        self.assertAlmostEqual(aged['graph']['series'][0]['points'][-1]['x'], 596.67)
+        self.assertEqual(aged['graph']['start_time'], 410)
+        self.assertEqual(aged['graph']['end_time'], 2210)
+
+    def test_durable_history_survives_restart_without_filling_downtime(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'media.sqlite'
+            first = TrafficHistory(storage_path=path)
+            first.observe(sample(1000000), now=1000)
+            first.observe(sample(1005000), now=1005)
+            restarted = TrafficHistory(storage_path=path)
+            result = restarted.observe(sample(1100000), now=1100)
+            self.assertEqual([p['ts'] for p in result['points'] if p['rx_mbps'] is not None],
+                             [1000, 1005, 1100])
+            self.assertEqual(result['graph']['series'][0]['path'].count('M'), 2)
+            expired = TrafficHistory(storage_path=path).observe({}, now=3000)
+            self.assertEqual(expired['graph']['samples'], 0)
+            self.assertEqual(expired['points'], [])
+
+    def test_persistence_failure_preserves_live_telemetry(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            history = TrafficHistory(storage_path=directory)
+            result = history.observe(sample(), now=100)
+            self.assertTrue(result['available'])
+            self.assertEqual(result['rx_mbps'], 8)
+            self.assertEqual(result['persistence_state'], 'unavailable')
+
     def test_interval_volume_is_normalized_to_decimal_mbps(self):
         result = TrafficHistory().observe(sample(), now=100)
         self.assertEqual(result['rx_mbps'], 8)

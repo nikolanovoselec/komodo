@@ -56,7 +56,7 @@ def _api(path, allowed_rrd=frozenset()):
     # Membership alone cannot authorize arbitrary URLs. Optional paths must also
     # match this exact read-only grammar, with no extra queries or child endpoints.
     optional = path == '/storage' or re.fullmatch(
-        r'/nodes/[A-Za-z0-9][A-Za-z0-9-]*/(?:disks/zfs|storage|rrddata\?timeframe=hour&cf=AVERAGE)', path)
+        r'/nodes/[A-Za-z0-9][A-Za-z0-9-]*/(?:disks/zfs|storage|(?:(?:qemu|lxc)/[1-9][0-9]*/)?rrddata\?timeframe=hour&cf=AVERAGE)', path)
     if path not in ('/nodes', '/cluster/resources?type=vm') and not (optional and path in allowed_rrd):
         raise ValueError('Read endpoint not allowed')
     base = os.environ.get('PVE_URL', 'https://192.168.1.2:8006/api2/json').rstrip('/')
@@ -134,18 +134,14 @@ def _node_order(node):
     return (name, 0, name)
 
 
-def _history(rows):
-    rows = sorted((r for r in rows if isinstance(r, dict) and _number(r.get('time')) is not None),
-                  key=lambda r: r['time'])
+def _history(rows, now=None):
+    end = time.time() if now is None else now
+    duration = 1800
+    start = end - duration
+    rows = sorted({r['time']: r for r in rows if isinstance(r, dict)
+                   and _number(r.get('time')) is not None
+                   and start <= r['time'] <= end}.values(), key=lambda r: r['time'])
     valid = [r for r in rows if _number(r.get('cpu')) is not None and r['cpu'] <= 1]
-    points = None
-    if valid:
-        start, end = valid[0]['time'], valid[-1]['time']
-        points = ' '.join(f"{100 * (r['time'] - start) / (end - start) if end > start else 0:g},{30 * (1 - r['cpu']):g}"
-                          for r in valid)
-    start = rows[0]['time'] if rows else None
-    end = rows[-1]['time'] if rows else None
-    duration = rows[-1]['time'] - rows[0]['time'] if rows else None
     # Proxmox pvestatd sums physical NIC byte counters; pmxcfs/status.c
     # stores netin/netout as DERIVE. RRD values are already bytes/second.
     rates = [_number(r.get(key)) for r in rows for key in ('netin', 'netout')]
@@ -153,29 +149,29 @@ def _history(rows):
     scale = (max(rates) or 1) if rates else None
 
     def segments(key):
+        metric_scale = 1 if key == 'cpu' else scale
         result, segment = [], []
         previous = None
         for row in rows:
             value = _number(row.get(key))
+            if key == 'cpu' and value is not None and value > 1:
+                value = None
             # The hour RRD uses one-minute buckets. Missing buckets and invalid
             # values are gaps, not zero traffic or permission to interpolate.
             if value is None or (previous is not None and row['time'] - previous != 60):
                 if len(segment) >= 2:
                     result.append(' '.join(segment))
                 segment = []
-            if value is not None and scale is not None:
-                x = 100 * (row['time'] - start) / duration if duration else 0
-                segment.append(f'{x:g},{30 * (1 - value / scale):g}')
+            if value is not None and metric_scale is not None:
+                x = 100 * (row['time'] - start) / duration
+                segment.append(f'{x:g},{30 * (1 - value / metric_scale):g}')
             previous = row['time']
         if len(segment) >= 2:
             result.append(' '.join(segment))
         return result
 
-    window = ('unavailable' if duration is None else
-              f'{duration / 3600:g}h' if duration >= 3600 and duration % 3600 == 0 else
-              f'{duration / 60:g}m' if duration >= 60 and duration % 60 == 0 else f'{duration:g}s')
-    latest = rows[-1] if rows else {}
-    return {'history': {'cpu_points': points, 'samples': len(valid), 'window': window,
+    latest = rows[-1] if rows and end - rows[-1]['time'] <= 120 else {}
+    return {'history': {'cpu_segments': segments('cpu'), 'samples': len(valid), 'window': '30m',
                         'start_time': start, 'end_time': end, 'duration_seconds': duration,
                         'net_rx_segments': segments('netin'), 'net_tx_segments': segments('netout'),
                         'net_scale_bytes_sec': scale},

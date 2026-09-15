@@ -27,16 +27,16 @@ class Refresh(unittest.TestCase):
                 route = 'pve-current' if 'pve-resources' in widget else 'current'
                 self.assertIn('url: http://workload-summary:8090/' + route, widget)
                 self.assertIn('.JSON.String "freshness.state"', widget)
-                self.assertIn('.JSON.Float "freshness.age_seconds"', widget)
-                self.assertIn('snapshot age', widget)
+                self.assertNotIn('snapshot age', widget)
+                self.assertIn('Data is stale', widget)
                 self.assertIn('template: \'{{ if .JSON.String "error" }}<div class="k-warning">', widget)
                 self.assertIn('{{ .JSON.String "error" }}</div>{{ else }}', widget)
 
-    def test_cadence_labels_distinguish_ui_collection_and_source(self):
+    def test_routine_cadence_boilerplate_is_not_visible(self):
         config = (Path(__file__).resolve().parents[1] / 'config/dynacat.yml').read_text()
-        self.assertIn('UI 1s · collector 5s · PVE ~10s · RRD 1m', config)
-        self.assertIn('UI refresh 1s; collector cache 5s; PVE samples ~10s.', config)
-        self.assertIn('UI refresh 1s · collector cache 5s', config)
+        self.assertNotIn('UI 1s · collector 5s · PVE ~10s · RRD 1m', config)
+        self.assertNotIn('UI refresh', config)
+        self.assertNotIn('collector cache', config)
         self.assertNotIn('5s refresh', config)
         self.assertNotIn('refresh 5s', config.lower())
 

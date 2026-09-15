@@ -38,10 +38,10 @@ class CurrentTrafficTests(unittest.TestCase):
             self.assertEqual(traffic.get('has_interval'), has_interval)
         from pathlib import Path
         template = (Path(__file__).resolve().parents[1] / 'config/dynacat.yml').read_text()
-        self.assertIn('if .JSON.Bool "resources.data.traffic.has_age"', template)
-        self.assertIn('{{ else }}age unknown{{ end }}', template)
-        self.assertIn('if .JSON.Bool "resources.data.traffic.has_interval"', template)
-        self.assertIn('{{ else }}unknown{{ end }} source interval', template)
+        self.assertNotIn('age unknown', template)
+        self.assertNotIn('source interval', template)
+        self.assertIn('Data unavailable', template)
+        self.assertIn('Data is stale', template)
         self.assertNotIn('s + collection', template)
 
     def test_invalid_sample_time_and_empty_resources(self):

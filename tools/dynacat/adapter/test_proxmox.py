@@ -1,6 +1,7 @@
 import importlib
 import json
 import unittest
+import unittest.mock
 from unittest.mock import patch
 
 
@@ -34,18 +35,18 @@ class Proxmox(unittest.TestCase):
         result = self.module()._history([
             dict(time=180, netin=100, netout=200),
             dict(time=0), dict(time=120, netin=50, netout=100),
-            dict(time=60, netin=0, netout=50), dict(time=240)])
+            dict(time=60, netin=0, netout=50), dict(time=240)], now=240)
         history = result['history']
-        self.assertEqual(history['net_rx_segments'], ['25,30 50,22.5 75,15'])
-        self.assertEqual(history['net_tx_segments'], ['25,22.5 50,15 75,0'])
+        self.assertEqual(history['net_rx_segments'], ['90,30 93.3333,22.5 96.6667,15'])
+        self.assertEqual(history['net_tx_segments'], ['90,22.5 93.3333,15 96.6667,0'])
         self.assertEqual(history['net_scale_bytes_sec'], 200)
-        self.assertEqual(history['start_time'], 0)
+        self.assertEqual(history['start_time'], -1560)
         self.assertEqual(history['end_time'], 240)
-        self.assertEqual(history['duration_seconds'], 240)
-        self.assertEqual(history['window'], '4m')
+        self.assertEqual(history['duration_seconds'], 1800)
+        self.assertEqual(history['window'], '30m')
         self.assertIsNone(result['net_in_bytes_sec'])
         self.assertIsNone(result['net_out_bytes_sec'])
-        latest = self.module()._history([dict(time=0, netin=123.5, netout=456.25)])
+        latest = self.module()._history([dict(time=0, netin=123.5, netout=456.25)], now=0)
         self.assertEqual(latest['net_in_bytes_sec'], 123.5)
         self.assertEqual(latest['net_out_bytes_sec'], 456.25)
 
@@ -55,7 +56,7 @@ class Proxmox(unittest.TestCase):
                 rows = [dict(time=t, netin=10, netout=20) for t in range(0, 421, 60)]
                 rows[2]['netin'] = invalid
                 del rows[5]  # Missing minute, not merely a missing value.
-                h = self.module()._history(list(reversed(rows)))['history']
+                h = self.module()._history(list(reversed(rows)), now=420)['history']
                 self.assertEqual([len(s.split()) for s in h['net_rx_segments']], [2, 2, 2])
                 self.assertEqual([len(s.split()) for s in h['net_tx_segments']], [5, 2])
                 self.assertEqual(h['net_scale_bytes_sec'], 20)
@@ -66,22 +67,22 @@ class Proxmox(unittest.TestCase):
                         self.assertEqual(xy, sorted(xy))
                 json.dumps(h, allow_nan=False)
         h = self.module()._history([dict(time=0, netin=5), dict(time=60),
-                                   dict(time=120, netin=5)])['history']
+                                   dict(time=120, netin=5)], now=120)['history']
         self.assertEqual(h['net_rx_segments'], [])  # Never draw isolated points.
 
     def test_zero_network_is_valid_with_finite_fallback_scale(self):
         h = self.module()._history([dict(time=0, netin=0, netout=0),
-                                   dict(time=60, netin=0, netout=0)])['history']
+                                   dict(time=60, netin=0, netout=0)], now=60)['history']
         self.assertEqual(h['net_scale_bytes_sec'], 1)
-        self.assertEqual(h['net_rx_segments'], ['0,30 100,30'])
-        self.assertEqual(h['net_tx_segments'], ['0,30 100,30'])
+        self.assertEqual(h['net_rx_segments'], ['96.6667,30 100,30'])
+        self.assertEqual(h['net_tx_segments'], ['96.6667,30 100,30'])
         empty = self.module()._history([])['history']
         self.assertEqual(empty['net_rx_segments'], [])
         self.assertEqual(empty['net_tx_segments'], [])
-        self.assertIsNone(empty['start_time'])
-        self.assertIsNone(empty['end_time'])
-        self.assertIsNone(empty['duration_seconds'])
-        self.assertEqual(empty['window'], 'unavailable')
+        self.assertEqual(empty['end_time'] - empty['start_time'], 1800)
+        self.assertIsInstance(empty['end_time'], (int, float))
+        self.assertEqual(empty['duration_seconds'], 1800)
+        self.assertEqual(empty['window'], '30m')
         self.assertIsNone(empty['net_scale_bytes_sec'])
 
     def test_physical_zfs_pool_capacity_is_not_root_disk_or_storage_capacity(self):
@@ -186,14 +187,15 @@ class Proxmox(unittest.TestCase):
             self.assertIn(path, ['/nodes/pve-' + n + '/rrddata?timeframe=hour&cf=AVERAGE'
                                  for n in ('i', 'ii', 'iii')])
             return [dict(time=300, cpu=1, netin=125, netout=250),
-                    dict(time=100, cpu=0), dict(time=200, cpu=.5)]
-        result = pve.collect(api)
+                    dict(time=180, cpu=0), dict(time=240, cpu=.5)]
+        with unittest.mock.patch.object(pve.time, 'time', return_value=300):
+            result = pve.collect(api)
         self.assertIsNone(result['error'])
         self.assertEqual([n['name'] for n in result['nodes']], ['pve-i', 'pve-ii', 'pve-iii'])
         for node in result['nodes']:
-            self.assertEqual(node['history']['cpu_points'], '0,30 50,15 100,0')
+            self.assertEqual(node['history']['cpu_segments'], ['93.3333,30 96.6667,15 100,0'])
             self.assertEqual(node['history']['samples'], 3)
-            self.assertEqual(node['history']['window'], '200s')
+            self.assertEqual(node['history']['window'], '30m')
             self.assertEqual(node['net_in_bytes_sec'], 125)
             self.assertEqual(node['net_out_bytes_sec'], 250)
         self.assertEqual(calls[0], '/nodes')
@@ -230,7 +232,7 @@ class Proxmox(unittest.TestCase):
                                 '/nodes/pve-i/rrddata?timeframe=hour&cf=AVERAGE',
                                 '/nodes/pve-i/disks/zfs', '/storage'])
         for node in result['nodes']:
-            self.assertEqual(node['history'], pve._history([])['history'])
+            self.assertEqual(node['history'], pve._history([], now=node['history']['end_time'])['history'])
             self.assertEqual(node['history']['net_rx_segments'], [])
             self.assertIsNone(node['history']['net_scale_bytes_sec'])
             self.assertIsNone(node['net_in_bytes_sec'])
@@ -242,10 +244,10 @@ class Proxmox(unittest.TestCase):
         result = pve._history([None, {}, dict(time=float('nan'), cpu=.5),
                                dict(time=0, cpu=-1), dict(time=1, cpu=2),
                                dict(time=2, cpu=True), dict(time=3, cpu=float('inf')),
-                               dict(time=4, cpu=.4, netin=-1, netout=float('nan'))])
-        self.assertEqual(result['history']['cpu_points'], '0,18')
+                               dict(time=4, cpu=.4, netin=-1, netout=float('nan'))], now=4)
+        self.assertEqual(result['history']['cpu_segments'], [])
         self.assertEqual(result['history']['samples'], 1)
-        self.assertEqual(result['history']['window'], '4s')
+        self.assertEqual(result['history']['window'], '30m')
         self.assertIsNone(result['net_in_bytes_sec'])
         self.assertIsNone(result['net_out_bytes_sec'])
         json.dumps(result, allow_nan=False)

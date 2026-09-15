@@ -18,7 +18,7 @@ MEDIA_GEO = GeoLocator(os.environ.get('DYNACAT_GEO_DB', '/geoip/dbip-city-lite.m
 PLEX = 'http://192.168.2.205:32400'
 ARR = {'sonarr': 'http://192.168.2.38:8988', 'radarr': 'http://192.168.2.38:8309'}
 SERVER_ID = '680f79cd6a6313ac1f9f2ab3'
-MEDIA_TRAFFIC = TrafficHistory()
+MEDIA_TRAFFIC = TrafficHistory(storage_path=os.environ.get('MEDIA_HISTORY_PATH'))
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, *args, **kwargs):

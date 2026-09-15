@@ -248,7 +248,8 @@ def collect(api):
     result = project(servers, stacks, tags, containers, members)
     import vm_metrics
     pve, _, _ = _pve_cache.snapshot(wait=True)
-    result['pve'] = vm_metrics.enrich(pve, servers)
+    import workload_history
+    result['pve'] = workload_history.enrich(vm_metrics.enrich(pve, servers))
     import navigation
     navigation.link_ranked_hosts(result, servers)
     import workload_docker

@@ -67,10 +67,12 @@ def enrich(pve_result, servers):
                          and guest.get('memory_source') != 'Komodo'
                          and (guest.get('ram') or {}).get('percent') is not None)
         if ram is not None and not has_guest_ram:
+            guest.update(metric_sample_ts=refreshed / 1000, metric_binding=binding[1] + '|' + binding[2])
             guest.setdefault('pve_host_ram', deepcopy(guest.get('ram')))
             guest.update(ram=ram, memory_source='Komodo', memory_scope='Guest OS memory (Komodo / Periphery)')
         has_guest_disk = ((guest.get('disk') or {}).get('percent') is not None
                           and guest.get('disk_source') != 'Komodo')
         if disk is not None and not has_guest_disk:
+            guest.update(metric_sample_ts=refreshed / 1000, metric_binding=binding[1] + '|' + binding[2])
             guest.update(disk=disk, disk_source='Komodo', disk_scope='Guest filesystem usage (Komodo / Periphery)')
     return result
