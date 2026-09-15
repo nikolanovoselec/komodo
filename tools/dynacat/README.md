@@ -77,8 +77,20 @@ verification and all other verification flags. This relaxes RFC certificate-prof
 strictness, not chain trust; no unverified context or global TLS override is used.
 Replace the legacy CA through normal cluster certificate maintenance to remove
 this compatibility exception in the future.
-Node/guest-count reads fail independently from Komodo. Network history remains
-unimplemented. Disk top 5 ranks enabled reporting Komodo hosts by aggregate
+Node/guest-count reads fail independently from Komodo. Genuine one-hour CPU RRD
+history and the latest RRD-average ingress/egress rates are read through a narrow
+node-derived GET allowlist. Optional RRD failure never erases current resources.
+The central Resources cards are ordered proxmox-i, proxmox-ii, proxmox-iii.
+Physical ZFS pool allocation (alloc/size/free) is read from each node’s
+`/nodes/{node}/disks/zfs`; the existing audit token supports this without any new
+privileges. Root filesystem usage and ZFS pool allocation overlap and must never
+be summed. Pool capacity does not identify rotational HDD versus SSD media.
+If the pool endpoint is unavailable, an explicitly labeled ZFS-backed-storage
+fallback joins `/storage` and `/nodes/{node}/storage`, choosing one shallowest
+active dataset per pool rather than summing aliases or child datasets. Missing
+readings remain unavailable, not zero. No storage configuration is exposed.
+Compact Komodo cards below are Periphery guest/server telemetry, not hypervisors.
+ Disk top 5 ranks enabled reporting Komodo hosts by aggregate
 filesystem capacity percent, not physical disks, per-container consumption or I/O.
 
 Diagnostic classification (2026-09-15): all four `nextcloud_*` definitions have no
