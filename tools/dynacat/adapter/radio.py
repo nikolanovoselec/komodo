@@ -48,7 +48,7 @@ def source(item):
     return None
 
 
-def queue():
+def queue(limit=16):
     container = media.plex('/library/sections/21/all?type=10&sort=random&X-Plex-Container-Start=0&X-Plex-Container-Size=64')
     if 'librarySectionID' in container and str(container['librarySectionID']) != '21':
         return {'tracks': []}
@@ -61,7 +61,7 @@ def queue():
         selected = source(item)
         if not selected or any(row['id'] == str(item['ratingKey']) for row in tracks):
             continue
-        if len(tracks) >= 16:
+        if len(tracks) >= limit:
             break
         image = media.session_poster(item.get('parentThumb', ''))
         tracks.append(dict(id=str(item['ratingKey']), title=item.get('title', ''),
@@ -70,6 +70,39 @@ def queue():
                            poster='data:image/jpeg;base64,' + image if image else '',
                            stream='/radio/stream/' + str(item['ratingKey'])))
     return {'tracks': tracks}
+
+
+PREVIEW_TTL = 300
+PREVIEW_FAILURE_TTL = 30
+_preview_value = None
+_preview_expires = 0
+_preview_lock = threading.Lock()
+
+
+def preview():
+    global _preview_value, _preview_expires
+    # Hold the lock through refresh so simultaneous misses share one lookup.
+    with _preview_lock:
+        if _preview_value is not None and time.monotonic() < _preview_expires:
+            return _preview_value
+        ttl = PREVIEW_TTL
+        try:
+            tracks = queue(limit=1)['tracks']
+            _preview_value = {'track': tracks[0] if tracks else None,
+                              'error': '' if tracks else 'No playable tracks available'}
+            if tracks:
+                # A literal data URI prefix in the native Go template avoids
+                # URL-scheme sanitization; only validated base64 follows it.
+                poster = tracks[0]['poster'].removeprefix('data:image/jpeg;base64,')
+                _preview_value['poster_base64'] = poster if re.fullmatch(r'[A-Za-z0-9+/=]+', poster) else ''
+            if not tracks:
+                ttl = PREVIEW_FAILURE_TTL
+        except Exception:
+            # Never expose upstream URLs, credentials, or exception details.
+            _preview_value = {'track': None, 'error': 'Radio upstream unavailable'}
+            ttl = PREVIEW_FAILURE_TTL
+        _preview_expires = time.monotonic() + ttl
+        return _preview_value
 
 
 UPSTREAM_TIMEOUT = 8
@@ -135,6 +168,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         try:
+            if self.path == '/radio/preview' and self.command == 'GET':
+                self.json(200, preview())
+                return
             if self.path == '/radio/queue' and self.command == 'GET':
                 self.json(200, queue())
                 return

@@ -1,25 +1,38 @@
 /* Plex Radio owns its audio element; native widget polling never replaces it. */
 (function () {
   'use strict';
-  function createRadio({audio, fetch, random = Math.random, changed = () => {}}) {
+  function createRadio({audio, fetch, preview = null, previewError = '', random = Math.random, changed = () => {}}) {
     audio.preload = 'none';
-    const state = {shuffle:true, tracks:[], index:-1, history:[], playing:false, busy:false, error:'', currentTime:0, duration:0};
+    const safeTrack = t => t && /^[0-9]{1,20}$/.test(String(t.id)) && t.stream===`/radio/stream/${t.id}`;
+    const seed = safeTrack(preview) ? preview : null;
+    let queueLoaded=false;
+    const state = {shuffle:true, tracks:seed ? [seed] : [], index:seed ? 0 : -1, history:[], playing:false, busy:false, error:seed ? '' : previewError, currentTime:0, duration:0};
     const emit = () => changed(state);
+    function setPreview(track) {
+      if (state.index>=0 || state.busy || !safeTrack(track)) return;
+      state.tracks=[track];state.index=0;state.error='';emit();
+    }
     let generation=0, controller=null;
-    async function play() {
+    async function play(randomize = false) {
       if (state.busy || state.playing) return;
       const token=++generation;
       controller=new AbortController();state.busy=true;state.error='';emit();
       try {
-        if (!state.tracks.length) {
+        if (!queueLoaded) {
           const response = await fetch('/radio/queue',{signal:controller.signal,credentials:'same-origin'});
           if (!response.ok) throw new Error('Music library unavailable. Try Play again.');
           const data=await response.json();
           if (token!==generation) return;
-          const tracks=Array.isArray(data.tracks) ? data.tracks.filter(t => t && /^\d+$/.test(String(t.id)) && t.stream===`/radio/stream/${t.id}`) : [];
+          const tracks=Array.isArray(data.tracks) ? data.tracks.filter(safeTrack) : [];
           if (!tracks.length) throw new Error('No playable music is available.');
-          state.tracks=tracks;
-          state.index = state.shuffle ? Math.floor(random()*state.tracks.length) : 0;
+          const current=state.tracks[state.index];
+          state.tracks=current ? [current,...tracks.filter(t=>String(t.id)!==String(current.id))] : tracks;
+          state.index = current ? 0 : state.shuffle ? Math.floor(random()*state.tracks.length) : 0;
+          queueLoaded=true;
+        }
+        if (randomize && state.tracks.length>1) {
+          state.history.push(state.index);
+          state.index=(state.index+1+Math.floor(random()*(state.tracks.length-1)))%state.tracks.length;
         }
         if (!audio.src) audio.src = state.tracks[state.index].stream;
         await audio.play();
@@ -65,6 +78,7 @@
     }
     async function shuffle() {
       if (state.busy) return;
+      if (!queueLoaded) return play(true);
       if (state.index<0) return play();
       await next();
       if (!state.playing) await play();
@@ -74,7 +88,7 @@
       if (!audio.src) return;
       pause();state.error='This track could not be played. Try Next or Play.';emit();
     });
-    return {state,play,pause,stop,next,previous,shuffle,seek};
+    return {state,play,pause,stop,next,previous,shuffle,seek,setPreview};
   }
   if (typeof module !== 'undefined') module.exports = {createRadio};
   if (typeof window === 'undefined' || window.__plexRadioInstalled) return;
@@ -90,14 +104,25 @@
     card.querySelector('.pr-dismiss').hidden=onMedia();
   }
   function mount() {
-    if (card) {placeCard();return;}
+    const native=document.querySelector('.pr-server-preview');
+    const preview=native?.dataset.previewId ? {
+      id:native.dataset.previewId,stream:`/radio/stream/${native.dataset.previewId}`,
+      title:native.querySelector('.pr-title').textContent,artist:native.querySelector('.pr-artist').textContent,
+      album:native.querySelector('.pr-album').textContent,codec:native.dataset.previewCodec,
+      poster:native.querySelector('img').getAttribute('src') || ''
+    } : null;
+    if (card) {
+      radio?.setPreview(preview);
+      document.querySelectorAll('.pr-server-preview').forEach(el=>el.remove());
+      placeCard();return;
+    }
     if (!onMedia()) return;
     const column=document.querySelector('.page-columns > .page-column');
     if (!column) return;
-    card=document.createElement('section');card.id='plex-radio';card.className='plex-radio';
+    card=native || document.createElement('section');card.id='plex-radio';card.className='plex-radio';
     card.setAttribute('aria-label','Plex Radio');
     // Static template only. All library metadata below is assigned via textContent.
-    card.innerHTML=`<button type="button" class="pr-dismiss" data-action="dismiss" aria-label="Dismiss mini player" title="Hide mini player; music keeps playing" hidden>×</button><header class="pr-heading"><span>PLEX RADIO</span><span class="pr-mode">YOUR MUSIC · ON SHUFFLE</span></header>
+    if (!native) card.innerHTML=`<button type="button" class="pr-dismiss" data-action="dismiss" aria-label="Dismiss mini player" title="Hide mini player; music keeps playing" hidden>×</button><header class="pr-heading"><span>PLEX RADIO</span><span class="pr-mode">YOUR MUSIC · ON SHUFFLE</span></header>
       <div class="pr-body"><div class="pr-art"><span aria-hidden="true">♫</span><img alt="" hidden></div>
       <div class="pr-info"><h3 class="pr-title">Let your library play</h3><p class="pr-artist">A little discovery, from your own collection.</p><p class="pr-album"></p>
       <div class="pr-controls"><button type="button" data-action="previous" aria-label="Previous track">⏮</button><button type="button" data-action="play" class="pr-play">Play</button><button type="button" data-action="next" aria-label="Next track">⏭</button><button type="button" data-action="shuffle" title="Play a random track">Shuffle</button></div></div></div>
@@ -107,6 +132,7 @@
     // can reset browser playback. Only the controls move to the mini player.
     const audio=document.createElement('audio');audio.id='plex-radio-audio';audio.hidden=true;audio.preload='none';
     document.body.append(audio);placeCard();
+    document.documentElement.classList.add('pr-enhanced');
     const root=card;
     const get=selector=>root.querySelector(selector);
     const clock=value=>`${Math.floor(value/60)}:${String(Math.floor(value%60)).padStart(2,'0')}`;
@@ -128,13 +154,13 @@
       play.textContent=state.busy ? 'Cancel' : state.playing ? 'Pause' : 'Play';
       play.setAttribute('aria-label',state.busy ? 'Cancel loading' : play.textContent);
       get('[data-action="previous"]').disabled=state.busy || !state.history.length;
-      get('[data-action="next"]').disabled=state.busy || state.index<0;
+      get('[data-action="next"]').disabled=state.busy || state.tracks.length<2;
       get('[data-action="shuffle"]').disabled=state.busy;
       get('.pr-mode').textContent=state.shuffle ? 'YOUR MUSIC · ON SHUFFLE' : 'YOUR MUSIC · IN ORDER';
       get('.pr-status').textContent=state.error || (state.busy ? 'Tuning in…' : state.playing ? 'Playing from your Plex library' : track ? 'Paused · ready when you are' : 'Press Play to begin. Audio stays off until you do.');
       root.classList.toggle('pr-error',Boolean(state.error));root.classList.toggle('pr-playing',state.playing);
     }
-    const player=createRadio({audio,fetch:window.fetch.bind(window),changed:render});radio=player;render(player.state);
+    const player=createRadio({audio,preview,previewError:native?.dataset.previewError || '',fetch:window.fetch.bind(window),changed:render});radio=player;render(player.state);
     get('#pr-seek').addEventListener('input',event=>player.seek(Number(event.target.value)));
     function renderVolume() {
       const volume=get('#pr-volume'), percent=Math.round(audio.volume*100);
@@ -165,7 +191,7 @@
     window.history[method]=function(...args) {const result=original.apply(this,args);mount();return result;};
   }
   // Reattach only if the page layout itself is replaced, not on normal widget refreshes.
-  const observer=new MutationObserver(()=>{if (!card?.isConnected) mount();});
+  const observer=new MutationObserver(()=>{if (!card?.isConnected || document.querySelector('.pr-server-preview')) mount();});
   observer.observe(document.documentElement,{childList:true,subtree:true});
   mount();
 })();

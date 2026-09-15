@@ -23,9 +23,11 @@
 .mo-players .mo-badge{font-size:10px}
 .mo-players .mo-session-bandwidth{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--color-text-subdue)}
 .mo-players .mo-progress{height:3px;margin-top:4px}
-.mo-players .mo-session-viewer{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:2px 0;font-size:12px;line-height:16px;color:var(--color-text-highlight)}
-.mo-players .mo-session-viewer strong{font-weight:500;min-width:0;overflow-wrap:anywhere}
-.mo-players .mo-session-viewer>span{flex-shrink:0;font-size:10px;color:var(--color-text-base)}
+.mo-players .mo-session-viewer{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 7px;margin:0 34px 5px 0;padding:0 0 5px;border-bottom:1px solid var(--mo-line);font-size:13px;line-height:17px;color:var(--color-text-highlight)}
+.mo-players .mo-session-viewer strong{font-weight:600;min-width:0;overflow-wrap:anywhere}
+.mo-players .mo-session-viewer>span{font-size:10px;color:var(--color-text-base)}
+.mo-players .mo-session-viewer .mo-session-user-label{font-size:9px;font-weight:600;letter-spacing:.1em;padding:1px 4px;border:1px solid var(--mo-line);border-radius:3px;color:var(--color-text-highlight);background:var(--mo-wash)}
+.mo-players .mo-session-viewer>span:last-child{margin-left:auto}
 .mo-players .mo-session-origin{font-size:11px;line-height:15px;margin-bottom:4px;color:var(--color-text-base);overflow-wrap:anywhere}
 .mo-session-meta{position:absolute;top:0;right:0;anchor-scope:--mo-info}
 .mo-session-meta button{anchor-name:--mo-info;display:grid;place-items:center;width:44px;height:44px;cursor:pointer;color:var(--color-text-subdue);font-size:15px;background:none;border:0;padding:0}

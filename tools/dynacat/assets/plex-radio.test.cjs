@@ -13,6 +13,37 @@ function make(options={}) {
   const radio = createRadio({audio, fetch:async()=>{calls++;return {ok:true,json:async()=>({tracks})};}, random:()=>0, ...options});
   return {radio,audio,tracks,calls:()=>calls};
 }
+test('server preview seeds metadata without requests and Play keeps it first in the full queue',async()=>{
+  const preview={id:'99',title:'Server choice',artist:'Artist',album:'Album',poster:'data:image/jpeg;base64,/9g=',stream:'/radio/stream/99'};
+  const {radio,audio,calls}=make({preview});
+  assert.equal(radio.state.tracks[radio.state.index]?.id,'99');
+  assert.equal(audio.src,'');assert.equal(audio.plays,0);assert.equal(calls(),0);
+  await radio.play();
+  assert.equal(audio.src,'/radio/stream/99');assert.equal(calls(),1);
+  assert.deepEqual(radio.state.tracks.map(t=>t.id),['99','1','2','3']);
+  await radio.next();assert.equal(audio.src,'/radio/stream/1');
+});
+test('Shuffle from server preview fetches the full queue and starts a different track only',async()=>{
+  const {radio,audio,calls}=make({preview:{id:'99',stream:'/radio/stream/99'}});
+  await radio.shuffle();
+  assert.equal(calls(),1);assert.equal(audio.plays,1);assert.equal(audio.src,'/radio/stream/1');
+  await radio.previous();assert.equal(audio.src,'/radio/stream/99');
+});
+test('late native preview can fill only idle state, never pending or selected playback',async()=>{
+  const {radio,audio,calls}=make();
+  assert.equal(typeof radio.setPreview,'function');
+  radio.setPreview({id:'99',stream:'/radio/stream/99'});
+  assert.equal(radio.state.tracks[radio.state.index].id,'99');
+  radio.setPreview({id:'88',stream:'/radio/stream/88'});
+  assert.equal(radio.state.tracks[radio.state.index].id,'99');
+  assert.equal(audio.src,'');assert.equal(calls(),0);
+});
+test('failed server preview remains an honest idle error until explicit Play retries',async()=>{
+  const {radio,audio,calls}=make({previewError:'Radio upstream unavailable'});
+  assert.equal(radio.state.error,'Radio upstream unavailable');
+  assert.equal(calls(),0);assert.equal(audio.src,'');
+  await radio.play();assert.equal(radio.state.error,'');assert.equal(audio.plays,1);
+});
 test('explicit Play starts a local stream; pause and resume reuse it',async()=>{
   const {radio,audio,calls}=make();
   await radio.play();
@@ -55,6 +86,35 @@ test('ended advances only after Play; media errors stop rather than skip forever
   assert.equal(audio.src,'/radio/stream/2');
   audio.dispatchEvent(new Event('error'));assert.equal(radio.state.playing,false);assert.ok(radio.state.error);
 });
+test('native server preview is enhanced in place and polling cannot replace current metadata',async(t)=>{
+  const {JSDOM}=require('jsdom');
+  // Same controls as the real native template; data text is intentionally not HTML.
+  const fixture=fs.readFileSync(`${__dirname}/../config/dynacat.yml`,'utf8');
+  const template=fixture.slice(fixture.indexOf('<section class="plex-radio pr-server-preview"'),fixture.indexOf('</section>',fixture.indexOf('<section class="plex-radio pr-server-preview"'))+10);
+  const html=template.replace(/\{\{[^}]*\}\}/g,'').replace('data-preview-id=""','data-preview-id="99"').replace('data-preview-codec=""','data-preview-codec="mp3"');
+  const dom=new JSDOM(`<div class="page-columns"><div class="page-column"><div class="plex-radio-widget">${html}</div></div></div>`,{url:'https://test/media',runScripts:'outside-only'});
+  const w=dom.window;let requests=0,plays=0;
+  const native=w.document.querySelector('.pr-server-preview');
+  native.querySelector('.pr-title').textContent='Server chosen song';native.querySelector('.pr-artist').textContent='Server artist';native.querySelector('.pr-album').textContent='Server album';
+  native.querySelector('img').setAttribute('src','data:image/jpeg;base64,/9g=');
+  w.HTMLMediaElement.prototype.pause=function(){};w.HTMLMediaElement.prototype.load=function(){};
+  w.HTMLMediaElement.prototype.play=async function(){plays++;};
+  w.fetch=async()=>{requests++;return {ok:true,json:async()=>({tracks:[{id:'1',stream:'/radio/stream/1'}]})};};
+  w.eval(fs.readFileSync(source,'utf8'));
+  t.after(()=>{w.dispatchEvent(new w.Event('pagehide'));w.close();});
+  const card=w.document.querySelector('#plex-radio'),audio=w.document.querySelector('#plex-radio-audio');
+  assert.equal(card,native);assert.equal(card.querySelector('.pr-title').textContent,'Server chosen song');
+  assert.equal(card.querySelector('[data-action="next"]').disabled,true,'preview cannot skip until full queue loads');
+  assert.ok(w.document.documentElement.classList.contains('pr-enhanced'),'native polling shell must be hidden after adoption');
+  assert.equal(card.querySelector('img').getAttribute('src'),'data:image/jpeg;base64,/9g=');
+  assert.equal(requests,0);assert.equal(plays,0);assert.equal(audio.hasAttribute('src'),false);
+  const poll=w.document.querySelector('.plex-radio-widget');poll.innerHTML=html;
+  w.document.dispatchEvent(new w.Event('dynacat:widget-updated'));await new Promise(setImmediate);
+  assert.equal(w.document.querySelectorAll('.plex-radio').length,1);
+  assert.equal(card.querySelector('.pr-title').textContent,'Server chosen song');
+  card.querySelector('[data-action="play"]').click();await new Promise(setImmediate);
+  assert.equal(plays,1);assert.equal(audio.getAttribute('src'),'/radio/stream/99');
+});
 test('persistent media card survives widget replacement and internal navigation',async()=>{
   const {JSDOM}=require('jsdom');
   const dom=new JSDOM('<div class="page-columns"><div class="page-column"><div class="media-ops-widget">old</div></div></div>',{url:'https://test/media',runScripts:'outside-only'});
@@ -93,6 +153,16 @@ function mountControls(t) {
   const card=w.document.querySelector('#plex-radio');
   return {w,card,audio:w.document.querySelector('#plex-radio-audio'),plays:()=>plays,requests:()=>requests};
 }
+test('late native render seeds the idle fallback without a queue request',async(t)=>{
+  const {w,card,audio,plays,requests}=mountControls(t);
+  const preview=card.cloneNode(true);preview.removeAttribute('id');preview.classList.add('pr-server-preview');preview.dataset.previewId='99';
+  preview.querySelector('.pr-title').textContent='Late server song';
+  w.document.querySelector('.page-column').append(preview);
+  await new Promise(setImmediate);
+  assert.equal(card.querySelector('.pr-title').textContent,'Late server song');
+  assert.equal(w.document.querySelectorAll('.plex-radio').length,1);
+  assert.equal(plays(),0);assert.equal(requests(),0);assert.equal(audio.hasAttribute('src'),false);
+});
 test('dismiss hides only the mini player, preserves audio and stays dismissed until Media returns',async(t)=>{
   const {w,card,audio,plays}=mountControls(t);
   const dismiss=card.querySelector('[data-action="dismiss"]');
@@ -148,6 +218,8 @@ test('card stylesheet follows theme tokens and accessible responsive controls',(
   const css=fs.readFileSync(cssPath,'utf8');
   assert.match(css,/data-action=previous[^}]+font-size:24px/);
   assert.ok(css.includes('.pr-mini'));
+  assert.ok(css.includes('.pr-enhanced .plex-radio-widget{display:none}'));
+  assert.ok(css.includes('.plex-radio-widget>.widget-header{display:none}'));
   for(const token of ['--color-primary','--color-text-base','--color-text-highlight','--color-text-subdue',':focus-visible','44px','@media']) assert.ok(css.includes(token),token);
 });
 test('sliders have compact responsive layout and visible keyboard focus',()=>{

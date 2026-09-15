@@ -30,7 +30,7 @@ async def main():
             })''')
             assert rows,'No live sessions; cannot verify viewer visibility'
             assert all(r['viewer'] and r['origin'] and r['matchedUser'] and r['matchedPlayer'] and r['matchedLocation'] for r in rows),rows
-            assert all(123<=r['height']<=125 for r in rows),rows
+            assert all(123<=r['height']<=160 for r in rows),rows  # Dedicated USER row may wrap on phones.
             assert not await page.evaluate('document.documentElement.scrollWidth>innerWidth')
             await page.locator('.mo-section h3').filter(has_text='Now playing').click()
             await page.mouse.move(5,890)
