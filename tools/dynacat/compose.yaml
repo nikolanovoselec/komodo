@@ -7,7 +7,7 @@ services:
     pull_policy: build
     container_name: tools_dynacat_workload_summary
     labels:
-      ch.graymatter.config-revision: "construct-offline-location-35"
+      ch.graymatter.config-revision: "construct-completed-maintenance-36"
     command: ["python", "-B", "/app/adapter.py"]
     user: "65534:65534"
     volumes:
