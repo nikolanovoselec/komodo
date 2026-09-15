@@ -17,7 +17,7 @@ async def main():
                     queue=await widget.locator('.mo-download').count();imports=await widget.locator('.mo-import').count()
                     row=widget.locator('.mo-import').first
                     assert imports>0,'No live imports to verify'
-                    await row.evaluate('e=>e.scrollIntoView({block:"center"})')
+                    await row.evaluate('e=>e.scrollIntoView({block:"center",behavior:"instant"})')
                     result=await row.evaluate('''e=>{const a=e.querySelector('.mo-item-title'),b=e.getBoundingClientRect();return {href:a.getAttribute('href'),nested:!!e.querySelector('a a'),hits:[[3,3],[b.width-3,3],[3,b.height-3],[b.width-3,b.height-3],[b.width/2,b.height/2]].map(([x,y])=>{const hit=document.elementFromPoint(b.x+x,b.y+y)?.closest('a');return hit===a||hit?.classList.contains('mo-imdb')})}}''')
                     assert all(result['hits']) and not result['nested'],result
                     assert result['href'].startswith('https://'+app+'.graymatter.ch/')
