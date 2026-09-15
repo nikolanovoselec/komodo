@@ -51,8 +51,9 @@ async def main():
                 await page.evaluate('document.documentElement.style.scrollBehavior="auto";scrollTo({top:0,behavior:"instant"})')
                 await page.locator('.header-container .theme-picker').hover()
                 await page.locator('.theme-choices [data-key="catppuccin-latte"]:visible').first.click()
-                await page.mouse.move(0,0)
-                await page.wait_for_timeout(400)
+                await page.reload(wait_until='domcontentloaded')
+                await page.mouse.move(500,500)
+                await page.wait_for_timeout(1200)
                 await weather.screenshot(path=prefix+'-light-weather.png')
             report[mode]={'text':text,'bars':bars,'themes':themes,'overflow':False,'branding':'The Construct'}
             await page.close()
