@@ -27,7 +27,7 @@ def _api(path):
     request = urllib.request.Request(base + path, method='GET',
         headers={'Authorization': 'PVEAPIToken=' + token_id + '=' + secret, 'Accept': 'application/json'})
     opener = urllib.request.build_opener(urllib.request.HTTPSHandler(context=context), _NoRedirect())
-    with opener.open(request, timeout=5) as response:
+    with opener.open(request, timeout=2) as response:
         return json.load(response)['data']
 
 

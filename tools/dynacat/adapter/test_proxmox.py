@@ -85,7 +85,7 @@ class Proxmox(unittest.TestCase):
             self.assertEqual(request.get_method(), 'GET')
             self.assertEqual(request.get_header('Authorization'), 'PVEAPIToken=reader@pve!dash=test-only-placeholder')
             self.assertGreater(kwargs['timeout'], 0)
-            self.assertLessEqual(kwargs['timeout'], 10)
+            self.assertLessEqual(kwargs['timeout'], 2)
         self.assertNotIn('test-only-placeholder', json.dumps(result))
 
     def test_insecure_url_is_rejected_before_sending_credentials(self):
