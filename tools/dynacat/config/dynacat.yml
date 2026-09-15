@@ -1,5 +1,5 @@
 document:
-  head: '<link rel="stylesheet" href="/assets/workload-docker.css"><link rel="stylesheet" href="/assets/endpoints.css"><script src="/assets/endpoints.js" defer></script><script src="/assets/bern-calendar.js" defer></script><link rel="stylesheet" href="/assets/bern-calendar.css"><script src="/assets/workload-docker.js" defer></script><link rel="stylesheet" href="/assets/media-ops.css"><script src="/assets/media-ops.js" defer></script><script src="/assets/local-theme.js"></script><script src="/assets/command-center.js" defer></script>'
+  head: '<link rel="stylesheet" href="/assets/plex-radio.css"><script src="/assets/plex-radio.js" defer></script><link rel="stylesheet" href="/assets/workload-docker.css"><link rel="stylesheet" href="/assets/endpoints.css"><script src="/assets/endpoints.js" defer></script><script src="/assets/bern-calendar.js" defer></script><link rel="stylesheet" href="/assets/bern-calendar.css"><script src="/assets/workload-docker.js" defer></script><link rel="stylesheet" href="/assets/media-ops.css"><script src="/assets/media-ops.js" defer></script><script src="/assets/local-theme.js"></script><script src="/assets/command-center.js" defer></script>'
 server:
   port: 8080
   assets-path: /app/assets

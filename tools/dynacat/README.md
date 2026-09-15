@@ -1,5 +1,39 @@
 # Dynacat workload overview
 
+## Plex browser radio
+
+The Media page now offers explicit Play/Pause, Previous/Next, shuffle, seek and
+volume controls with real Plex artwork. Nothing is fetched or played until Play;
+widget refresh preserves the audio element, navigation away stops it, and a fresh
+page never resumes automatically. This is local browser playback, not remote Plex
+player control. Volume is session-only.
+
+A digest-pinned unprivileged nginx gateway owns host port 8080. Dynacat and the
+radio sidecar have no published ports. Only `/radio/queue` and numeric
+`/radio/stream/{ratingKey}` requests reach radio; everything else under `/radio`
+is rejected. Cloudflare Access remains the outer boundary; LAN port access must
+remain trusted. The sidecar receives only the existing protected Plex token,
+never the other integration credentials. The existing metadata collector retains
+its own Plex credential for its existing read-only widgets. No credential is
+returned in JSON, HTML, stream URLs or response headers.
+
+Radio is restricted to Music section 21 and validated numeric track/part IDs.
+Direct MP3, AAC, FLAC, Ogg Vorbis/Opus and supported PCM WAV combinations are
+allowlisted; codec support ultimately depends on the browser. Unsupported files
+are omitted, with no transcoding fallback. Real-library Chromium verification
+used Ogg Vorbis. Single byte ranges, suffix ranges and HEAD are supported; invalid
+or multiple ranges are rejected. Upstream redirects and arbitrary proxy URLs are
+blocked. Streams are bounded to eight simultaneous requests, 2 GiB per file,
+10-second client timeout and five-minute transfer deadline (not track duration).
+
+QA: `python3 -m unittest discover -s adapter -q` and
+`NODE_PATH=/tmp/radio-test-deps/node_modules node assets/plex-radio.test.cjs`
+(jsdom 26). `qa_radio.py` runs isolated muted Playwright playback against real Plex
+using credentials held only in process memory; `QA_DEPLOYED=1` tests the deployed
+gateway directly without retrieving a token. Evidence is saved outside Git under
+`/srv/hermes/workspaces/radio-qa/`. Tests cover decoded playback, HTTP framing,
+controls, refresh preservation, navigation stop and dark/light desktop/mobile.
+
 The private `workload-summary` sidecar joins Komodo read responses and returns a
 small allowlisted JSON projection to Dynacat. It has no published port, Docker
 socket, SSH credentials, host metrics mounts, or write API route. It runs as an
