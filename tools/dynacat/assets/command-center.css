@@ -144,7 +144,8 @@ meter::-webkit-meter-bar{border:0;background:color-mix(in srgb,var(--color-prima
 .cc-rail-clock [data-local-time]{gap:12px}
 .cc-rail-clock .clock>ul>li{gap:12px}
 .cc-rail-clock .clock-time{font-variant-numeric:tabular-nums}
-.cc-rail-weather .weather-columns{display:none}
+/* Keep native hourly bars, current-temperature highlight and daylight shading.
+   Hiding weather-columns reduces the reference widget to condition text only. */
 .cc-rail-weather .widget-small-content-bounds{max-width:none}
 .cc-rail-weather .size-h2{font-size:16px}
 .cc-rail-weather .size-h4{font-size:12px}
