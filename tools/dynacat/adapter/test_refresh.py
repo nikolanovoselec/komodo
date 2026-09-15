@@ -23,6 +23,12 @@ class Refresh(unittest.TestCase):
             with self.subTest(widget=index):
                 self.assertRegex(widget, r'(?m)^      update-interval: 1s$')
                 self.assertRegex(widget, r'(?m)^      cache: 1s$')
+                self.assertIn('url: http://workload-summary:8090/current', widget)
+                self.assertIn('.JSON.String "freshness.state"', widget)
+                self.assertIn('.JSON.Float "freshness.age_seconds"', widget)
+                self.assertIn('snapshot age', widget)
+                self.assertIn('template: \'{{ if .JSON.String "error" }}<div class="k-warning">', widget)
+                self.assertIn('{{ .JSON.String "error" }}</div>{{ else }}', widget)
 
     def test_cadence_labels_distinguish_ui_collection_and_source(self):
         config = (Path(__file__).resolve().parents[1] / 'config/dynacat.yml').read_text()

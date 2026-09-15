@@ -31,7 +31,14 @@ The summary cache lasts 5 seconds; operational widgets refresh one second after
 completion of their previous request while the page is visible (`cache: 1s` and
 `update-interval: 1s`). This is a one-second UI polling interval, not a promise of
 new measurements every second. The shared single-flight collector cache keeps the
-four widget reads from multiplying expensive integration collections.
+four widget reads from multiplying expensive integration collections. They read
+`/current`, which serves the last sample without waiting for background upstream
+I/O. Snapshot state/age is displayed; data expires 30 seconds from collection start.
+Cold start, expiry or collection failure returns 503 and the widget's explicit
+unavailable branch—not zero/healthy counts. Failed attempts are throttled for five
+seconds. `/summary` and `/health` still wait for the shared attempt, without holding
+the reader lock. The age limit describes the collection snapshot, not RRD/ZFS/GitHub
+measurement age; those independently cached sources retain their own cadences.
 PVE current CPU/RAM samples originate from pvestatd approximately every 10 seconds.
 Native one-minute RRD graph samples and ZFS/storage reads are cached for 60 seconds;
 GitHub retains its ten-minute cache. Faster polling does not invent graph samples.

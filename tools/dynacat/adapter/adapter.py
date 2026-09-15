@@ -22,29 +22,65 @@ def api(kind, params):
 
 
 def make_server(address, loader):
-    lock = threading.Lock()
-    cached = {'at':None, 'data':None, 'failed':False}
+    """Share one demand-driven collection, never blocking /current on upstream I/O.
+
+    Legacy /summary and /health wait for the current attempt via Condition.wait
+    (which releases the reader lock). Successful and failed attempts both defer
+    the next attempt for five seconds. The fast route serves the last snapshot
+    only while younger than 30 seconds, measured conservatively from collection
+    START, not completion; this bounds slow/hung refresh and late-result safety.
+    Source-specific RRD/ZFS/GitHub caches remain independently governed upstream.
+    """
+    refresh_interval, max_age = 5, 30
+    lock = threading.Condition()
+    cached = {'at':None, 'data':None, 'failed':False, 'collecting':False,
+              'sample_at':None}
+
+    def refresh(started):
+        # Never hold the reader lock across upstream I/O.
+        try:
+            data = loader()
+            json.dumps(data)  # Serialization failure also invalidates the old sample.
+            failed = False
+        except Exception:
+            data, failed = None, True
+        with lock:
+            cached.update(at=time.monotonic(), data=data, failed=failed,
+                          collecting=False, sample_at=started)
+            lock.notify_all()
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, format, *args):
             pass
         def do_GET(self):
-            if self.path not in ('/summary', '/health'):
+            if self.path not in ('/summary', '/health', '/current'):
                 self.send_error(404)
                 return
             try:
                 with lock:
-                    if cached['at'] is None or time.monotonic() - cached['at'] >= 5:
-                        try:
-                            cached['data'] = loader()
-                            cached['failed'] = False
-                        except Exception:
-                            cached['data'] = None
-                            cached['failed'] = True
-                        cached['at'] = time.monotonic()
-                    if cached['failed']:
-                        raise RuntimeError('Telemetry unavailable')
-                    payload = json.dumps(cached['data']).encode()
-                status = 200
+                    now = time.monotonic()
+                    if not cached['collecting'] and (cached['at'] is None or now - cached['at'] >= refresh_interval):
+                        cached['collecting'] = True
+                        threading.Thread(target=refresh, args=(now,), daemon=True).start()
+                    if self.path != '/current':
+                        while cached['collecting']:
+                            lock.wait()
+                    age = None if cached['sample_at'] is None else time.monotonic() - cached['sample_at']
+                    state = ('unavailable' if cached['failed'] else
+                             'starting' if cached['data'] is None else
+                             'expired' if age is not None and age >= max_age else
+                             'collecting' if cached['collecting'] else 'cached')
+                    freshness = dict(state=state, collecting=cached['collecting'],
+                                     age_seconds=age, max_age_seconds=max_age)
+                    if state in ('unavailable', 'starting', 'expired'):
+                        data = dict(error='Komodo telemetry unavailable; verify read API access',
+                                    freshness=freshness)
+                        status = 503
+                    else:
+                        data = cached['data']
+                        if self.path == '/current':
+                            data = dict(data, freshness=freshness)
+                        status = 200
+                payload = json.dumps(data).encode()
             except Exception:
                 # Fail closed rather than showing an old healthy response or logging secrets.
                 payload = b'{"error":"Komodo telemetry unavailable; verify read API access"}'
