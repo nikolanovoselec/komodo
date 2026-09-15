@@ -1,10 +1,30 @@
 services:
+  workload-summary:
+    image: python:3.13-slim@sha256:9d2e5553305c7c7b0097999bb17187c69b921ccd6bc9d40e4bb5ebe652c00285
+    container_name: tools_dynacat_workload_summary
+    command: ["python", "-B", "/app/adapter.py"]
+    user: "65534:65534"
+    volumes:
+      - ./adapter:/app:ro
+    environment:
+      DYNACAT_KOMODO_API_KEY: ${DYNACAT_KOMODO_API_KEY}
+      DYNACAT_KOMODO_API_SECRET: ${DYNACAT_KOMODO_API_SECRET}
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/health', timeout=30)"]
+      interval: 30s
+      timeout: 35s
+      retries: 3
+      start_period: 30s
   dynacat:
     image: panonim/dynacat:3.0.0
     container_name: tools_dynacat
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "komodo-native-3"
+      ch.graymatter.config-revision: "compact-workloads-1"
     ports:
       - "8080:8080"
     volumes:

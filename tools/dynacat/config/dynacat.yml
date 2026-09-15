@@ -180,7 +180,7 @@ pages:
   - size: full
     widgets:
     - type: custom-api
-      title: Komodo · enrolled servers
+      title: Resources · enabled Komodo hosts
       title-url: https://komodo.graymatter.ch
       css-class: komodo-widget
       cache: 15s
@@ -194,9 +194,9 @@ pages:
         type: ListServers
         params:
           limit: 0
-      template: |-
-        {{ $all := .JSON.Array "" }}{{ $ok := .JSON.Array `#(info.state=="Ok")#` }}
-        <div class="k-summary"><div><strong>{{ len $all }}</strong><span>ENROLLED</span></div><div><strong>{{ len $ok }}</strong><span>REPORTING</span></div><div><strong>{{ len (.JSON.Array `#(info.state=="Disabled")#`) }}</strong><span>DISABLED</span></div><div><strong>{{ len (.JSON.Array `#(info.state!="Ok")#|#(info.state!="Disabled")#`) }}</strong><span>OTHER STATES</span></div></div>
+      template: |
+        {{ $all := .JSON.Array `#(info.state!="Disabled")#` }}{{ $ok := .JSON.Array `#(info.state=="Ok")#` }}
+        <div class="k-inventory-head"><strong>{{ len $all }} enabled hosts</strong><span>{{ len $ok }} reporting · {{ len (.JSON.Array `#(info.state!="Ok")#|#(info.state!="Disabled")#`) }} need attention</span></div>
         <div class="k-note">Komodo Periphery guests / servers · not Proxmox hypervisor metrics · refresh 30s</div>
         <div class="k-host-grid">{{ range $all }}{{ if ne (.String "info.state") "Disabled" }}
         <article class="k-host"><header><a href="https://komodo.graymatter.ch/servers/{{ .String "id" }}">{{ .String "name" }}</a><span class="k-state {{ if ne (.String "info.state") "Ok" }}k-warning{{ end }}">{{ .String "info.state" }}</span></header>
@@ -206,28 +206,30 @@ pages:
         {{ if eq (.Float "info.stats.mem_used_gb") 0.0 }}<div class="k-warning k-note">RAM: source reports zero; usage may be unavailable.</div>{{ end }}
         <div class="k-fresh">Source sample <span data-dynamic-relative-time="{{ div (.Int "info.stats.refresh_ts") 1000 }}"></span> · load {{ printf "%.2f" (.Float "info.stats.load_average.one") }}</div>
         {{ else }}<p class="k-warning">Telemetry unavailable · {{ .String "info.state" }}</p>{{ end }}</article>{{ end }}{{ end }}</div>
-        <details class="k-disabled"><summary>Disabled enrollment · no live metrics</summary><div>{{ range .JSON.Array `#(info.state=="Disabled")#` }}<span>{{ .String "name" }}</span>{{ end }}</div></details>
     - type: custom-api
-      title: Container inventory · by host
+      title: Workloads · attention first
       title-url: https://komodo.graymatter.ch
       css-class: komodo-widget
       cache: 15s
       update-interval: 30s
-      url: http://192.168.5.53:9120/read
-      method: POST
-      headers:
-        X-Api-Key: ${DYNACAT_KOMODO_API_KEY}
-        X-Api-Secret: ${DYNACAT_KOMODO_API_SECRET}
-      body:
-        type: ListAllDockerContainers
-        params:
-          limit: 0
+      url: http://workload-summary:8090/summary
       template: |-
-        {{ $all := .JSON.Array "" }}<div class="k-inventory-head"><strong>{{ len $all }} containers</strong><span>{{ len (.JSON.Array `#(state=="running")#`) }} running · {{ len (.JSON.Array `#(state!="running")#`) }} other</span></div>
-        <div class="k-note">Reported by Komodo · fetched <span {{ now | toRelativeTime }}></span> · refresh 30s</div>
-        <div class="k-container-grid">{{ range unique "server_name" $all | sortByString "server_name" "asc" }}{{ $host := .String "server_name" }}
-        <section class="k-container-host"><header><a href="https://komodo.graymatter.ch/servers/{{ .String "server_id" }}">{{ $host }}</a></header>
-        {{ range $all }}{{ if eq (.String "server_name") $host }}<div class="k-container-row"><span class="k-dot {{ if ne (.String "state") "running" }}k-bad{{ end }}" title="{{ .String "state" }}"></span><div class="k-container-name"><strong title="{{ .String "image" }}">{{ trimPrefix (concat $host "_") (.String "name") }}</strong><small>{{ .String "status" }}</small></div><span class="k-container-usage">{{ if .Exists "stats.cpu_perc" }}{{ .String "stats.cpu_perc" }}<small>{{ .String "stats.mem_perc" }} RAM</small>{{ else }}{{ .String "state" }}{{ end }}</span></div>{{ end }}{{ end }}</section>{{ end }}</div>
+        <div class="k-summary"><div><strong>{{ .JSON.Int "running_stacks" }}</strong><span>RUNNING STACKS</span></div><div><strong>{{ .JSON.Int "running_containers" }}</strong><span>RUNNING CONTAINERS</span></div><div><strong>{{ len (.JSON.Array "stack_problems") }}</strong><span>STACK ISSUES</span></div><div><strong>{{ len (.JSON.Array "container_problems") }}</strong><span>CONTAINER ISSUES</span></div></div>
+        <div class="k-note">Enabled workloads only · {{ .JSON.Int "stacks_total" }} stacks / {{ .JSON.Int "containers_total" }} containers · fetched <span data-dynamic-relative-time="{{ .JSON.Int "fetched_at" }}"></span></div>
+        {{ range .JSON.Array "stack_problems" }}<div class="k-problem"><a href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ .String "name" }}</a><span>{{ .String "host" }} · {{ .String "state" }}</span></div>{{ end }}
+        {{ range .JSON.Array "container_problems" }}<div class="k-problem"><strong>{{ .String "name" }}</strong><span>{{ .String "host" }} · {{ .String "status" }}</span></div>{{ end }}
+        <div class="k-group-grid">{{ range .JSON.Array "groups" }}<details class="k-stack-group"><summary><strong>{{ .String "host" }}</strong><span>{{ .Int "count" }} running</span></summary><div class="k-chips">{{ range .Array "stacks" }}<a class="k-stack-chip" href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ trimPrefix (concat (.String "host") "_") (.String "name") }}</a>{{ end }}</div></details>{{ end }}</div>
+    - type: custom-api
+      title: Top consumers · containers
+      css-class: komodo-widget
+      cache: 15s
+      update-interval: 30s
+      url: http://workload-summary:8090/summary
+      template: <div class="k-top-grid"><section><h3>CPU · top 5</h3>{{ range .JSON.Array "top_cpu" }}<div class="k-top-row"><div><strong>{{ .String "name" }}</strong><small>{{
+        .String "host" }}</small></div><b>{{ printf "%.1f" (.Float "cpu") }}%</b></div>{{ else }}<p>CPU metrics unavailable</p>{{ end }}</section><section><h3>RAM
+        · top 5</h3>{{ range .JSON.Array "top_ram" }}<div class="k-top-row"><div><strong>{{ .String "name" }}</strong><small>{{ .String "host" }}</small></div><b>{{
+        .String "ram" }}</b></div>{{ else }}<p>RAM metrics unavailable</p>{{ end }}</section></div><div class="k-note">Measured by Docker via Komodo · running enabled
+        workloads · refresh 30s</div>
   - size: small
     widgets:
     - type: custom-api
@@ -245,28 +247,14 @@ pages:
         type: GetSystemStats
         params:
           server: tools
-      template: '{{ range .JSON.Array "disks" }}<div class="k-volume"><label>{{ .String "mount" }} <b>{{ printf "%.0f" (mul (div (.Float "used_gb")
-        (.Float "total_gb")) 100) }}%</b></label><meter min="0" max="{{ .Float "total_gb" }}" value="{{ .Float "used_gb" }}"></meter><small>{{
-        printf "%.2f" (.Float "used_gb") }} / {{ printf "%.2f" (.Float "total_gb") }} GiB · {{ .String "file_system" }}</small></div>{{ end }}<div
-        class="k-fresh">Source sample <span data-dynamic-relative-time="{{ div (.JSON.Int "refresh_ts") 1000 }}"></span></div>'
-    - type: custom-api
-      title: Stack state · Komodo
-      title-url: https://komodo.graymatter.ch
-      css-class: komodo-widget
-      cache: 15s
-      update-interval: 30s
-      url: http://192.168.5.53:9120/read
-      method: POST
-      headers:
-        X-Api-Key: ${DYNACAT_KOMODO_API_KEY}
-        X-Api-Secret: ${DYNACAT_KOMODO_API_SECRET}
-      body:
-        type: ListStacks
-        params:
-          limit: 0
-      template: |-
-        <div class="k-inventory-head"><strong>{{ len (.JSON.Array "") }} stacks</strong></div><div class="k-note">Includes templates / inactive definitions · fetched <span {{ now | toRelativeTime }}></span></div>
-        {{ $all := .JSON.Array "" }}{{ range unique "info.server_name" $all | sortByString "info.server_name" "asc" }}{{ $host := .String "info.server_name" }}<details class="k-stack-group"><summary>{{ if $host }}{{ $host }}{{ else }}Unassigned{{ end }}</summary>{{ range $all }}{{ if eq (.String "info.server_name") $host }}<div class="k-stack"><a href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ trimPrefix (concat $host "_") (.String "name") }}</a><small>{{ .String "info.status" }}{{ if .Bool "template" }} · template{{ end }}</small></div>{{ end }}{{ end }}</details>{{ end }}
+      template: '{{ range .JSON.Array "disks" }}<div class="k-volume"><label>{{ .String "mount" }} <b>{{ printf "%.0f" (mul (div (.Float "used_gb") (.Float "total_gb"))
+        100) }}%</b></label><meter min="0" max="{{ .Float "total_gb" }}" value="{{ .Float "used_gb" }}"></meter><small>{{ printf "%.2f" (.Float "used_gb") }} / {{
+        printf "%.2f" (.Float "total_gb") }} GiB · {{ .String "file_system" }}</small></div>{{ end }}<div class="k-fresh">Source sample <span data-dynamic-relative-time="{{
+        div (.JSON.Int "refresh_ts") 1000 }}"></span></div>'
+    - type: html
+      title: Proxmox · integration pending
+      source: <div class="k-note">Hypervisor resources &amp; VM/LXC overview require a read-only Proxmox API token. Current cards show Komodo guests, not hypervisors.
+        No Proxmox metrics are being collected.</div>
     - type: rss
       title: Infrastructure signal
       title-icon: mdi:rss
