@@ -124,7 +124,7 @@ test('card stylesheet follows theme tokens and accessible responsive controls',(
 test('sliders have compact responsive layout and visible keyboard focus',()=>{
   const css=fs.readFileSync(`${__dirname}/plex-radio.css`,'utf8');
   for (const rule of ['.pr-sliders{','.pr-seek{','.pr-volume{','.pr-sliders input[type=range]:focus-visible{','.pr-time{']) assert.ok(css.includes(rule),`missing ${rule}`);
-  assert.match(css,/@media[^}]+}\s*\.pr-sliders\{[^}]*grid-template-columns:1fr/);
+  assert.match(css,/@media[\s\S]*\.pr-sliders\{[^}]*grid-template-columns:minmax\(0,1fr\) 100px/);
 });
 test('radio exists and never loads media or queue until explicit Play',()=>{
   assert.ok(fs.existsSync(source),'Plex radio implementation missing');

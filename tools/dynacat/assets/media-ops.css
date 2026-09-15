@@ -1,14 +1,28 @@
 /* Media Ops only. Theme variables are native to all 22 Construct presets. */
+/* Traffic layout: keep real paths/gaps and give the chart, not prose, the space. */
+.mo-page .mo-traffic .mo-traffic-heading{flex-direction:row;align-items:baseline;gap:8px}
+.mo-page .mo-traffic .mo-traffic-heading h3{font-size:14px;margin:0 0 2px}
+.mo-page .mo-traffic .mo-traffic-heading>div>small{display:block;font-size:10px;line-height:13px;max-width:240px}
+.mo-page .mo-traffic .mo-traffic-freshness{font-size:9px;max-width:90px;flex-shrink:0;text-align:right}
+.mo-page .mo-traffic .mo-traffic-rates{margin:8px 0 3px;gap:16px;flex-wrap:nowrap}
+.mo-page .mo-traffic .mo-traffic-rates>div{gap:5px;white-space:nowrap}
+.mo-page .mo-traffic .mo-traffic-rates b{font-size:16px}
+.mo-page .mo-traffic .mo-traffic-rates>small{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.mo-page .mo-traffic .mo-traffic-plot{height:70px;padding-top:12px}
+.mo-page .mo-traffic .mo-traffic-axis{margin-top:3px;font-size:9px}
+.mo-page .mo-traffic .mo-traffic-foot{margin-top:4px;gap:0;line-height:12px;align-items:flex-end}
+.mo-page .mo-traffic .mo-traffic-foot small{font-size:9px}
+
 /* Compact existing Plex sessions; deliberately scoped away from traffic and radio. */
 .mo-players .mo-player{position:relative}
-.mo-players .mo-player-link{grid-template-columns:44px minmax(0,1fr);gap:10px;padding:9px 10px}
-.mo-players .mo-player-art{width:44px;border-radius:4px}
-.mo-players .mo-player h3{font-size:15px;line-height:19px;margin:0 34px 2px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mo-players .mo-player-info>p{font-size:11px;line-height:15px;margin:0 30px 5px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mo-players .mo-player-top{justify-content:flex-start;align-items:center;gap:5px 9px;font-size:10px;line-height:14px}
+.mo-players .mo-player-link{grid-template-columns:30px minmax(0,1fr);gap:9px;padding:5px 9px}
+.mo-players .mo-player-art{width:30px;border-radius:3px}
+.mo-players .mo-player h3{font-size:14px;line-height:17px;margin:0 34px 1px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mo-players .mo-player-info>p{font-size:11px;line-height:13px;margin:0 30px 2px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mo-players .mo-player-top{justify-content:flex-start;align-items:center;gap:3px 8px;font-size:10px;line-height:12px}
 .mo-players .mo-badge{font-size:10px}
 .mo-players .mo-session-bandwidth{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--color-text-subdue)}
-.mo-players .mo-progress{height:3px;margin-top:6px}
+.mo-players .mo-progress{height:2px;margin-top:3px}
 .mo-session-meta{position:absolute;top:0;right:0;anchor-scope:--mo-info}
 .mo-session-meta button{anchor-name:--mo-info;display:grid;place-items:center;width:44px;height:44px;cursor:pointer;color:var(--color-text-subdue);font-size:15px;background:none;border:0;padding:0}
 .mo-session-meta button:focus-visible{outline:2px solid var(--color-primary);outline-offset:-4px;border-radius:5px}

@@ -12,6 +12,7 @@ body{letter-spacing:.015em}
 /* Mobile has one native page chooser at the top; desktop navigation is unchanged. */
 .cc-page-select{display:none}
 @media(max-width:767px){
+ body .header-container{position:sticky!important;top:0;z-index:30;background:var(--color-background);margin-bottom:12px}
  .header-container .nav,.mobile-navigation,.mobile-navigation-offset{display:none!important}
  .header-container .header{min-height:54px;gap:8px}
  .cc-page-select{display:block;order:2;flex:1 0 100%;width:100%;min-height:44px;border:1px solid var(--cc-border);border-radius:4px;padding:8px 10px;font:inherit;color:var(--color-text-highlight);background:var(--color-widget-background);color-scheme:var(--scheme)}
