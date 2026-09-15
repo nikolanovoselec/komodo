@@ -17,6 +17,12 @@ test('internal click swaps content without replacing audio; back restores cached
  await w.constructNavigate('/media');assert.equal(w.document.querySelector('#initial'),initial);assert.deepEqual(activations,[true,false]);
  w.history.back();await new Promise(r=>setTimeout(r,30));assert.equal(w.location.pathname,'/hardware-workloads');assert.equal(calls.length,1);
 });
+test('networking uses internal lifecycle and retains stationary audio and dismiss state',async t=>{
+ const {w,calls}=await fixture(t);const audio=w.document.querySelector('audio'),radio=w.document.querySelector('#plex-radio');radio.dataset.dismissed='true';
+ const handled=await w.constructNavigate('/networking');
+ assert.equal(handled,true);assert.equal(w.location.pathname,'/networking');assert.equal(w.document.querySelector('audio'),audio);assert.equal(radio.dataset.dismissed,'true');assert.equal(calls[0],'/api/pages/networking/content/');
+ await w.constructNavigate('/media');assert.equal(w.document.querySelector('audio'),audio);
+});
 test('mobile select uses same lifecycle; repeated route does not fetch or activate twice',async t=>{
  const {w,calls,activations}=await fixture(t);const s=w.document.querySelector('select');s.value='/endpoints-services';s.dispatchEvent(new w.Event('change',{bubbles:true}));await new Promise(setImmediate);
  assert.equal(w.location.pathname,'/endpoints-services');await w.constructNavigate('/endpoints-services');assert.equal(calls.length,1);assert.deepEqual(activations,[true]);

@@ -7,7 +7,7 @@ services:
     pull_policy: build
     container_name: tools_dynacat_workload_summary
     labels:
-      ch.graymatter.config-revision: "construct-workloads-area-46"
+      ch.graymatter.config-revision: "construct-networking-47"
     command: ["python", "-B", "/app/adapter.py"]
     user: "65534:65534"
     volumes:
@@ -17,6 +17,7 @@ services:
     environment:
       WORKLOAD_HISTORY_PATH: /history/workloads.sqlite
       MEDIA_HISTORY_PATH: /history/media.sqlite
+      UNIFI_HISTORY_PATH: /history/unifi.sqlite
       SONARR_API_KEY: ${SONARR_API_KEY}
       RADARR_API_KEY: ${RADARR_API_KEY}
       DYNACAT_PLEX_TOKEN: ${DYNACAT_PLEX_TOKEN}
@@ -44,7 +45,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "construct-workloads-area-46"
+      ch.graymatter.config-revision: "construct-networking-47"
     expose: ["8080"]
     volumes:
       - ./config:/app/config
@@ -111,7 +112,7 @@ services:
     image: nginxinc/nginx-unprivileged:1.28.0-alpine@sha256:c97ff0bf7cbae369953c6da1232ec14ad9f971d66360c5698db0856a4cd657a0
     container_name: tools_dynacat_gateway
     labels:
-      ch.graymatter.config-revision: "construct-runtime-dns-42"
+      ch.graymatter.config-revision: "construct-navigation-47"
     depends_on: [dynacat, radio]
     ports: ["8080:8080"]
     volumes:

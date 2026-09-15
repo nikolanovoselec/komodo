@@ -1,11 +1,11 @@
 /* Dynacat 3.0 route lifecycle bridge. Installed once from its existing page
  * module (gateway.conf), so native initializers/pollers and the single SSE
- * connection stay authoritative. Cache at most these three native DOM trees:
+ * connection stay authoritative. Cache at most these four native DOM trees:
  * revisits retain bound controls, rather than accumulating listeners/timers.
  * The audio stays in document.body and is never detached or reconstructed. */
 export function installNavigation({pageData, activate}) {
   if (window.constructNavigate) return;
-  const routes=new Map([['/hardware-workloads','Hardware & Workloads'],['/media','Media'],['/endpoints-services','Endpoints & Services']]);
+  const routes=new Map([['/hardware-workloads','Hardware & Workloads'],['/networking','Networking'],['/media','Media'],['/endpoints-services','Endpoints & Services']]);
   const normalize=path=>path==='/' ? '/hardware-workloads' : path.replace(/\/$/,'');
   let current=normalize(location.pathname), generation=0, pending=null;
   const pages=new Map();
@@ -79,7 +79,7 @@ export function installNavigation({pageData, activate}) {
   let chordUntil=0;
   window.addEventListener('keydown',event=>{
     if(event.ctrlKey || event.metaKey || event.altKey || event.target.closest?.('input,textarea,select,[contenteditable="true"]'))return;
-    const key=event.key.toLowerCase(), paths={h:'/hardware-workloads',m:'/media',e:'/endpoints-services'};
+    const key=event.key.toLowerCase(), paths={h:'/hardware-workloads',n:'/networking',m:'/media',e:'/endpoints-services'};
     if(key==='d'){chordUntil=Date.now()+1500;event.stopImmediatePropagation();return;}
     if(chordUntil>Date.now() && paths[key]) {event.preventDefault();event.stopImmediatePropagation();void navigate(paths[key]);}
     chordUntil=0;

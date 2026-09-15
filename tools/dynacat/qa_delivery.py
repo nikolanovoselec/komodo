@@ -66,8 +66,7 @@ async def verify():
                 if light:
                     await page.locator('.theme-choices [data-key="catppuccin-latte"]').first.evaluate('e=>e.click()')
                 assert not await page.evaluate('document.documentElement.scrollWidth > innerWidth'), 'Page overflows'
-                assert await page.locator('.mo-imports summary>span').first.evaluate('e=>parseFloat(getComputedStyle(e).fontSize)>=13'), 'History label too small'
-                assert not await page.locator('.mo-imports').first.evaluate('e=>e.open')
+                assert await page.locator('.mo-imports').count()==0, 'Two recent entries need no empty disclosure'
                 await page.screenshot(path=str(OUT / f'collapsed-{width}-{"light" if light else "dark"}.png'), full_page=True)
                 await page.locator('.mo-imports').evaluate_all('els=>els.forEach(e=>e.open=true)')
                 queue = page.locator('.mo-download').first

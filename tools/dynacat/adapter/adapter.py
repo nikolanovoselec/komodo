@@ -78,7 +78,7 @@ class PveSnapshot:
 _pve_cache = PveSnapshot()
 
 
-def make_server(address, loader):
+def make_server(address, loader, *, continuous=False, warmers=None, sample_interval=.25):
     """Share one demand-driven collection, never blocking /current on upstream I/O.
 
     Legacy /summary and /health wait for the current attempt via Condition.wait
@@ -105,10 +105,23 @@ def make_server(address, loader):
             cached.update(at=time.monotonic(), data=data, failed=failed,
                           collecting=False, sample_at=started)
             lock.notify_all()
+    def kickoff():
+        with lock:
+            now = time.monotonic()
+            if not cached['collecting'] and (cached['at'] is None or now - cached['at'] >= refresh_interval):
+                cached['collecting'] = True
+                threading.Thread(target=refresh, args=(now,), daemon=True).start()
+
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, format, *args):
             pass
         def do_GET(self):
+            if self.path == '/network-current':
+                import unifi
+                data = unifi.current()
+                status = 200 if data['state'] == 'available' else 503
+                self.send_json(status, json.dumps(data).encode())
+                return
             if self.path in ('/media-current', '/media-library', '/media-arr'):
                 import media
                 self.send_json(200, json.dumps(media.current(self.path.removeprefix('/media-'))).encode())
@@ -125,10 +138,7 @@ def make_server(address, loader):
                 return
             try:
                 with lock:
-                    now = time.monotonic()
-                    if not cached['collecting'] and (cached['at'] is None or now - cached['at'] >= refresh_interval):
-                        cached['collecting'] = True
-                        threading.Thread(target=refresh, args=(now,), daemon=True).start()
+                    kickoff()
                     if self.path != '/current':
                         while cached['collecting']:
                             lock.wait()
@@ -162,7 +172,25 @@ def make_server(address, loader):
             self.send_header('Content-Length', str(len(payload)))
             self.end_headers()
             self.wfile.write(payload)
-    return ThreadingHTTPServer(address, Handler)
+    from telemetry import Sampler
+    class Server(ThreadingHTTPServer):
+        sampler: Sampler | None = None
+
+        def shutdown(self):
+            if self.sampler is not None:
+                self.sampler.stop()
+            super().shutdown()
+
+        def server_close(self):
+            if self.sampler is not None:
+                self.sampler.stop()
+            super().server_close()
+
+    server = Server(address, Handler)
+    if continuous:
+        server.sampler = Sampler([kickoff, *(warmers or ())], interval=sample_interval)
+        server.sampler.start()
+    return server
 
 
 
@@ -268,5 +296,16 @@ def visible_stacks(servers, stacks, tags):
             and s['info'].get('server_id') not in disabled_hosts]
 
 
+def main():
+    import media
+    warmers = [_pve_cache.snapshot, *(source.snapshot for source in media.SOURCES.values())]
+    if os.environ.get('DYNACAT_UNIFI_TOKEN'):
+        import unifi
+        warmers.append(unifi.current)
+    with make_server(('0.0.0.0', 8090), lambda: collect(api),
+                     continuous=True, warmers=warmers) as server:
+        server.serve_forever()
+
+
 if __name__ == '__main__':
-    make_server(('0.0.0.0', 8090), lambda: collect(api)).serve_forever()
+    main()

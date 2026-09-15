@@ -12,7 +12,9 @@ class DeliveryScope(unittest.TestCase):
                     if w.get('title') in ('Sonarr delivery','Radarr delivery'):
                         t=w['template']
                         self.assertNotIn('class="mo-imports" open',t)
-                        self.assertIn('class="mo-delivery-summary"',t)
+                        self.assertNotIn('class="mo-delivery-summary"',t)
+                        self.assertIn('class="mo-recent-preview"',t)
+                        self.assertIn('More history',t)
                         self.assertIn('class="mo-import-meta"',t)
     def test_arr_only_scope(self):
         d=yaml.safe_load((ROOT/'config/dynacat.yml').read_text())
