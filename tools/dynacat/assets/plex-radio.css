@@ -7,7 +7,7 @@
 .pr-sliders{display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,170px);gap:8px 20px;margin-top:10px}.pr-seek{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;min-width:0}.pr-volume{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px;min-width:0}.pr-sliders label{font-size:10px;color:var(--color-text-subdue)}.pr-sliders input[type=range]{width:100%;min-width:0;min-height:44px;margin:0;accent-color:var(--color-primary);cursor:pointer}.pr-sliders input[type=range]:disabled{opacity:.4;cursor:default}.pr-sliders input[type=range]:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px;border-radius:4px}.pr-time{font-size:10px;color:var(--color-text-subdue);font-variant-numeric:tabular-nums;white-space:nowrap}
 /* Controls retain 44px targets; transport glyphs are deliberately larger. */
 .pr-controls [data-action=previous],.pr-controls [data-action=next]{font-size:24px;line-height:1;padding:8px 10px}
-.plex-radio.pr-mini{position:fixed;right:20px;bottom:16px;width:min(520px,calc(100% - 40px));z-index:30;margin:0;padding:12px 16px;background:var(--color-widget-background,var(--color-background));box-shadow:0 4px 28px #0005}
+.plex-radio.pr-mini{position:fixed;right:20px;bottom:16px;width:min(360px,calc(100% - 40px));z-index:30;margin:0;padding:12px 16px;background:var(--color-widget-background,var(--color-background));box-shadow:0 4px 28px #0005}
 .pr-mini .pr-heading,.pr-mini .pr-album,.pr-mini .pr-status,.pr-mini .pr-sliders{display:none}
 .pr-mini.pr-error .pr-status{display:block}
 .pr-mini .pr-art{flex-basis:52px}.pr-mini .pr-body{gap:12px}.pr-mini .pr-title{font-size:15px}.pr-mini .pr-artist{font-size:11px}.pr-mini .pr-controls{margin:8px 0 0;gap:5px}.pr-mini .pr-play{min-width:68px}
@@ -15,10 +15,10 @@
 .pr-dismiss{position:absolute;top:0;right:0;width:44px;height:44px;border:0;background:transparent;color:var(--color-text-base);font-size:22px;cursor:pointer;border-radius:6px}
 .pr-dismiss:hover{color:var(--color-primary);background:var(--pr-wash)}
 .pr-dismiss:focus-visible{outline:2px solid var(--color-primary);outline-offset:-4px}
-.pr-mini .pr-info{padding-right:32px}
+.pr-mini .pr-title,.pr-mini .pr-artist{padding-right:28px}
 body:has(.pr-mini:not([hidden])){padding-bottom:180px}
 .cc-navigation-error{padding:12px;color:var(--color-negative)}
-@media(max-width:600px){.plex-radio.pr-mini{right:10px;bottom:10px;width:calc(100% - 20px)}.pr-mini .pr-art{display:none}.pr-mini .pr-body,.pr-mini .pr-info{display:block}.pr-mini .pr-controls{margin:8px 0 0}.pr-mini .pr-title{font-size:15px}}
+@media(max-width:600px){.plex-radio.pr-mini{right:10px;bottom:10px;width:min(320px,calc(100% - 20px))}.pr-mini .pr-art{display:none}.pr-mini .pr-body,.pr-mini .pr-info{display:block}.pr-mini .pr-controls{margin:8px 0 0}.pr-mini .pr-title{font-size:15px}}
 @media(max-width:600px){
  .plex-radio{padding:10px 12px;margin-bottom:16px}
  .pr-heading{margin-bottom:8px;line-height:12px;letter-spacing:.12em}.pr-mode{max-width:145px}
