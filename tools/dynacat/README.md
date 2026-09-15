@@ -210,6 +210,77 @@ a source measurement timestamp: polling cannot invent 1Hz PVE measurements.
 Run `qa_compact.py URL OUTPUT` for four-viewport light/dark matrix alignment and
 metric preservation; use `--baseline` before future changes for bounds/screenshots.
 
+## Unified Cluster Workloads / Docker
+
+The former standalone Docker Hosts widget is merged into the guest resource
+matrix. Physical-node cards, Top Consumers and the right rail are unchanged.
+`workload_docker.enrich` joins only the existing audited VM/LXC mappings, exact
+PVE type/ID/name and immutable Komodo server ID/address. Each matched row adds
+running/total containers, stopped/other and unhealthy counts, summed running-
+container CPU/RAM, and an expandable exact-linked inventory. CPU may exceed 100%;
+RAM is container accounting, never substituted for host/guest memory. Expanded
+rows expose measured coverage. Source freshness must be strictly under 30s.
+Disabled Docker resources stay excluded. Missing Docker inventory is not zero
+containers or proof of no daemon. Unmatched hosts and unassigned definitions
+remain separate disclosures; assigned stack problems stay with their machine.
+All PVE inventory/state/CPU and prior VM-metric fallback behavior is retained.
+`qa_workload_merge.py` verifies actual expansion/focus across polling and
+light/dark desktop/tablet/mobile rendering. Fixtures test disabled, stale,
+identity-mismatch, missing-stat and actionable-failure cases.
+
+## Native Media Ops
+
+`/media-ops` is a native, theme-aware page with scoped styles. Directory and News
+configurations and all theme definitions remain unchanged. `adapter/media.py`
+provides fixed read-only `/media-current`, `/media-library` and `/media-arr`
+projections. No media control/write endpoint is exposed. The sidecar retains its
+unprivileged, read-only, private-network-only deployment.
+
+- Komodo supplies exact Plex, Emby and Jellyfin container identities, CPU and RAM.
+  Jellyfin remains explicitly visible because this page names all three servers;
+  its authoritative disabled tag is labeled separately from its exited state.
+- All three use host networking. Docker `net_io=0B / 0B` is not a measured idle
+  per-app bandwidth value. The page explicitly marks per-app traffic unavailable.
+  Separate host traffic shows Periphery's received/transmitted bytes from the last
+  declared polling interval across all interfaces, **not bytes/second** and not
+  Plex-only traffic. `refresh_ts` must be younger than 30 seconds.
+  Verified implementation: Komodo v2.3.2 `bin/periphery/src/stats/mod.rs` sums
+  sysinfo `received()` / `transmitted()` (since the previous network refresh).
+- Sonarr/Radarr reuse their existing protected Komodo variables in the sidecar.
+  History uses eventType=3 (completed imports), queues retain bounded pagination
+  and an explicit truncated flag. Failed reads are not displayed as empty queues.
+- Plex session and library collectors are implemented but require a separately
+  approved, server-scoped `DYNACAT_PLEX_TOKEN`. Compose tolerates its absence so
+  independent integrations still work. **Plex is not verified/complete while the
+  credential is absent.** Provision it as a protected Komodo variable, then add
+  `DYNACAT_PLEX_TOKEN = [[DYNACAT_PLEX_TOKEN]]` to this stack's TOML environment and
+  redeploy through Git/Komodo. Do not copy browser sessions or a broad personal
+  Plex account token. A missing protected variable is intentionally not referenced
+  in TOML yet, because unresolved secret substitution would block all deployment.
+- Plex library requests ask for actual `type=4` episode items sorted by `addedAt`
+  (not season-level recentlyAdded records); movie requests use `type=1`. Section
+  totals count top-level library items (shows, movies, artists), not episodes for
+  TV totals. Playback bandwidth is Plex's session reservation, not measured NIC
+  throughput. Sources/cache cadence are explicitly labeled.
+- Until Plex access is configured, the separate **Just landed** gallery presents
+  verified Arr imports, explicitly not Plex library membership. IMDb links use
+  only upstream identifiers validated as `tt` plus 7–10 digits.
+- Poster bytes are fetched server-side from fixed Plex/Radarr paths or an exact
+  HTTPS TVDB artwork origin/path allowlist. Redirects, arbitrary URLs, oversized
+  payloads and non-JPEG data are rejected. Browsers receive bounded JPEG data URIs,
+  never token-bearing URLs or upstream credentials. Missing artwork remains a
+  labeled placeholder. Gallery/image work cannot block 1s resource presentation.
+- Independent demand-driven caches: sessions/resources 5s, Arr 30s, library/artwork
+  5m. Failures invalidate prior snapshots and stale data expires. Native Dynacat
+  owns polling (1s current, 10s delivery/gallery), pauses hidden pages and prevents
+  overlap. Media-only JS preserves disclosure/focus/scroll across replacement.
+
+Run `python3 -m unittest discover -s tools/dynacat/adapter -q` and
+`dynacat-qa-venv/bin/python tools/dynacat/qa_media.py BASE_URL OUTPUT_DIRECTORY`.
+The browser regression uses the actual app/upstreams, verifies loaded images,
+1s completion cadence, focus/disclosure retention, two contrasting persistent
+native themes, and four viewport widths; it never serves synthetic telemetry.
+
 ## Browser-local theme compatibility
 
 The public URL's native theme POST returned HTTP 403 with `cross-origin request

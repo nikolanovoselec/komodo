@@ -109,6 +109,10 @@ def make_server(address, loader):
         def log_message(self, format, *args):
             pass
         def do_GET(self):
+            if self.path in ('/media-current', '/media-library', '/media-arr'):
+                import media
+                self.send_json(200, json.dumps(media.current(self.path.removeprefix('/media-'))).encode())
+                return
             if self.path == '/pve-current':
                 pve, freshness, status = _pve_cache.snapshot()
                 data = dict(pve=pve, freshness=freshness)
@@ -192,7 +196,7 @@ def project(servers, stacks, tags, containers, disabled_members):
     workloads = []
     for s in visible:
         i = s['info']
-        workloads.append(dict(id=s['id'], name=s['name'], host=i.get('server_name') or 'Unassigned',
+        workloads.append(dict(id=s['id'], name=s['name'], server_id=i.get('server_id'), host=i.get('server_name') or 'Unassigned',
                               state=i.get('state', 'unknown'), status=i.get('status') or i.get('state', 'unknown'),
                               unassigned=not i.get('server_id') and not i.get('swarm_id')))
     kept = []
@@ -223,7 +227,7 @@ def project(servers, stacks, tags, containers, disabled_members):
                 running_containers=sum(c['state']=='running' for c in kept),
                 definition_issues=[s for s in workloads if s['unassigned']],
                 stack_problems=[s for s in workloads if s['state']!='running' and not s['unassigned']],
-                container_problems=problems, groups=groups,
+                container_problems=problems, container_inventory=kept, groups=groups,
                 top_cpu=sorted([c for c in kept if c['state']=='running' and c['cpu'] is not None], key=lambda c:c['cpu'], reverse=True)[:5],
                 top_ram=sorted([c for c in kept if c['state']=='running' and c['ram_bytes'] is not None], key=lambda c:c['ram_bytes'], reverse=True)[:5])
 
@@ -247,6 +251,10 @@ def collect(api):
     result['pve'] = vm_metrics.enrich(pve, servers)
     import navigation
     navigation.link_ranked_hosts(result, servers)
+    import workload_docker
+    workload_docker.enrich(result, servers)
+    # Full inventory now lives once under each matched/unmatched Docker group.
+    result.pop('container_inventory', None)
     import renovate
     result['renovate'] = renovate.collect()
     return result

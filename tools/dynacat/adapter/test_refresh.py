@@ -18,7 +18,8 @@ class Refresh(unittest.TestCase):
         widgets = re.split(r'(?m)^    - type: ', config)
         stats = [widget for widget in widgets if re.search(
             r'^      css-class: .*\b(?:pve-resources|pve-guests|workload-attention|top-consumers)\b', widget, re.M)]
-        self.assertEqual(len(stats), 4)
+        # Docker Hosts is intentionally merged into Cluster Workloads.
+        self.assertEqual(len(stats), 3)
         for index, widget in enumerate(stats):
             with self.subTest(widget=index):
                 self.assertRegex(widget, r'(?m)^      update-interval: 1s$')

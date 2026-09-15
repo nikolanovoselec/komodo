@@ -1,5 +1,5 @@
 document:
-  head: '<script src="/assets/local-theme.js"></script><script src="/assets/command-center.js" defer></script>'
+  head: '<link rel="stylesheet" href="/assets/workload-docker.css"><link rel="stylesheet" href="/assets/media-ops.css"><script src="/assets/media-ops.js" defer></script><script src="/assets/local-theme.js"></script><script src="/assets/command-center.js" defer></script>'
 server:
   port: 8080
   assets-path: /app/assets
@@ -193,52 +193,11 @@ pages:
     - type: custom-api
       title: Cluster Workloads
       title-url: https://proxmox.graymatter.ch
-      css-class: komodo-widget komodo-hosts pve-guests
+      css-class: komodo-widget komodo-hosts pve-guests cw-merged
       cache: 1s
       update-interval: 1s
       url: http://workload-summary:8090/current
-      template: '{{ if .JSON.String "error" }}<div class="k-warning">{{ .JSON.String "error" }}</div>{{ else }}<div class="k-note">{{ .JSON.String "freshness.state" }} · snapshot age {{ printf "%.0f" (.JSON.Float "freshness.age_seconds") }}s · max 30s</div>{{ if .JSON.String "pve.error" }}<div class="k-warning">{{ .JSON.String "pve.error" }}</div>{{ else }}<div class="k-inventory-head"><span>{{ len (.JSON.Array `pve.guest_inventory.#(status=="running")#`)
-        }} running guests · Proxmox API</span><span>RESOURCE MATRIX · VM / LXC</span></div><div class="pve-matrix-head" aria-hidden="true"><span>WORKLOAD / NODE</span><div><span>CPU</span><span>RAM</span><span>DISK USED</span></div><span>METRIC SOURCES</span></div><div class="k-host-grid">{{ range .JSON.Array `pve.guest_inventory.#(status=="running")#` }}<a class="k-host cc-resource-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><header><strong>{{
-        .String "name" }}</strong><span class="pve-guest-meta">{{ .String "node" }} · #{{ .Int "id" }}</span><span class="k-state">● {{ if eq (.String "type") "qemu" }}VM{{ else }}LXC{{ end }}</span></header><div class="k-metrics"><div><label>CPU {{ if ne (.String "cpu_percent") "" }}<b>{{ printf "%.1f" (.Float "cpu_percent") }}%</b></label><meter min="0"
-        max="100" value="{{ .Float "cpu_percent" }}"></meter>{{ else }}<b>N/A</b></label><div class="k-unavailable-bar"></div>{{ end }}</div><div class="pve-guest-ram" title="{{ .String
-        "memory_scope" }}"><label>RAM {{ if ne (.String "ram.percent") "" }}<b>{{ printf "%.0f" (.Float "ram.percent") }}%</b></label><meter min="0" max="100" value="{{ .Float "ram.percent"
-        }}"></meter><small>{{ printf "%.1f" (div (.Float "ram.used_bytes") 1073741824) }} / {{ printf "%.1f" (div (.Float "ram.total_bytes") 1073741824) }} GiB</small>{{ else }}<b>N/A</b></label><div
-        class="k-unavailable-bar"></div>{{ end }}</div><div class="pve-guest-disk"><label>DISK {{ if ne (.String "disk.percent") "" }}<b>{{ printf "%.0f" (.Float "disk.percent") }}%</b></label><meter
-        min="0" max="100" value="{{ .Float "disk.percent" }}"></meter><small>{{ printf "%.1f" (div (.Float "disk.used_bytes") 1073741824) }} GiB used</small>{{ else }}<b>N/A</b></label><div
-        class="k-unavailable-bar"></div>{{ if gt (.Float "disk.total_bytes") 0.0 }}<small>{{ printf "%.0f" (div (.Float "disk.total_bytes") 1073741824) }} GiB allocated</small>{{ else
-        }}<small>Not reported</small>{{ end }}{{ end }}</div></div><div class="pve-guest-source">CPU PVE · RAM {{ if eq (.String "memory_source") "Komodo" }}Komodo{{ else }}{{ if eq
-        (.String "type") "qemu" }}PVE host{{ else }}PVE{{ end }}{{ end }} · disk {{ if eq (.String "disk_source") "Komodo" }}Komodo{{ else }}{{ if eq (.String "type") "qemu" }}unavailable{{
-        else }}PVE{{ end }}{{ end }}</div></a>{{ end }}</div><details class="k-stack-group pve-stopped"><summary><strong>{{ len (.JSON.Array `pve.guest_inventory.#(status!="running")#`)
-        }} stopped / other guests</strong><span>show inventory</span></summary>{{ range .JSON.Array `pve.guest_inventory.#(status!="running")#` }}<a class="k-top-row cc-resource-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><strong>{{ .String
-        "name" }}</strong><small>{{ .String "node" }} · {{ .String "type" }} #{{ .Int "id" }} · {{ .String "status" }}</small></a>{{ end }}</details><div class="k-note">Inventory /
-        CPU and LXC metrics: Proxmox. VM RAM / aggregate filesystem usage: identity-verified Komodo guests. PVE host RAM is used only if guest readings are unavailable (QEMU overhead
-        may exceed configured RAM). Allocated disk ≠ used space; mounts may overlap. Stopped ≠ disabled; no guest disable policy applied. UI refresh 1s; collector cache 5s; PVE samples ~10s.</div>{{ end }}{{ end }}'
-    - type: custom-api
-      title: Docker Hosts
-      title-url: https://komodo.graymatter.ch
-      css-class: komodo-widget workload-attention
-      cache: 1s
-      update-interval: 1s
-      url: http://workload-summary:8090/current
-      template: '{{ if .JSON.String "error" }}<div class="k-warning">{{ .JSON.String "error" }}</div>{{ else }}<div class="k-note">{{ .JSON.String "freshness.state" }} · snapshot age {{ printf "%.0f" (.JSON.Float "freshness.age_seconds") }}s · max 30s</div><div class="k-summary"><div><strong>{{ .JSON.Int "running_stacks" }}</strong><span>RUNNING STACKS</span></div><div><strong>{{ .JSON.Int "running_containers" }}</strong><span>RUNNING
-        CONTAINERS</span></div><div><strong>{{ len (.JSON.Array "stack_problems") }}</strong><span>RUNTIME STACK ISSUES</span></div><div><strong>{{ len (.JSON.Array "container_problems")
-        }}</strong><span>CONTAINER ISSUES</span></div></div>
-
-        <div class="k-note">Enabled workloads only · UI refresh 1s · collector cache 5s · {{ .JSON.Int "stacks_total" }} stacks / {{ .JSON.Int "containers_total" }} containers · fetched <span data-dynamic-relative-time="{{
-        .JSON.Int "fetched_at" }}"></span></div>
-
-        {{ range .JSON.Array "stack_problems" }}<div class="k-problem"><a href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ .String "name" }}</a><span>{{ .String "host"
-        }} · {{ .String "state" }}</span></div>{{ end }}
-
-        {{ range .JSON.Array "container_problems" }}<div class="k-problem"><a class="cc-container-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer">{{ .String "name" }}</a><span>{{ .String "host" }} · {{ .String "status" }}</span></div>{{ end
-        }}
-
-        <details class="k-stack-group"><summary><strong>{{ len (.JSON.Array "definition_issues") }} unassigned definitions</strong><span>runtime unknown</span></summary><div class="k-note">No
-        assigned server or swarm. Retained definitions, not confirmed running incidents or deliberately disabled workloads.</div>{{ range .JSON.Array "definition_issues" }}<div class="k-top-row"><a
-        href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ .String "name" }}</a><small>Unassigned · runtime unknown</small></div>{{ end }}</details><div class="k-note">Stopped
-        / unhealthy containers remain actionable, including legacy unmanaged containers. Age does not prove retirement.</div><div class="k-group-grid">{{ range .JSON.Array "groups" }}<details
-        class="k-stack-group"><summary><strong>{{ .String "host" }}</strong><span>{{ .Int "count" }} running</span></summary><div class="k-chips">{{ range .Array "stacks" }}<a class="k-stack-chip"
-        href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ trimPrefix (concat (.String "host") "_") (.String "name") }}</a>{{ end }}</div></details>{{ end }}</div>{{ end }}'
+      template: '{{ if .JSON.String "error" }}<div class="k-warning">{{ .JSON.String "error" }}</div>{{ else }}<div class="cw-overview"><span><b>{{ len (.JSON.Array `pve.guest_inventory.#(status=="running")#`) }}</b> running VM / LXC guests</span><span><b>{{ .JSON.Int "running_containers" }}/{{ .JSON.Int "containers_total" }}</b> enabled Docker containers</span><span><b>{{ .JSON.Int "running_stacks" }}/{{ .JSON.Int "stacks_total" }}</b> stacks running</span><span class="cw-alert">{{ len (.JSON.Array "container_problems") }} container issues · {{ len (.JSON.Array "stack_problems") }} stack issues</span></div><div class="k-note">{{ .JSON.String "freshness.state" }} · snapshot age {{ .JSON.Float "freshness.age_seconds" | printf "%.0f" }}s · max 30s · Docker grouped only by audited guest identity</div>{{ if .JSON.String "pve.error" }}<div class="k-warning">{{ .JSON.String "pve.error" }}</div>{{ else }}<div class="cw-matrix-head"><div class="pve-matrix-head"><span>WORKLOAD / NODE</span><div><span>CPU</span><span>RAM</span><span>DISK USED</span></div><span>METRIC SOURCES</span></div><span>DOCKER · PER MACHINE</span></div><div class="k-host-grid cw-workloads">{{ range .JSON.Array `pve.guest_inventory.#(status=="running")#` }}<article class="cw-workload"><a class="k-host cc-resource-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><header><strong>{{ .String "name" }}</strong><span class="pve-guest-meta">{{ .String "node" }} · #{{ .Int "id" }}</span><span class="k-state">● {{ if eq (.String "type") "qemu" }}VM{{ else }}LXC{{ end }}</span></header><div class="k-metrics"><div><label>CPU {{ if ne (.String "cpu_percent") "" }}<b>{{ printf "%.1f" (.Float "cpu_percent") }}%</b></label><meter min="0" max="100" value="{{ .Float "cpu_percent" }}"></meter>{{ else }}<b>N/A</b></label><div class="k-unavailable-bar"></div>{{ end }}</div><div class="pve-guest-ram" title="{{ .String "memory_scope" }}"><label>RAM {{ if ne (.String "ram.percent") "" }}<b>{{ printf "%.0f" (.Float "ram.percent") }}%</b></label><meter min="0" max="100" value="{{ .Float "ram.percent" }}"></meter><small>{{ printf "%.1f" (div (.Float "ram.used_bytes") 1073741824) }} / {{ printf "%.1f" (div (.Float "ram.total_bytes") 1073741824) }} GiB</small>{{ else }}<b>N/A</b></label><div class="k-unavailable-bar"></div>{{ end }}</div><div class="pve-guest-disk"><label>DISK {{ if ne (.String "disk.percent") "" }}<b>{{ printf "%.0f" (.Float "disk.percent") }}%</b></label><meter min="0" max="100" value="{{ .Float "disk.percent" }}"></meter><small>{{ printf "%.1f" (div (.Float "disk.used_bytes") 1073741824) }} GiB used</small>{{ else }}<b>N/A</b></label><div class="k-unavailable-bar"></div>{{ if gt (.Float "disk.total_bytes") 0.0 }}<small>{{ printf "%.0f" (div (.Float "disk.total_bytes") 1073741824) }} GiB allocated</small>{{ else }}<small>Not reported</small>{{ end }}{{ end }}</div></div><div class="pve-guest-source">CPU PVE · RAM {{ if eq (.String "memory_source") "Komodo" }}Komodo{{ else }}{{ if eq (.String "type") "qemu" }}PVE host{{ else }}PVE{{ end }}{{ end }} · disk {{ if eq (.String "disk_source") "Komodo" }}Komodo{{ else }}{{ if eq (.String "type") "qemu" }}unavailable{{ else }}PVE{{ end }}{{ end }}</div></a><details class="cw-docker"><summary><strong class="cw-detail-key">{{ .String "type" }} #{{ .Int "id" }} containers</strong>{{ if .Bool "docker.available" }}<div class="cw-docker-count"><b>{{ .Int "docker.running" }}<small>/{{ .Int "docker.total" }}</small></b><span>containers running</span><i>▸</i></div><div class="cw-docker-stats"><span title="{{ .String "docker.cpu_scope" }}">ΣCPU {{ if ne (.String "docker.cpu") "" }}<b>{{ .Float "docker.cpu" | printf "%.1f" }}%</b>{{ else }}—{{ end }}</span><span title="{{ .String "docker.ram_scope" }}">ΣRAM {{ if ne (.String "docker.ram_bytes") "" }}<b>{{ div (.Float "docker.ram_bytes") 1073741824 | printf "%.2f" }} GiB</b>{{ else }}—{{ end }}</span></div>{{ if or (gt (.Int "docker.failed") 0) (gt (.Int "docker.unhealthy") 0) (gt (len (.Array "docker.stack_problems")) 0) }}<div class="cw-alert">{{ .Int "docker.failed" }} stopped / other · {{ .Int "docker.unhealthy" }} unhealthy · {{ len (.Array "docker.stack_problems") }} stack issues</div>{{ end }}{{ else }}<div class="cw-no-docker">{{ if .String "docker.status" }}{{ .String "docker.status" }}{{ else }}No Docker data{{ end }}</div>{{ if gt (len (.Array "docker.stack_problems")) 0 }}<div class="cw-alert">{{ len (.Array "docker.stack_problems") }} stack issues ▸</div>{{ end }}{{ end }}</summary><div class="cw-docker-expanded">{{ if .Bool "docker.available" }}<div class="cw-docker-scope">Komodo / Docker · CPU is summed across cores and can exceed 100%; RAM is summed container accounting, not host memory.<br>Measured running containers: CPU {{ .Int "docker.cpu_coverage.measured" }}/{{ .Int "docker.cpu_coverage.running" }} · RAM {{ .Int "docker.ram_coverage.measured" }}/{{ .Int "docker.ram_coverage.running" }} · server sample {{ .Float "docker.age_seconds" | printf "%.0f" }}s old.</div>{{ else }}<p class="cw-docker-scope">No current identity-verified Docker inventory. This is not a claim of zero containers or no installed daemon.</p>{{ end }}<div class="cw-container-table">{{ range .Array "docker.containers" }}<a class="cw-container cc-container-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><div><strong>{{ .String "name" }}</strong><small>{{ .String "status" }}</small></div><span class="cw-state cw-state-{{ .String "state" }}">{{ .String "state" }}</span><span>{{ if ne (.String "cpu") "" }}{{ .Float "cpu" | printf "%.2f" }}% CPU{{ else }}CPU —{{ end }}</span><span>{{ .String "ram" }}</span></a>{{ end }}</div>{{ range .Array "docker.stack_problems" }}<div class="cw-problem"><a href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}" target="_blank" rel="noopener noreferrer">{{ .String "name" }} ↗</a><span>{{ .String "state" }} · stack</span></div>{{ end }}</div></details></article>{{ end }}</div><details class="k-stack-group pve-stopped"><summary><strong>{{ len (.JSON.Array `pve.guest_inventory.#(status!="running")#`) }} stopped / other guests</strong><span>show inventory</span></summary>{{ range .JSON.Array `pve.guest_inventory.#(status!="running")#` }}<article class="cw-stopped-guest"><a class="k-top-row cc-resource-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><strong>{{ .String "name" }}</strong><small>{{ .String "node" }} · {{ .String "type" }} #{{ .Int "id" }} · {{ .String "status" }}</small></a><details class="cw-docker"><summary><strong class="cw-detail-key">{{ .String "type" }} #{{ .Int "id" }} containers</strong>{{ if .Bool "docker.available" }}<div class="cw-docker-count"><b>{{ .Int "docker.running" }}<small>/{{ .Int "docker.total" }}</small></b><span>containers running</span><i>▸</i></div><div class="cw-docker-stats"><span title="{{ .String "docker.cpu_scope" }}">ΣCPU {{ if ne (.String "docker.cpu") "" }}<b>{{ .Float "docker.cpu" | printf "%.1f" }}%</b>{{ else }}—{{ end }}</span><span title="{{ .String "docker.ram_scope" }}">ΣRAM {{ if ne (.String "docker.ram_bytes") "" }}<b>{{ div (.Float "docker.ram_bytes") 1073741824 | printf "%.2f" }} GiB</b>{{ else }}—{{ end }}</span></div>{{ if or (gt (.Int "docker.failed") 0) (gt (.Int "docker.unhealthy") 0) (gt (len (.Array "docker.stack_problems")) 0) }}<div class="cw-alert">{{ .Int "docker.failed" }} stopped / other · {{ .Int "docker.unhealthy" }} unhealthy · {{ len (.Array "docker.stack_problems") }} stack issues</div>{{ end }}{{ else }}<div class="cw-no-docker">{{ if .String "docker.status" }}{{ .String "docker.status" }}{{ else }}No Docker data{{ end }}</div>{{ if gt (len (.Array "docker.stack_problems")) 0 }}<div class="cw-alert">{{ len (.Array "docker.stack_problems") }} stack issues ▸</div>{{ end }}{{ end }}</summary><div class="cw-docker-expanded">{{ if .Bool "docker.available" }}<div class="cw-docker-scope">Komodo / Docker · CPU is summed across cores and can exceed 100%; RAM is summed container accounting, not host memory.<br>Measured running containers: CPU {{ .Int "docker.cpu_coverage.measured" }}/{{ .Int "docker.cpu_coverage.running" }} · RAM {{ .Int "docker.ram_coverage.measured" }}/{{ .Int "docker.ram_coverage.running" }} · server sample {{ .Float "docker.age_seconds" | printf "%.0f" }}s old.</div>{{ else }}<p class="cw-docker-scope">No current identity-verified Docker inventory. This is not a claim of zero containers or no installed daemon.</p>{{ end }}<div class="cw-container-table">{{ range .Array "docker.containers" }}<a class="cw-container cc-container-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><div><strong>{{ .String "name" }}</strong><small>{{ .String "status" }}</small></div><span class="cw-state cw-state-{{ .String "state" }}">{{ .String "state" }}</span><span>{{ if ne (.String "cpu") "" }}{{ .Float "cpu" | printf "%.2f" }}% CPU{{ else }}CPU —{{ end }}</span><span>{{ .String "ram" }}</span></a>{{ end }}</div>{{ range .Array "docker.stack_problems" }}<div class="cw-problem"><a href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}" target="_blank" rel="noopener noreferrer">{{ .String "name" }} ↗</a><span>{{ .String "state" }} · stack</span></div>{{ end }}</div></details></article>{{ end }}</details><div class="k-note">PVE remains authoritative for guest inventory, state, CPU and LXC metrics. VM RAM / filesystem fallback remains identity-verified Periphery. Docker CPU/RAM are separate container sums, not host utilization; shared accounting can overlap. Disabled Docker resources are excluded. A stopped PVE guest is not automatically disabled. UI refresh 1s; collector cache 5s; PVE samples ~10s.</div>{{ end }}<div class="cw-unmatched"><details class="k-stack-group"><summary><strong>{{ len (.JSON.Array "docker_unmatched") }} unmatched Docker hosts</strong><span>identity not joined</span></summary><div class="k-note">Enabled Docker hosts without an exact current Proxmox identity. No name-based or IP-only guessing.</div>{{ range .JSON.Array "docker_unmatched" }}<details class="cw-unmatched-host"><summary><strong>{{ .String "host" }}</strong><span>{{ if .Bool "available" }}{{ .Int "running" }}/{{ .Int "total" }} running · {{ .Int "failed" }} stopped / other · {{ .Int "unhealthy" }} unhealthy{{ else }}{{ .String "status" }}{{ end }} · {{ len (.Array "stack_problems") }} stack issues</span></summary><a class="cw-host-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer">Open exact Komodo host ↗</a><div class="cw-container-table">{{ range .Array "containers" }}<a class="cw-container cc-container-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><div><strong>{{ .String "name" }}</strong><small>{{ .String "status" }}</small></div><span class="cw-state cw-state-{{ .String "state" }}">{{ .String "state" }}</span><span>{{ if ne (.String "cpu") "" }}{{ .Float "cpu" | printf "%.2f" }}% CPU{{ else }}CPU —{{ end }}</span><span>{{ .String "ram" }}</span></a>{{ end }}</div>{{ range .Array "stack_problems" }}<div class="cw-problem"><a href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}" target="_blank" rel="noopener noreferrer">{{ .String "name" }} ↗</a><span>{{ .String "state" }} · stack</span></div>{{ end }}</details>{{ end }}</details><details class="k-stack-group"><summary><strong>{{ len (.JSON.Array "definition_issues") }} unassigned definitions</strong><span>runtime unknown</span></summary><div class="k-note">Definitions without an assigned server/swarm are retained separately, not confirmed runtime incidents.</div>{{ range .JSON.Array "definition_issues" }}<a class="cw-container" href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}" target="_blank" rel="noopener noreferrer"><strong>{{ .String "name" }}</strong><span>Unassigned · runtime unknown</span></a>{{ end }}</details></div>{{ end }}'
     - type: custom-api
       title: Docker Containers - Top Consumers
       css-class: komodo-widget top-consumers
@@ -288,108 +247,110 @@ pages:
   desktop-navigation-width: wide
   key-bind: d m
   columns:
-  - size: small
-    widgets:
-    - type: torrenting
-      title: Active downloads
-      title-icon: mdi:download-network
-      update-interval: 30s
-      hide-completed: true
-      hide-inactive: true
-      wrap-text: true
-      collapse-after: 8
-      hosts:
-      - url: http://192.168.2.38:8080
-        username: dynacat
-        password: dynacat
-    - type: calendar
-      title: Release calendar
-      title-icon: mdi:calendar-star
-      show-release-state: true
-      update-interval: 30m
-      hosts:
-      - url: sonarr:http://192.168.2.38:8988
-        public-url: https://sonarr.graymatter.ch
-        token: ${SONARR_API_KEY}
-      - url: radarr:http://192.168.2.38:8309
-        public-url: https://radarr.graymatter.ch
-        token: ${RADARR_API_KEY}
-    - type: bookmarks
-      groups:
-      - title: Media control
-        color: 222 74 74
-        links:
-        - title: Plex
-          url: https://plex.novoselec.ch
-          icon: si:plex
-        - title: qBittorrent
-          url: https://qbittorrent.graymatter.ch
-          icon: si:qbittorrent
-        - title: Sonarr
-          url: https://sonarr.graymatter.ch
-          icon: si:sonarr
-        - title: Radarr
-          url: https://radarr.graymatter.ch
-          icon: si:radarr
   - size: full
     widgets:
-    - type: html
+    - type: custom-api
+      title: Media Ops
       frameless: true
-      css-class: section-label
-      source: <div><span class="status-dot"></span> MEDIA CONTROL <small>Downloads · releases · servers · library</small></div>
-    - type: monitor
-      title: Media container estate
-      title-icon: mdi:docker
-      style: compact
-      show-history: true
-      update-interval: 1m
-      sites:
-      - title: Dozzle
-        url: https://dozzle.local.graymatter.ch/
-      - title: Plex
-        url: https://plex.novoselec.ch
-      - title: qBittorrent
-        url: https://qbittorrent.graymatter.ch
-      - title: Sonarr
-        url: https://sonarr.graymatter.ch
-      - title: Radarr
-        url: https://radarr.graymatter.ch
-    - type: videos
-      title: Architecture & technology
-      title-icon: mdi:youtube
-      channels:
-      - UCXuqSBlHAE6Xw-yeJA0Tunw
-      - UCBJycsmduvYEL83R_U4JriQ
-      - UCHnyfMqiRRG1u-2MsSQLbXA
-      style: grid-cards
-      limit: 9
-      collapse-after-rows: 1
+      css-class: media-ops-widget
+      cache: 1s
+      update-interval: 1s
+      url: http://workload-summary:8090/media-current
+      template: "<div class=\"mo-page mo-live\">\n<div class=\"mo-head\"><div><span class=\"mo-eyebrow\">THE SCREENING ROOM</span><h2>Media Ops</h2><p>Playback,\
+        \ libraries and delivery \u2014 one live view.</p></div><span class=\"mo-live-label\"><i></i> LIVE OPERATIONS</span></div>\n{{ if .JSON.String\
+        \ \"sessions.error\" }}<div class=\"mo-notice\">{{ .JSON.String \"sessions.error\" }} \xB7 DYNACAT_PLEX_TOKEN must be available to the\
+        \ collector.</div>{{ else }}\n<div class=\"mo-kpis\"><div><b>{{ .JSON.Int \"sessions.data.count\" }}</b><span>Concurrent streams</span></div><div><b>{{\
+        \ .JSON.Int \"sessions.data.direct\" }}</b><span>Direct play</span></div><div><b>{{ .JSON.Int \"sessions.data.transcoding\" }}</b><span>Transcoding</span></div><div><b>{{\
+        \ if .JSON.Bool \"sessions.data.has_bandwidth\" }}{{ .JSON.Float \"sessions.data.bandwidth_mbps\" }}<small> Mbps</small>{{ else }}\u2014\
+        {{ end }}</b><span>Plex reserved bandwidth</span></div></div>\n<div class=\"mo-section\"><h3>Now playing</h3><small>Plex sessions \xB7\
+        \ {{ .JSON.Int \"sessions.age\" }}s since collection \xB7 UI 1s / source cache 5s</small></div>\n<div class=\"mo-players\">{{ range .JSON.Array\
+        \ \"sessions.data.streams\" }}<article class=\"mo-player\"><div class=\"mo-player-top\"><span class=\"mo-badge\">{{ .String \"state\"\
+        \ }}</span><span>{{ .String \"mode\" }} \xB7 {{ .String \"resolution\" }}</span></div><h3>{{ if .String \"imdb\" }}<a href=\"{{ .String\
+        \ \"imdb\" }}\" target=\"_blank\" rel=\"noopener noreferrer\">{{ .String \"title\" }} \u2197</a>{{ else }}{{ .String \"title\" }}{{ end\
+        \ }}</h3><p>{{ .String \"subtitle\" }}</p><div class=\"mo-progress\"><i style=\"width:{{ .Float \"progress\" }}%\"></i></div><div class=\"\
+        mo-player-bottom\"><span>{{ .String \"user\" }} \xB7 {{ .String \"player\" }}</span><span>{{ .Float \"progress\" | printf \"%.0f\" }}%\
+        \ \xB7 {{ .String \"location\" }}</span></div></article>{{ else }}<div class=\"mo-idle\"><span>\u2161</span><div><h3>The room is quiet</h3><p>Plex\
+        \ reports no active playback. New sessions appear here automatically.</p></div></div>{{ end }}</div>{{ end }}\n<div class=\"mo-section\"\
+        ><h3>Media servers</h3><small>Komodo / Docker \xB7 {{ .JSON.Int \"resources.age\" }}s since collection</small></div>\n{{ if .JSON.String\
+        \ \"resources.error\" }}<div class=\"mo-notice\">{{ .JSON.String \"resources.error\" }}</div>{{ else }}<div class=\"mo-servers\">{{ range\
+        \ .JSON.Array \"resources.data.servers\" }}<a class=\"mo-server\" href=\"{{ .String \"url\" }}\" target=\"_blank\" rel=\"noopener noreferrer\"\
+        ><div class=\"mo-server-title\"><h3>{{ .String \"name\" }}</h3><span class=\"mo-state mo-state-{{ if .Bool \"disabled\" }}disabled{{ else\
+        \ }}{{ .String \"state\" }}{{ end }}\">{{ if .Bool \"disabled\" }}disabled \xB7 {{ end }}{{ .String \"state\" }}</span></div><div class=\"\
+        mo-server-metrics\"><div><small>CPU \xB7 Docker</small><b>{{ if .Bool \"has_cpu\" }}{{ .Float \"cpu\" | printf \"%.2f\" }}%{{ else }}\u2014\
+        {{ end }}</b></div><div><small>RAM \xB7 container</small><b>{{ .String \"ram\" }}</b></div></div><p>{{ .String \"status\" }}</p><small>Network:\
+        \ {{ .String \"bandwidth\" }}</small></a>{{ end }}</div><div class=\"mo-host-traffic\"><span>Media host \xB7 all interfaces \xB7 last\
+        \ {{ .JSON.String \"resources.data.traffic.interval\" }} poll</span><b>{{ if .JSON.Bool \"resources.data.traffic.available\" }}\u2193\
+        \ {{ .JSON.Float \"resources.data.traffic.rx_kb\" }} kB <em>\u2191 {{ .JSON.Float \"resources.data.traffic.tx_kb\" }} kB</em>{{ else }}Traffic\
+        \ unavailable{{ end }}</b><small>Komodo / Periphery \xB7 interval volume, not a per-app rate</small></div>{{ end }}\n</div>"
+    - type: custom-api
+      title: Plex library
+      frameless: true
+      css-class: media-ops-widget
+      cache: 10s
+      update-interval: 10s
+      url: http://workload-summary:8090/media-library
+      template: "<div class=\"mo-page\"><div class=\"mo-section\"><h3>Library pulse</h3><small>Plex library API \xB7 {{ .JSON.Int \"library.age\"\
+        \ }}s since collection \xB7 cache 5m</small></div>{{ if .JSON.String \"library.error\" }}<div class=\"mo-notice\">{{ .JSON.String \"library.error\"\
+        \ }}</div>{{ else }}<div class=\"mo-libraries\">{{ range .JSON.Array \"library.data.libraries\" }}<div><b>{{ .Int \"total\" }}</b><span>{{\
+        \ .String \"title\" }}</span><small>{{ .String \"type\" }} library items</small></div>{{ end }}</div><div class=\"mo-section\"><h3>Fresh\
+        \ on Plex</h3><small>Latest movies & episodes \xB7 newest first</small></div><div class=\"mo-posters\">{{ range .JSON.Array \"library.data.recent\"\
+        \ }}<article class=\"mo-poster\"><div class=\"mo-art\">{{ if .String \"poster\" }}<img src=\"data:image/jpeg;base64,{{ .String \"poster\"\
+        \ }}\" alt=\"{{ .String \"title\" }} poster\" loading=\"lazy\" width=\"200\" height=\"300\">{{ else }}<span class=\"mo-art-placeholder\"\
+        >{{ .String \"type\" }}</span>{{ end }}<span class=\"mo-art-type\">{{ .String \"type\" }}</span></div><h3>{{ if .String \"imdb\" }}<a\
+        \ href=\"{{ .String \"imdb\" }}\" target=\"_blank\" rel=\"noopener noreferrer\">{{ .String \"title\" }} \u2197</a>{{ else }}{{ .String\
+        \ \"title\" }}{{ end }}</h3><p>{{ .String \"subtitle\" }}</p><small>{{ .String \"library\" }} \xB7 <span data-dynamic-relative-time=\"\
+        {{ .Int \"added_at\" }}\"></span></small></article>{{ else }}<p class=\"mo-notice\">Plex returned no recent video additions.</p>{{ end\
+        \ }}</div>{{ end }}</div>{{ if .JSON.String \"library.error\" }}<div class=\"mo-page\"><div class=\"mo-section\"><h3>Just landed</h3><small>Verified\
+        \ Sonarr / Radarr imports \xB7 not Plex membership</small></div>{{ if .JSON.String \"imports.error\" }}<div class=\"mo-notice\">{{ .JSON.String\
+        \ \"imports.error\" }}</div>{{ else }}<div class=\"mo-posters\">{{ range .JSON.Array \"imports.data.recent\" }}<article class=\"mo-poster\"\
+        ><div class=\"mo-art\">{{ if .String \"poster\" }}<img src=\"data:image/jpeg;base64,{{ .String \"poster\" }}\" alt=\"{{ .String \"title\"\
+        \ }} poster\" loading=\"lazy\" width=\"200\" height=\"300\">{{ else }}<span class=\"mo-art-placeholder\">{{ .String \"type\" }}</span>{{\
+        \ end }}<span class=\"mo-art-type\">{{ .String \"type\" }}</span></div><h3>{{ if .String \"imdb\" }}<a href=\"{{ .String \"imdb\" }}\"\
+        \ target=\"_blank\" rel=\"noopener noreferrer\">{{ .String \"title\" }} \u2197</a>{{ else }}{{ .String \"title\" }}{{ end }}</h3><p>{{\
+        \ .String \"subtitle\" }}</p><small>{{ .String \"library\" }} \xB7 <span data-dynamic-relative-time=\"{{ .Int \"added_at\" }}\"></span></small></article>{{\
+        \ else }}<p class=\"mo-notice\">No recent imports returned.</p>{{ end }}</div>{{ end }}</div>{{ end }}"
   - size: small
     widgets:
-    - type: monitor
-      title: Media services
-      style: compact
-      show-history: true
-      sites:
-      - title: Plex
-        url: https://plex.novoselec.ch
-      - title: Sonarr
-        url: https://sonarr.graymatter.ch
-      - title: Radarr
-        url: https://radarr.graymatter.ch
-      - title: qBittorrent
-        url: https://qbittorrent.graymatter.ch
-      - title: Tautulli
-        url: https://tautulli.graymatter.ch
-    - type: rss
-      title: Media signal
-      style: vertical-list
-      limit: 8
-      collapse-after: 6
-      single-line-titles: true
-      feeds:
-      - title: Ars Technica
-        url: https://feeds.arstechnica.com/arstechnica/index
+    - type: custom-api
+      title: Sonarr delivery
+      frameless: true
+      css-class: media-ops-widget
+      cache: 10s
+      update-interval: 10s
+      url: http://workload-summary:8090/media-arr
+      template: "<div class=\"mo-page mo-delivery\"><div class=\"mo-section\"><h3>Sonarr \xB7 delivery</h3><small>API \xB7 {{ .JSON.Int \"sonarr.age\"\
+        \ }}s ago \xB7 cache 30s</small></div>{{ if .JSON.String \"sonarr.error\" }}<div class=\"mo-notice\">{{ .JSON.String \"sonarr.error\"\
+        \ }}</div>{{ else }}<div class=\"mo-queue-heading\"><span>DOWNLOAD QUEUE</span><b>{{ .JSON.Int \"sonarr.data.total\" }}</b></div>{{ range\
+        \ .JSON.Array \"sonarr.data.queue\" }}<article class=\"mo-download\"><div><strong>{{ if .String \"imdb\" }}<a href=\"{{ .String \"imdb\"\
+        \ }}\" target=\"_blank\" rel=\"noopener noreferrer\">{{ .String \"title\" }} \u2197</a>{{ else }}{{ .String \"title\" }}{{ end }}</strong><span>{{\
+        \ .Float \"progress\" }}%</span></div><div class=\"mo-progress\"><i style=\"width:{{ .Float \"progress\" }}%\"></i></div><small>{{ .String\
+        \ \"status\" }} \xB7 {{ .String \"tracked\" }} \xB7 {{ .Float \"remaining_gb\" }} GB left \xB7 {{ .String \"eta\" }}</small></article>{{\
+        \ else }}<p class=\"mo-empty\">Queue clear \u2014 no tracked downloads.</p>{{ end }}{{ if .JSON.Bool \"sonarr.data.truncated\" }}<p class=\"\
+        mo-notice\">Showing first 30 queued items.</p>{{ end }}<details class=\"mo-imports\" open><summary>Recently imported <span>Latest 12 completed\
+        \ imports</span></summary>{{ range .JSON.Array \"sonarr.data.recent\" }}<article class=\"mo-import\"><span class=\"mo-check\">\u2713</span><div><h4>{{\
+        \ if .String \"imdb\" }}<a href=\"{{ .String \"imdb\" }}\" target=\"_blank\" rel=\"noopener noreferrer\">{{ .String \"title\" }} \u2197\
+        </a>{{ else }}{{ .String \"title\" }}{{ end }}</h4><p>{{ .String \"subtitle\" }}</p><small>{{ .String \"quality\" }} \xB7 {{ .String \"\
+        date\" }}</small></div></article>{{ else }}<p class=\"mo-empty\">No completed imports returned.</p>{{ end }}</details>{{ end }}</div>"
+    - type: custom-api
+      title: Radarr delivery
+      frameless: true
+      css-class: media-ops-widget
+      cache: 10s
+      update-interval: 10s
+      url: http://workload-summary:8090/media-arr
+      template: "<div class=\"mo-page mo-delivery\"><div class=\"mo-section\"><h3>Radarr \xB7 delivery</h3><small>API \xB7 {{ .JSON.Int \"radarr.age\"\
+        \ }}s ago \xB7 cache 30s</small></div>{{ if .JSON.String \"radarr.error\" }}<div class=\"mo-notice\">{{ .JSON.String \"radarr.error\"\
+        \ }}</div>{{ else }}<div class=\"mo-queue-heading\"><span>DOWNLOAD QUEUE</span><b>{{ .JSON.Int \"radarr.data.total\" }}</b></div>{{ range\
+        \ .JSON.Array \"radarr.data.queue\" }}<article class=\"mo-download\"><div><strong>{{ if .String \"imdb\" }}<a href=\"{{ .String \"imdb\"\
+        \ }}\" target=\"_blank\" rel=\"noopener noreferrer\">{{ .String \"title\" }} \u2197</a>{{ else }}{{ .String \"title\" }}{{ end }}</strong><span>{{\
+        \ .Float \"progress\" }}%</span></div><div class=\"mo-progress\"><i style=\"width:{{ .Float \"progress\" }}%\"></i></div><small>{{ .String\
+        \ \"status\" }} \xB7 {{ .String \"tracked\" }} \xB7 {{ .Float \"remaining_gb\" }} GB left \xB7 {{ .String \"eta\" }}</small></article>{{\
+        \ else }}<p class=\"mo-empty\">Queue clear \u2014 no tracked downloads.</p>{{ end }}{{ if .JSON.Bool \"radarr.data.truncated\" }}<p class=\"\
+        mo-notice\">Showing first 30 queued items.</p>{{ end }}<details class=\"mo-imports\" open><summary>Recently imported <span>Latest 12 completed\
+        \ imports</span></summary>{{ range .JSON.Array \"radarr.data.recent\" }}<article class=\"mo-import\"><span class=\"mo-check\">\u2713</span><div><h4>{{\
+        \ if .String \"imdb\" }}<a href=\"{{ .String \"imdb\" }}\" target=\"_blank\" rel=\"noopener noreferrer\">{{ .String \"title\" }} \u2197\
+        </a>{{ else }}{{ .String \"title\" }}{{ end }}</h4><p>{{ .String \"subtitle\" }}</p><small>{{ .String \"quality\" }} \xB7 {{ .String \"\
+        date\" }}</small></div></article>{{ else }}<p class=\"mo-empty\">No completed imports returned.</p>{{ end }}</details>{{ end }}</div>"
 - name: Directory
   slug: directory
   name-icon: mdi:apps
