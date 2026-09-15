@@ -92,7 +92,10 @@ active dataset per pool rather than summing aliases or child datasets. Missing
 readings remain unavailable, not zero. No storage configuration is exposed.
 Compact Proxmox guest cards below show running VM/LXC resources with stopped
 guests in a separate disclosure. VM RAM is explicitly host-accounted, not guest
-OS available memory; VM filesystem usage is unavailable, not virtual-disk capacity.
+OS available memory. QEMU host RAM can exceed configured guest RAM due to
+emulator overhead; preserve that real reading and label its configured denominator.
+VM filesystem usage is unavailable; separately labeled allocated disk capacity
+is informational and is never graphed as used space.
 Guest stopped status is not treated as a disable policy. Komodo remains the Docker
 container/stack source only. Top CPU/RAM entries link to the exact container route
 `/servers/{server_id}/container/{container_name}`; disk rankings link to host detail.
@@ -124,3 +127,19 @@ this dashboard change neither restarts nor deletes it.
 
 References: https://pve.proxmox.com/pve-docs/api-viewer/ and
 https://pve.proxmox.com/pve-docs/chapter-pveum.html .
+
+## Verified VM guest fallback
+
+The six running VM identities are explicitly bound in `adapter/vm_metrics.py` by
+VMID plus exact name guard to immutable Komodo server ID and verified endpoint.
+PVE net0 MACs were independently matched to each guest's IP/interface. Openclaw
+was verified locally on the Hermes execution host; other guests via existing
+trusted read-only SSH. No runtime SSH credentials or additional PVE permissions
+were introduced. Re-audit these bindings after VM recreation or IP reassignment.
+
+For those VMs only, fresh reporting enabled Komodo guests supply RAM and aggregate
+filesystem usage, labeled per card. PVE host-accounted RAM is retained separately.
+LXC values, all physical node values, guest inventory/state/node and CPU stay PVE.
+Unmatched/offline/disabled/stale sources never substitute zero or invented readings.
+Shared/multiple guest mounts may overlap; aggregate usage is not a virtual disk
+allocation or a physical ZFS pool measurement.

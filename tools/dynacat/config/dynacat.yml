@@ -244,14 +244,19 @@ pages:
         }} running guests · Proxmox API</span><span>VM / LXC</span></div><div class="k-host-grid">{{ range .JSON.Array `pve.guest_inventory.#(status=="running")#` }}<article class="k-host"><header><strong>{{
         .String "name" }}</strong><span class="k-state">● {{ if eq (.String "type") "qemu" }}VM{{ else }}LXC{{ end }}</span></header><div class="pve-guest-meta">{{ .String "node" }}
         · #{{ .Int "id" }}</div><div class="k-metrics"><div><label>CPU {{ if ne (.String "cpu_percent") "" }}<b>{{ printf "%.1f" (.Float "cpu_percent") }}%</b></label><meter min="0"
-        max="100" value="{{ .Float "cpu_percent" }}"></meter>{{ else }}<b>N/A</b></label><div class="k-unavailable-bar"></div>{{ end }}</div><div title="{{ .String "memory_scope" }}"><label>RAM
-        {{ if ne (.String "ram.percent") "" }}<b>{{ printf "%.0f" (.Float "ram.percent") }}%</b></label><meter min="0" max="100" value="{{ .Float "ram.percent" }}"></meter>{{ else }}<b>N/A</b></label><div
-        class="k-unavailable-bar"></div>{{ end }}</div><div><label>DISK {{ if ne (.String "disk.percent") "" }}<b>{{ printf "%.0f" (.Float "disk.percent") }}%</b></label><meter min="0"
-        max="100" value="{{ .Float "disk.percent" }}"></meter>{{ else }}<b>N/A</b></label><div class="k-unavailable-bar"></div>{{ end }}</div></div></article>{{ end }}</div><details
-        class="k-stack-group pve-stopped"><summary><strong>{{ len (.JSON.Array `pve.guest_inventory.#(status!="running")#`) }} stopped / other guests</strong><span>show inventory</span></summary>{{
-        range .JSON.Array `pve.guest_inventory.#(status!="running")#` }}<div class="k-top-row"><strong>{{ .String "name" }}</strong><small>{{ .String "node" }} · {{ .String "type" }}
-        #{{ .Int "id" }} · {{ .String "status" }}</small></div>{{ end }}</details><div class="k-note">CPU = guest allocation · VM RAM = host-accounted, not guest OS free memory · VM
-        disk unavailable; LXC disk only when measured. Stopped ≠ disabled; no guest disable policy applied. Refresh 30s.</div>{{ end }}'
+        max="100" value="{{ .Float "cpu_percent" }}"></meter>{{ else }}<b>N/A</b></label><div class="k-unavailable-bar"></div>{{ end }}</div><div class="pve-guest-ram" title="{{ .String
+        "memory_scope" }}"><label>RAM {{ if ne (.String "ram.percent") "" }}<b>{{ printf "%.0f" (.Float "ram.percent") }}%</b></label><meter min="0" max="100" value="{{ .Float "ram.percent"
+        }}"></meter><small>{{ printf "%.1f" (div (.Float "ram.used_bytes") 1073741824) }} / {{ printf "%.1f" (div (.Float "ram.total_bytes") 1073741824) }} GiB</small>{{ else }}<b>N/A</b></label><div
+        class="k-unavailable-bar"></div>{{ end }}</div><div class="pve-guest-disk"><label>DISK {{ if ne (.String "disk.percent") "" }}<b>{{ printf "%.0f" (.Float "disk.percent") }}%</b></label><meter
+        min="0" max="100" value="{{ .Float "disk.percent" }}"></meter><small>{{ printf "%.1f" (div (.Float "disk.used_bytes") 1073741824) }} GiB used</small>{{ else }}<b>N/A</b></label><div
+        class="k-unavailable-bar"></div>{{ if gt (.Float "disk.total_bytes") 0.0 }}<small>{{ printf "%.0f" (div (.Float "disk.total_bytes") 1073741824) }} GiB allocated</small>{{ else
+        }}<small>Not reported</small>{{ end }}{{ end }}</div></div><div class="pve-guest-source">CPU PVE · RAM {{ if eq (.String "memory_source") "Komodo" }}Komodo{{ else }}{{ if eq
+        (.String "type") "qemu" }}PVE host{{ else }}PVE{{ end }}{{ end }} · disk {{ if eq (.String "disk_source") "Komodo" }}Komodo{{ else }}{{ if eq (.String "type") "qemu" }}unavailable{{
+        else }}PVE{{ end }}{{ end }}</div></article>{{ end }}</div><details class="k-stack-group pve-stopped"><summary><strong>{{ len (.JSON.Array `pve.guest_inventory.#(status!="running")#`)
+        }} stopped / other guests</strong><span>show inventory</span></summary>{{ range .JSON.Array `pve.guest_inventory.#(status!="running")#` }}<div class="k-top-row"><strong>{{ .String
+        "name" }}</strong><small>{{ .String "node" }} · {{ .String "type" }} #{{ .Int "id" }} · {{ .String "status" }}</small></div>{{ end }}</details><div class="k-note">Inventory /
+        CPU and LXC metrics: Proxmox. VM RAM / aggregate filesystem usage: identity-verified Komodo guests. PVE host RAM is used only if guest readings are unavailable (QEMU overhead
+        may exceed configured RAM). Allocated disk ≠ used space; mounts may overlap. Stopped ≠ disabled; no guest disable policy applied. Refresh 30s.</div>{{ end }}'
     - type: custom-api
       title: Workloads · attention first
       title-url: https://komodo.graymatter.ch

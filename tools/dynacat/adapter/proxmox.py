@@ -206,11 +206,17 @@ def _guest_inventory(guests):
         cpu = _number(guest.get('cpu')) if running else None
         # VM disk is allocated virtual capacity, not guest filesystem usage.
         disk_valid = running and guest['type'] == 'lxc' and (_number(guest.get('disk')) or 0) > 0
+        ram = _capacity(guest.get('mem') if running else None, guest.get('maxmem'))
+        # QEMU host accounting includes emulator overhead and can legitimately
+        # exceed configured guest RAM. Preserve measured bytes and disclose the
+        # denominator instead of rejecting these readings as impossible capacity.
+        if guest['type'] == 'qemu' and ram['used_bytes'] is not None and ram['total_bytes']:
+            ram['percent'] = 100 * ram['used_bytes'] / ram['total_bytes']
         result.append({'id': guest.get('vmid'), 'name': guest.get('name') or str(guest.get('vmid')),
                        'node': guest.get('node', 'unknown'), 'type': guest['type'],
                        'status': guest.get('status', 'unknown'),
                        'cpu_percent': cpu * 100 if cpu is not None and cpu <= 1 else None,
-                       'ram': _capacity(guest.get('mem') if running else None, guest.get('maxmem')),
+                       'ram': ram,
                        'disk': _capacity(guest.get('disk') if disk_valid else None, guest.get('maxdisk')),
                        'memory_scope': 'Host-accounted VM memory' if guest['type'] == 'qemu' else 'Container memory'})
     return sorted(result, key=lambda g: (g['id'] or 0, g['name']))

@@ -25,6 +25,10 @@ class Proxmox(unittest.TestCase):
         self.assertIsNone(guests[2]['cpu_percent'])
         self.assertIsNone(guests[2]['ram']['percent'])
         self.assertEqual(guests[2]['status'], 'stopped')
+        vm = pve._guest_inventory([dict(vmid=104, type='qemu', status='running', mem=103, maxmem=100)])[0]
+        self.assertEqual(vm['ram']['percent'], 103)
+        self.assertEqual(vm['ram']['used_bytes'], 103)
+        self.assertEqual(vm['ram']['total_bytes'], 100)
 
     def test_network_history_uses_timestamp_domain_shared_scale_and_byte_rates(self):
         result = self.module()._history([

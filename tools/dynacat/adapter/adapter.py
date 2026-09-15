@@ -133,7 +133,8 @@ def collect(api):
                for item in detail['info'].get('deployed_services', []) if item.get('container_name')}
     import proxmox
     result = project(servers, stacks, tags, containers, members)
-    result['pve'] = proxmox.collect()
+    import vm_metrics
+    result['pve'] = vm_metrics.enrich(proxmox.collect(), servers)
     import renovate
     result['renovate'] = renovate.collect()
     return result
