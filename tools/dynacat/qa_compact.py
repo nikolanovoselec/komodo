@@ -60,8 +60,14 @@ async def main():
                         return Math.abs(cpu.y-ram.y)<1 && Math.abs(ram.y-zfs.y)<1 && cpu.right<=ram.x && ram.right<=zfs.x && net.width>cpu.width*2.5;
                     })'''), 'Resource columns or network span changed'
                     assert max(x['height'] for x in sizes['.pve-node']) <= 330, sizes
-                    # Narrow tablet cards may wrap the retained source attribution.
-                    assert max(x['height'] for x in sizes['.pve-guests .k-host']) <= 112, sizes
+                    assert max(x['height'] for x in sizes['.pve-guests .k-host']) <= 80, sizes
+                    assert min(x['height'] for x in sizes['.pve-guests .k-host']) >= 44
+                    assert await page.locator('.pve-guests .k-host meter').count() == 27
+                    assert await page.locator('.pve-guests .pve-guest-meta').count() == 9
+                    assert await page.locator('.pve-guests .pve-guest-source').evaluate_all('es => es.every(e => parseFloat(getComputedStyle(e).fontSize) >= 10 && e.scrollWidth <= e.clientWidth)')
+                    assert await page.locator('.pve-guests .k-host').evaluate_all('es => es.every(e => e.scrollWidth <= e.clientWidth && e.querySelector("header strong").textContent.trim() && e.querySelector(".pve-guest-meta").textContent.includes("#"))')
+                    assert await page.locator('.pve-stopped .cc-resource-link').count() == 10
+                    assert await page.locator('.pve-stopped summary').evaluate('e=>e.getBoundingClientRect().height>=44')
             assert not errors, errors
             await page.close()
         await browser.close()

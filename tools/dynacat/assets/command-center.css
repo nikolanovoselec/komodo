@@ -92,16 +92,24 @@ meter::-webkit-meter-bar{border:0;background:color-mix(in srgb,var(--color-prima
 .pve-node footer{padding-top:7px;gap:10px;font-size:10px}
 .pve-node footer small{font-size:9px}
 .pve-source{margin-top:8px!important}
-.pve-guests .k-host-grid{gap:6px;margin-top:8px}
-.pve-guests .k-host{padding:7px 9px;line-height:1.2}
-.pve-guests .k-host header{font-size:12px;margin-bottom:3px}
-.pve-guest-meta{font-size:9px;margin:0 0 5px}
-.pve-guests .k-metrics{gap:8px}
+/* Guest-only minimal tiles: identity shares a line, all live values and sources stay visible. */
+.pve-guests .widget-content{container-type:inline-size}
+.pve-guests .k-host-grid{gap:3px 12px;margin-top:6px}
+.pve-guests .k-host{padding:5px 0;line-height:1.2;border:0;border-top:1px solid var(--cc-border);border-radius:0;background:transparent;min-height:72px}
+.pve-guests .k-host header{align-items:center;flex-wrap:wrap;gap:2px 7px;font-size:12px;margin-bottom:4px}
+.pve-guests .k-host header strong{margin-right:auto}
+.pve-guests .pve-guest-meta{font-size:10px;margin:0;color:var(--color-text-subdue);white-space:nowrap}
+.pve-guests .k-state{font-size:10px;white-space:nowrap}
+.pve-guests .k-metrics{gap:10px}
 .pve-guests .k-metrics label{display:flex;font-size:10px;gap:3px}
-.pve-guests .k-metrics b{float:none;display:inline;font-size:10px}
-.pve-guests meter,.pve-guests .k-unavailable-bar{margin-top:4px}
-.pve-guests .k-metrics small{margin-top:3px;font-size:9px;white-space:normal}
-.pve-guest-source{margin-top:5px;font-size:9px}
+.pve-guests .k-metrics b{float:none;display:inline;font-size:11px}
+.pve-guests meter,.pve-guests .k-unavailable-bar{height:3px;margin-top:2px}
+.pve-guests meter::-webkit-meter-bar{height:3px}
+.pve-guests .k-metrics small{margin-top:2px;font-size:10px;white-space:normal}
+.pve-guests .pve-guest-source{margin-top:3px;font-size:10px;line-height:1.2}
+@container(max-width:1000px){.pve-guests .k-host-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container(max-width:600px){.pve-guests .k-host-grid{grid-template-columns:1fr}}
+.pve-guests .pve-stopped summary,.pve-guests .pve-stopped .cc-resource-link{min-height:44px;align-items:center}
 @media(max-width:700px){.pve-grid{gap:8px}.pve-node{padding:10px;gap:8px}.pve-guests .k-host-grid{grid-template-columns:1fr}.pve-network>div{justify-content:space-between;gap:8px}}
 
 /* A single live date / dual-timezone / Bern weather strip precedes telemetry. */

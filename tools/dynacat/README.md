@@ -182,6 +182,19 @@ wrapping above resources on mobile. No date, timezone offset or weather is hardc
 `command-center.js` uses the native `dynacat:widget-updated` event to preserve
 open disclosures and focused links across refreshes; it adds no polling.
 
+## Compact guest presentation
+
+The workload overview alone uses minimal, border-separated tiles with a shared
+identity line and inline CPU/RAM/disk bars. Node/VMID, type/state, measured values,
+RAM denominator, used disk and per-metric sources remain visible. Source and
+capacity text is 10px (larger than the previous 9px); names remain 12px. Running
+links are about 77px high, and stopped disclosure/links retain 44px touch targets.
+Three desktop columns reduce to two when the widget is narrower than 1000px and
+one below 600px, favouring readable identities/sources over cramming tablet cards.
+Physical node cards and all other pages are unchanged. Run `qa_compact.py URL
+OUTPUT` for the four-viewport light/dark regression and use `--baseline` before
+future changes to retain measured bounds and screenshots.
+
 ## Browser-local theme compatibility
 
 The public URL's native theme POST returned HTTP 403 with `cross-origin request
