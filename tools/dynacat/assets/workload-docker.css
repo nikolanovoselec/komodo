@@ -1,16 +1,16 @@
 /* Cluster Workloads + Docker: confined to the merged guest widget. */
-.cw-merged>.widget-header{display:flex;align-items:center;justify-content:space-between;gap:10px 18px;flex-wrap:wrap}.cw-merged>.widget-header>h2{margin:0}.cw-merged .cw-status{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:11px;line-height:1.4;color:var(--color-text-base)}.cw-merged .cw-status .cw-normal{color:var(--color-text-base)}.cw-merged .cw-status .cw-issue{color:var(--color-negative)}
-.cw-merged .cw-collapse-bar{display:flex;justify-content:flex-end;position:sticky;top:8px;z-index:2;margin:0 0 8px}.cw-merged [data-cw-collapse]{min-height:44px;border:1px solid var(--color-primary);border-radius:5px;padding:8px 13px;background:var(--color-background);color:var(--color-primary);cursor:pointer;font-size:11px}.cw-merged .cw-hide-hint{display:none}.cw-merged .cw-docker[open]>summary .cw-hide-hint{display:inline-flex;margin-left:auto;color:var(--color-primary);font-size:11px}
+.cw-merged>.widget-header{display:flex;align-items:center;justify-content:space-between;gap:10px 18px;flex-wrap:wrap}.cw-merged>.widget-header>h2{margin:0}.cw-merged .cw-status{order:1;display:flex;align-items:center;gap:8px;margin-left:auto;font-size:11px;line-height:1.4;color:var(--color-text-base)}.cw-merged .cw-status .cw-normal{color:var(--color-text-base)}.cw-merged .cw-status .cw-issue{color:var(--color-negative)}
+.cw-merged .cw-collapse-bar{display:flex;justify-content:flex-end;position:sticky;top:8px;z-index:2;margin:0 0 8px}.cw-merged [data-cw-collapse-all]{order:2;flex:none}.cw-merged [data-cw-collapse-all][hidden]{display:none}.cw-merged [data-cw-collapse-all]:focus-visible,.cw-merged [data-cw-collapse]:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px}.cw-merged [data-cw-collapse],.cw-merged [data-cw-collapse-all]{min-height:44px;border:1px solid var(--color-primary);border-radius:5px;padding:8px 13px;background:var(--color-background);color:var(--color-primary);cursor:pointer;font-size:11px}.cw-merged .cw-hide-hint{display:none}.cw-merged .cw-docker[open]>summary .cw-hide-hint{display:inline-flex;margin-left:auto;color:var(--color-primary);font-size:11px}
 .pve-guests.cw-merged .cw-overview{display:flex;flex-wrap:wrap;gap:8px 22px;padding:2px 0 9px;border-bottom:1px solid var(--cc-border);font-size:11px;color:var(--color-text-subdue)}
 .pve-guests.cw-merged .cw-overview b{font-weight:500;font-size:14px;color:var(--color-text-highlight)}
 .pve-guests.cw-merged .cw-alert{color:var(--color-negative);font-size:10px;line-height:1.4}
-.pve-guests.cw-merged .cw-matrix-head,.pve-guests.cw-merged .cw-workload,.pve-guests.cw-merged .cw-stopped-guest{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:0 14px;align-items:start}
+.pve-guests.cw-merged .cw-matrix-head,.pve-guests.cw-merged .cw-workload,.pve-guests.cw-merged .cw-stopped-guest{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:0 14px;align-items:start}
 .pve-guests.cw-merged .cw-matrix-head>span{font-size:10px;color:var(--color-text-subdue);padding:7px 8px;letter-spacing:.06em}
-.pve-guests.cw-merged .cw-matrix-head .pve-matrix-head,.pve-guests.cw-merged .k-host.cc-resource-link{grid-template-columns:minmax(155px,1.15fr) minmax(0,2.6fr);gap:12px}
+.pve-guests.cw-merged .cw-matrix-head .pve-matrix-head,.pve-guests.cw-merged .k-host.cc-resource-link{grid-template-columns:clamp(155px,20%,200px) minmax(0,1fr);gap:12px}
 .pve-guests.cw-merged .cw-workload{border-top:1px solid var(--cc-border)}
 .pve-guests.cw-merged .cw-workload:nth-child(even){background:color-mix(in srgb,var(--color-primary) 2%,transparent)}
 .pve-guests.cw-merged .cw-workload>.k-host{border:0;background:transparent;margin:0;min-height:52px;padding:7px 6px}
-.pve-guests.cw-merged .k-metrics,.pve-guests.cw-merged .pve-matrix-head>div{gap:12px}
+.pve-guests.cw-merged .k-metrics,.pve-guests.cw-merged .pve-matrix-head>div{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .pve-guests.cw-merged .pve-guest-source{font-size:10px}
 .pve-guests.cw-merged .cw-docker{min-width:0;margin:0;border:0}
 .pve-guests.cw-merged .cw-docker>summary{cursor:pointer;list-style:none;padding:6px 8px;min-height:52px;border-left:1px solid var(--cc-border);color:var(--color-text-base)}
@@ -21,14 +21,11 @@
 .pve-guests.cw-merged .cw-docker-count small{font-size:11px;color:var(--color-text-subdue);font-weight:400}
 .pve-guests.cw-merged .cw-docker-count>span{font-size:10px;color:var(--color-text-subdue)}
 .pve-guests.cw-merged .cw-docker-count>i{font-style:normal;margin-left:auto;color:var(--color-primary)}
-.pve-guests.cw-merged .cw-docker-stats{display:flex;gap:12px;margin-top:4px;color:var(--color-text-subdue);font-size:9px}
-.pve-guests.cw-merged .cw-docker-stats b{color:var(--color-text-highlight);font-size:10px;font-weight:400}
 .pve-guests.cw-merged .cw-no-docker{font-size:11px;color:var(--color-text-subdue);padding-top:10px}
 .pve-guests.cw-merged .cw-docker[open]{grid-column:1/-1;border-top:1px dashed var(--cc-border)}
-.pve-guests.cw-merged .cw-workload:has(>.cw-docker[open])>.k-host,.pve-guests.cw-merged .cw-stopped-guest:has(>.cw-docker[open])>.cc-resource-link{grid-column:1/-1}
+.pve-guests.cw-merged .cw-workload:has(>.cw-docker[open])>.k-host,.pve-guests.cw-merged .cw-stopped-guest:has(>.cw-docker[open])>.cc-resource-link{grid-column:1}
 .pve-guests.cw-merged .cw-docker[open]>summary{display:flex;align-items:center;flex-wrap:wrap;gap:6px 22px;border-left:0;min-height:44px}
 .pve-guests.cw-merged .cw-docker[open] .cw-docker-count i{transform:rotate(90deg);margin-left:12px}
-.pve-guests.cw-merged .cw-docker[open] .cw-docker-stats{margin-top:0}
 .pve-guests.cw-merged .cw-docker-expanded{padding:0 12px 12px}
 .pve-guests.cw-merged .cw-docker-scope{font-size:10px;line-height:1.5;color:var(--color-text-subdue);margin:3px 0 12px}
 .pve-guests.cw-merged .cw-container{display:grid;grid-template-columns:minmax(0,1fr) 85px 95px 85px;gap:12px;align-items:center;min-height:44px;padding:8px 6px;border-top:1px solid var(--cc-border);font-size:11px;color:var(--color-text-base)}
@@ -48,7 +45,12 @@
  .pve-guests.cw-merged .cw-workload,.pve-guests.cw-merged .cw-stopped-guest{grid-template-columns:1fr}
  .pve-guests.cw-merged .cw-matrix-head{grid-template-columns:1fr}.pve-guests.cw-merged .cw-matrix-head>span{display:none}
  .pve-guests.cw-merged .cw-docker>summary{display:flex;align-items:center;flex-wrap:wrap;gap:6px 18px;border-left:0;border-top:1px dashed var(--cc-border);min-height:44px;padding:6px}
- .pve-guests.cw-merged .cw-docker-stats{margin:0}.pve-guests.cw-merged .cw-no-docker{padding:0}.pve-guests.cw-merged .cw-docker-count>i{margin-left:8px}
+ .pve-guests.cw-merged .cw-no-docker{padding:0}.pve-guests.cw-merged .cw-docker-count>i{margin-left:8px}
+}
+@media(max-width:700px){
+ .cw-merged>.widget-header:has([data-cw-collapse-all]:not([hidden]))>h2{flex-basis:100%}
+ .cw-merged>.widget-header:has([data-cw-collapse-all]:not([hidden])) .cw-status{margin-left:0;flex-direction:column;align-items:flex-start;gap:2px}
+ .cw-merged>.widget-header:has([data-cw-collapse-all]:not([hidden])) .cw-status>[aria-hidden]{display:none}
 }
 @container(max-width:680px){
  .pve-guests.cw-merged .cw-matrix-head{display:none}

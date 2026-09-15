@@ -12,6 +12,13 @@ class WorkloadUI(unittest.TestCase):
     def test_unavailable_not_successful_zero(self):
         for a,b in [(None,[]),([],None),(None,None)]:
             self.assertTrue(exception_visibility(a,b)['error'])
+    def test_no_per_machine_docker_aggregate_metrics(self):
+        config=(Path(__file__).resolve().parents[1]/'config/dynacat.yml').read_text()
+        workload=config.split('      title: Workloads\n',1)[1].split('    - type:',1)[0]
+        self.assertNotIn('cw-docker-stats',workload)
+        self.assertIn('cw-container',workload)
+        self.assertIn('CPU: Proxmox;',workload)
+        self.assertIn('update-interval: 1s',workload)
     def test_status_color_and_control_contract(self):
         config=(Path(__file__).resolve().parents[1]/'config/dynacat.yml').read_text()
         self.assertIn('data-cw-collapse',config)

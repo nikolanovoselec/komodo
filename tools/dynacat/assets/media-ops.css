@@ -1,4 +1,42 @@
 /* Media Ops only. Theme variables are native to all 22 Construct presets. */
+/* Compact existing Plex sessions; deliberately scoped away from traffic and radio. */
+.mo-players .mo-player{position:relative}
+.mo-players .mo-player-link{grid-template-columns:44px minmax(0,1fr);gap:10px;padding:9px 10px}
+.mo-players .mo-player-art{width:44px;border-radius:4px}
+.mo-players .mo-player h3{font-size:15px;line-height:19px;margin:0 34px 2px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mo-players .mo-player-info>p{font-size:11px;line-height:15px;margin:0 30px 5px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mo-players .mo-player-top{justify-content:flex-start;align-items:center;gap:5px 9px;font-size:10px;line-height:14px}
+.mo-players .mo-badge{font-size:10px}
+.mo-players .mo-session-bandwidth{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--color-text-subdue)}
+.mo-players .mo-progress{height:3px;margin-top:6px}
+.mo-session-meta{position:absolute;top:0;right:0;anchor-scope:--mo-info}
+.mo-session-meta button{anchor-name:--mo-info;display:grid;place-items:center;width:44px;height:44px;cursor:pointer;color:var(--color-text-subdue);font-size:15px;background:none;border:0;padding:0}
+.mo-session-meta button:focus-visible{outline:2px solid var(--color-primary);outline-offset:-4px;border-radius:5px}
+.mo-session-tooltip{position:fixed;inset:auto;position-anchor:--mo-info;right:anchor(right);top:anchor(bottom);margin:0;width:280px;max-width:calc(100vw - 42px);padding:13px;border:1px solid var(--mo-line);border-radius:6px;background:var(--color-widget-background,var(--color-background));color:var(--color-text-base);box-shadow:0 5px 18px #0003;font-size:11px;line-height:1.6;overflow-wrap:anywhere}
+.mo-session-tooltip strong{font-size:11px;color:var(--color-text-highlight)}
+.mo-session-tooltip p{margin:5px 0}
+.mo-session-tooltip .mo-imdb{min-height:44px!important;font-size:11px!important}
+
+/* Quiet host telemetry; existing source paths, gaps and isolated samples stay intact. */
+.mo-page .mo-traffic.mo-traffic{margin-top:20px;border:0;border-radius:0;padding:0;background:none}
+.mo-traffic .mo-traffic-heading{align-items:baseline}
+.mo-traffic-heading .mo-eyebrow{display:none}
+.mo-traffic .mo-traffic-heading h3{font-size:15px;margin:0 0 4px}
+.mo-traffic .mo-traffic-freshness{font-size:10px}
+.mo-traffic .mo-traffic-rates{align-items:center;gap:10px 28px;margin:14px 0 10px}
+.mo-traffic-rates>div{display:flex;align-items:baseline;gap:8px}
+.mo-traffic .mo-traffic-rates b{font-size:18px}
+.mo-traffic .mo-traffic-plot{height:96px;padding-top:16px}
+.mo-traffic .mo-traffic-plot g path{stroke-width:1.5}
+.mo-traffic .mo-traffic-plot circle{r:1}
+.mo-traffic .mo-traffic-grid{d:path("M0 0H600 M0 100H600");stroke:var(--color-text-subdue);opacity:.15}
+.mo-traffic .mo-traffic-scale,.mo-traffic .mo-traffic-axis{font-size:10px}
+.mo-traffic-plot::after{content:"0";position:absolute;left:0;bottom:2px;font-size:9px;color:var(--color-text-subdue)}
+.mo-traffic .mo-traffic-foot{justify-content:flex-end;margin-top:10px;border:0;padding:0}
+.mo-traffic .mo-traffic-foot small{font-size:10px}
+/* The plotted observations do not need a second numeric tally. */
+.mo-traffic-foot small:first-child:not(:last-child){display:none}
+@media(max-width:600px){.mo-traffic .mo-traffic-heading{gap:6px}.mo-traffic .mo-traffic-rates b{font-size:17px}.mo-traffic .mo-traffic-foot{align-items:flex-start}}
 .mo-players .mo-player{padding:0}.mo-player-link{padding:16px;display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;color:inherit}.mo-player:has(a.mo-player-link):hover{border-color:var(--color-primary)}.mo-player-art{width:64px;aspect-ratio:2/3;overflow:hidden;border-radius:5px;background:var(--mo-line)}.mo-player-art img{width:100%;height:100%;object-fit:cover;display:block}.mo-player-info{min-width:0}.mo-player-top,.mo-player-bottom{flex-wrap:wrap}.mo-page a.mo-poster-link{display:block;min-height:0}.mo-page a.mo-imdb{display:inline-block;min-height:28px;font-size:9px;font-weight:400;color:var(--color-text-subdue);padding:6px 0}.mo-player>.mo-imdb{margin-left:78px}
 .mo-page .mo-traffic{margin-top:14px;border:1px solid var(--mo-line);border-radius:8px;padding:18px 20px;background:linear-gradient(135deg,var(--mo-wash),transparent)}.mo-traffic-heading{display:flex;justify-content:space-between;gap:16px;align-items:start}.mo-traffic-heading h3{font-size:17px;margin:6px 0 4px}.mo-traffic-freshness{font-size:9px;color:var(--color-text-subdue);text-align:right}.mo-traffic-rates{display:flex;align-items:end;gap:32px;margin:20px 0 12px}.mo-traffic-rates>div>span{font-size:10px;display:block;margin-bottom:4px}.mo-traffic-rates b{font-size:25px;font-weight:400;font-variant-numeric:tabular-nums}.mo-traffic-rates>small{margin-left:auto;line-height:1.6;text-align:right}.mo-rx,.mo-traffic-rx{color:var(--color-primary)}.mo-tx,.mo-traffic-tx{color:var(--color-positive)}.mo-traffic-plot{position:relative;height:110px;padding-top:15px}.mo-traffic-plot svg{width:100%;height:100%;overflow:visible}.mo-traffic-plot g path{stroke:currentColor;stroke-width:2;vector-effect:non-scaling-stroke;fill:none}.mo-traffic-tx path{stroke-dasharray:5 4}.mo-traffic-plot circle{fill:currentColor}.mo-traffic-grid{stroke:var(--mo-line);stroke-width:1;vector-effect:non-scaling-stroke;fill:none}.mo-traffic-scale{position:absolute;top:0;left:0;font-size:9px;color:var(--color-text-subdue)}.mo-traffic-warmup{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:10px;color:var(--color-text-subdue);text-align:center}.mo-traffic-axis{display:flex;justify-content:space-between;margin-top:6px;font-size:9px;color:var(--color-text-subdue)}.mo-traffic-foot{display:flex;justify-content:space-between;gap:12px;margin-top:13px;border-top:1px solid var(--mo-line);padding-top:10px}.mo-traffic-foot small{font-size:9px}
 @media(max-width:600px){.mo-page .mo-traffic{padding:15px}.mo-traffic-heading,.mo-traffic-foot{flex-direction:column;gap:8px}.mo-traffic-freshness{text-align:left}.mo-traffic-rates{gap:24px;flex-wrap:wrap}.mo-traffic-rates>small{margin-left:0;text-align:left;width:100%}.mo-player-link{grid-template-columns:55px minmax(0,1fr);gap:10px}.mo-player-art{width:55px}.mo-player>.mo-imdb{margin-left:65px}.mo-page a.mo-imdb{min-height:44px}}
