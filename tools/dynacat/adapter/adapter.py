@@ -74,7 +74,8 @@ def project(servers, stacks, tags, containers, disabled_members):
     for s in visible:
         i = s['info']
         workloads.append(dict(id=s['id'], name=s['name'], host=i.get('server_name') or 'Unassigned',
-                              state=i.get('state', 'unknown'), status=i.get('status') or i.get('state', 'unknown')))
+                              state=i.get('state', 'unknown'), status=i.get('status') or i.get('state', 'unknown'),
+                              unassigned=not i.get('server_id') and not i.get('swarm_id')))
     kept = []
     for c in containers:
         if c['server_id'] in disabled_hosts or (c['server_id'], c['name']) in disabled_members:
@@ -89,10 +90,18 @@ def project(servers, stacks, tags, containers, disabled_members):
         active = [s for s in workloads if s['host'] == host and s['state'] == 'running']
         if active:
             groups.append(dict(host=host, count=len(active), stacks=sorted(active, key=lambda s:s['name'])))
-    return dict(fetched_at=int(time.time()), stacks_total=len(workloads), containers_total=len(kept),
+    disks = []
+    for s in servers:
+        stats = s['info'].get('stats') or {}
+        used, total = number(stats.get('disk_used_gb')), number(stats.get('disk_total_gb'))
+        if s['info']['state'] == 'Ok' and used is not None and total is not None and 0 <= used <= total and 0 < total < float('inf'):
+            disks.append(dict(name=s.get('name', s['id']), used=used, total=total, percent=100*used/total))
+    return dict(top_disk=sorted(disks, key=lambda d:d['percent'], reverse=True)[:5],
+                fetched_at=int(time.time()), stacks_total=len(workloads), containers_total=len(kept),
                 running_stacks=sum(s['state']=='running' for s in workloads),
                 running_containers=sum(c['state']=='running' for c in kept),
-                stack_problems=[s for s in workloads if s['state']!='running'],
+                definition_issues=[s for s in workloads if s['unassigned']],
+                stack_problems=[s for s in workloads if s['state']!='running' and not s['unassigned']],
                 container_problems=problems, groups=groups,
                 top_cpu=sorted([c for c in kept if c['state']=='running' and c['cpu'] is not None], key=lambda c:c['cpu'], reverse=True)[:5],
                 top_ram=sorted([c for c in kept if c['state']=='running' and c['ram_bytes'] is not None], key=lambda c:c['ram_bytes'], reverse=True)[:5])
@@ -111,7 +120,10 @@ def collect(api):
     members = {(s['info'].get('server_id'), item['container_name'])
                for s, detail in zip(hidden, details)
                for item in detail['info'].get('deployed_services', []) if item.get('container_name')}
-    return project(servers, stacks, tags, containers, members)
+    import proxmox
+    result = project(servers, stacks, tags, containers, members)
+    result['pve'] = proxmox.collect()
+    return result
 
 
 def visible_stacks(servers, stacks, tags):

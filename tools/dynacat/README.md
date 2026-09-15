@@ -14,7 +14,9 @@ unprivileged user with a read-only filesystem and digest-pinned Python image.
   disabled stack's `GetStack.info.deployed_services`. Prefix matching is forbidden.
   Unknown/unmanaged containers remain visible, including stopped ones.
 - Template flag is not a disable flag: deployed running template stacks remain.
-- Enabled down, stopped, unknown, unassigned and unhealthy workloads stay visible.
+- Unassigned stack definitions stay visible in a separate expandable section; they
+  are not counted as runtime stack incidents. Enabled assigned down, stopped,
+  unknown and unhealthy workloads remain runtime issues.
   A running Docker container whose status includes `unhealthy` is a problem.
 - Failed upstream reads return 503, not stale green counts or an empty success.
 - CPU percentages and RAM units are parsed numerically before sorting. Missing
@@ -32,7 +34,7 @@ Stage the actual two-service Compose application with isolated names/assets/port
 then inspect desktop/mobile screenshots before pushing. Bump the Compose revision
 label for tracked config changes so `BatchDeployStackIfChanged` redeploys them.
 
-## Proxmox Resources / VM-LXC overview: pending credential
+## Proxmox Resources / VM-LXC overview: wired, network blocked
 
 Dynacat 3.0.0 has no native Proxmox widget. Its native `server-stats` expects a
 Dynacat sysinfo endpoint, not Proxmox, and does not supply the requested network
@@ -62,7 +64,24 @@ Cluster resource responses are permission-filtered; HTTP 200 alone is insufficie
 Do not present cumulative netin/netout/diskread/diskwrite counters as rates. Use
 actual RRD rates or measured deltas. Guest filesystem usage may be unavailable:
 virtual disk capacity is not actual filesystem consumption. Do not double-count
-shared storage. No Proxmox metrics are fabricated or deployed by this change.
+shared storage. No Proxmox metrics are fabricated. The collector and template are deployed, but
+tools-to-PVE TCP 8006 times out; authentication, permission coverage and live
+rendering remain unverified until the network allows it. The user-provided
+DYNACAT_PROXMOX_TOKEN_ID and DYNACAT_PROXMOX_SECRET variables are wired to
+Compose without modifying the token ID. TLS uses the public cluster CA from
+`/etc/pve/pve-root-ca.pem`, read over existing trusted SSH, never a private key.
+Node/guest-count reads fail independently from Komodo. Network history remains
+unimplemented. Disk top 5 ranks enabled reporting Komodo hosts by aggregate
+filesystem capacity percent, not physical disks, per-container consumption or I/O.
+
+Diagnostic classification (2026-09-15): all four `nextcloud_*` definitions have no
+server/swarm assignment and old deployment metadata, but no disabled tag. No
+matching Nextcloud server/container exists in the managed inventory. Middleware
+`traefik` is a real exited-128 legacy unmanaged container (Compose project
+`traefik`, `/data/compose/34`), finished 2025-03-27. Docker reports inability to
+create `/mnt/configs/traefik/acme.json` due to permission denied. Its
+`unless-stopped` policy and absent retirement evidence mean it remains actionable;
+this dashboard change neither restarts nor deletes it.
 
 References: https://pve.proxmox.com/pve-docs/api-viewer/ and
 https://pve.proxmox.com/pve-docs/chapter-pveum.html .

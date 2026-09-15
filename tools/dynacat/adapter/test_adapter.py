@@ -35,6 +35,19 @@ class Filtering(unittest.TestCase):
         self.assertIn(('GetStack',{'stack':'disabled'}),calls)
         self.assertIn(('ListAllDockerContainers',{'limit':0}),calls)
 
+    def test_orphans_are_visible_but_not_runtime_incidents(self):
+        stacks = [dict(id=n,name=n,info={'server_id':host,'state':'unknown'}) for n,host in [('orphan',''),('assigned','on')]]
+        result = adapter.project([{'id':'on','info':{'state':'Ok'}}], stacks, [], [], set())
+        self.assertEqual([s['name'] for s in result.get('definition_issues', [])], ['orphan'])
+        self.assertEqual([s['name'] for s in result['stack_problems']], ['assigned'])
+        self.assertEqual(result['stacks_total'], 2)
+
+    def test_disk_ranks_valid_enabled_reporting_host_capacity(self):
+        servers = [dict(id=n,name=n,info={'state':state,'stats':{'disk_used_gb':used,'disk_total_gb':total}}) for n,state,used,total in [('a','Ok',90,100),('b','Ok',100,200),('disabled','Disabled',999,1000),('missing','Ok',None,100),('zero','Ok',2,0),('bad','Ok',101,100),('offline','NotOk',99,100)]]
+        result = adapter.project(servers, [], [], [], set())
+        self.assertEqual([s['name'] for s in result.get('top_disk', [])], ['a','b'])
+        self.assertEqual(result['top_disk'][0]['percent'], 90)
+
     def test_http_failure_is_explicit_and_sanitized(self):
         import threading, urllib.request, urllib.error, json
         server = adapter.make_server(('127.0.0.1',0), lambda: (_ for _ in ()).throw(RuntimeError('secret-token')))

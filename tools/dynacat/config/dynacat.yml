@@ -194,18 +194,37 @@ pages:
         type: ListServers
         params:
           limit: 0
-      template: |
-        {{ $all := .JSON.Array `#(info.state!="Disabled")#` }}{{ $ok := .JSON.Array `#(info.state=="Ok")#` }}
-        <div class="k-inventory-head"><strong>{{ len $all }} enabled hosts</strong><span>{{ len $ok }} reporting · {{ len (.JSON.Array `#(info.state!="Ok")#|#(info.state!="Disabled")#`) }} need attention</span></div>
+      template: '{{ $all := .JSON.Array `#(info.state!="Disabled")#` }}{{ $ok := .JSON.Array `#(info.state=="Ok")#` }}
+
+        <div class="k-inventory-head"><strong>{{ len $all }} enabled hosts</strong><span>{{ len $ok }} reporting · {{ len (.JSON.Array `#(info.state!="Ok")#|#(info.state!="Disabled")#`)
+        }} need attention</span></div>
+
         <div class="k-note">Komodo Periphery guests / servers · not Proxmox hypervisor metrics · refresh 30s</div>
+
         <div class="k-host-grid">{{ range $all }}{{ if ne (.String "info.state") "Disabled" }}
-        <article class="k-host"><header><a href="https://komodo.graymatter.ch/servers/{{ .String "id" }}">{{ .String "name" }}</a><span class="k-state {{ if ne (.String "info.state") "Ok" }}k-warning{{ end }}">{{ .String "info.state" }}</span></header>
+
+        <article class="k-host"><header><a href="https://komodo.graymatter.ch/servers/{{ .String "id" }}">{{ .String "name" }}</a><span class="k-state {{ if ne (.String "info.state")
+        "Ok" }}k-warning{{ end }}">{{ .String "info.state" }}</span></header>
+
         {{ if and (.Exists "info.stats.cpu_perc") (eq (.String "info.state") "Ok") }}
-        {{ $cpu := .Float "info.stats.cpu_perc" }}{{ $ram := mul (div (.Float "info.stats.mem_used_gb") (.Float "info.stats.mem_total_gb")) 100 }}{{ $disk := mul (div (.Float "info.stats.disk_used_gb") (.Float "info.stats.disk_total_gb")) 100 }}
-        <div class="k-metrics"><div><label>CPU <b>{{ printf "%.1f" $cpu }}%</b></label><meter min="0" max="100" value="{{ $cpu }}"></meter><small>{{ .Int "info.logical_core_count" }} logical cores</small></div><div><label>RAM <b>{{ printf "%.1f" $ram }}%</b></label><meter min="0" max="100" value="{{ $ram }}"></meter><small>{{ printf "%.1f" (.Float "info.stats.mem_used_gb") }} / {{ printf "%.1f" (.Float "info.stats.mem_total_gb") }} GiB</small></div><div><label>DISK <b>{{ printf "%.1f" $disk }}%</b></label><meter min="0" max="100" value="{{ $disk }}"></meter><small>{{ printf "%.1f" (.Float "info.stats.disk_used_gb") }} / {{ printf "%.1f" (.Float "info.stats.disk_total_gb") }} GiB</small></div></div>
-        {{ if eq (.Float "info.stats.mem_used_gb") 0.0 }}<div class="k-warning k-note">RAM: source reports zero; usage may be unavailable.</div>{{ end }}
-        <div class="k-fresh">Source sample <span data-dynamic-relative-time="{{ div (.Int "info.stats.refresh_ts") 1000 }}"></span> · load {{ printf "%.2f" (.Float "info.stats.load_average.one") }}</div>
+
+        {{ $cpu := .Float "info.stats.cpu_perc" }}{{ $ram := mul (div (.Float "info.stats.mem_used_gb") (.Float "info.stats.mem_total_gb")) 100 }}{{ $disk := mul (div (.Float
+        "info.stats.disk_used_gb") (.Float "info.stats.disk_total_gb")) 100 }}
+
+        <div class="k-metrics"><div><label>CPU <b>{{ printf "%.1f" $cpu }}%</b></label><meter min="0" max="100" value="{{ $cpu }}"></meter><small>{{ .Int "info.logical_core_count"
+        }} logical cores</small></div>{{ if gt (.Float "info.stats.mem_used_gb") 0.0 }}<div><label>RAM <b>{{ printf "%.1f" $ram }}%</b></label><meter min="0" max="100" value="{{
+        $ram }}"></meter><small>{{ printf "%.1f" (.Float "info.stats.mem_used_gb") }} / {{ printf "%.1f" (.Float "info.stats.mem_total_gb") }} GiB</small></div>{{ else }}<div><label>RAM
+        <b>N/A</b></label><small>Periphery LXC accounting unavailable</small></div>{{ end }}<div><label>DISK <b>{{ printf "%.1f" $disk }}%</b></label><meter min="0" max="100"
+        value="{{ $disk }}"></meter><small>{{ printf "%.1f" (.Float "info.stats.disk_used_gb") }} / {{ printf "%.1f" (.Float "info.stats.disk_total_gb") }} GiB</small></div></div>
+
+        {{ if eq (.Float "info.stats.mem_used_gb") 0.0 }}<div class="k-warning k-note">Source-reported zero excluded as a valid RAM reading.</div>{{ end }}
+
+        <div class="k-fresh">Source sample <span data-dynamic-relative-time="{{ div (.Int "info.stats.refresh_ts") 1000 }}"></span> · load {{ printf "%.2f" (.Float "info.stats.load_average.one")
+        }}</div>
+
         {{ else }}<p class="k-warning">Telemetry unavailable · {{ .String "info.state" }}</p>{{ end }}</article>{{ end }}{{ end }}</div>
+
+        '
     - type: custom-api
       title: Workloads · attention first
       title-url: https://komodo.graymatter.ch
@@ -213,23 +232,40 @@ pages:
       cache: 15s
       update-interval: 30s
       url: http://workload-summary:8090/summary
-      template: |-
-        <div class="k-summary"><div><strong>{{ .JSON.Int "running_stacks" }}</strong><span>RUNNING STACKS</span></div><div><strong>{{ .JSON.Int "running_containers" }}</strong><span>RUNNING CONTAINERS</span></div><div><strong>{{ len (.JSON.Array "stack_problems") }}</strong><span>STACK ISSUES</span></div><div><strong>{{ len (.JSON.Array "container_problems") }}</strong><span>CONTAINER ISSUES</span></div></div>
-        <div class="k-note">Enabled workloads only · {{ .JSON.Int "stacks_total" }} stacks / {{ .JSON.Int "containers_total" }} containers · fetched <span data-dynamic-relative-time="{{ .JSON.Int "fetched_at" }}"></span></div>
-        {{ range .JSON.Array "stack_problems" }}<div class="k-problem"><a href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ .String "name" }}</a><span>{{ .String "host" }} · {{ .String "state" }}</span></div>{{ end }}
-        {{ range .JSON.Array "container_problems" }}<div class="k-problem"><strong>{{ .String "name" }}</strong><span>{{ .String "host" }} · {{ .String "status" }}</span></div>{{ end }}
-        <div class="k-group-grid">{{ range .JSON.Array "groups" }}<details class="k-stack-group"><summary><strong>{{ .String "host" }}</strong><span>{{ .Int "count" }} running</span></summary><div class="k-chips">{{ range .Array "stacks" }}<a class="k-stack-chip" href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ trimPrefix (concat (.String "host") "_") (.String "name") }}</a>{{ end }}</div></details>{{ end }}</div>
+      template: '<div class="k-summary"><div><strong>{{ .JSON.Int "running_stacks" }}</strong><span>RUNNING STACKS</span></div><div><strong>{{ .JSON.Int "running_containers"
+        }}</strong><span>RUNNING CONTAINERS</span></div><div><strong>{{ len (.JSON.Array "stack_problems") }}</strong><span>RUNTIME STACK ISSUES</span></div><div><strong>{{
+        len (.JSON.Array "container_problems") }}</strong><span>CONTAINER ISSUES</span></div></div>
+
+        <div class="k-note">Enabled workloads only · {{ .JSON.Int "stacks_total" }} stacks / {{ .JSON.Int "containers_total" }} containers · fetched <span data-dynamic-relative-time="{{
+        .JSON.Int "fetched_at" }}"></span></div>
+
+        {{ range .JSON.Array "stack_problems" }}<div class="k-problem"><a href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ .String "name" }}</a><span>{{ .String
+        "host" }} · {{ .String "state" }}</span></div>{{ end }}
+
+        {{ range .JSON.Array "container_problems" }}<div class="k-problem"><strong>{{ .String "name" }}</strong><span>{{ .String "host" }} · {{ .String "status" }}</span></div>{{
+        end }}
+
+        <details class="k-stack-group"><summary><strong>{{ len (.JSON.Array "definition_issues") }} unassigned definitions</strong><span>runtime unknown</span></summary><div
+        class="k-note">No assigned server or swarm. Retained definitions, not confirmed running incidents or deliberately disabled workloads.</div>{{ range .JSON.Array "definition_issues"
+        }}<div class="k-top-row"><a href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ .String "name" }}</a><small>Unassigned · runtime unknown</small></div>{{
+        end }}</details><div class="k-note">Stopped / unhealthy containers remain actionable, including legacy unmanaged containers. Age does not prove retirement.</div><div
+        class="k-group-grid">{{ range .JSON.Array "groups" }}<details class="k-stack-group"><summary><strong>{{ .String "host" }}</strong><span>{{ .Int "count" }} running</span></summary><div
+        class="k-chips">{{ range .Array "stacks" }}<a class="k-stack-chip" href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ trimPrefix (concat (.String "host")
+        "_") (.String "name") }}</a>{{ end }}</div></details>{{ end }}</div>'
     - type: custom-api
-      title: Top consumers · containers
+      title: Top 5 · CPU / RAM / disk capacity
       css-class: komodo-widget
       cache: 15s
       update-interval: 30s
       url: http://workload-summary:8090/summary
-      template: <div class="k-top-grid"><section><h3>CPU · top 5</h3>{{ range .JSON.Array "top_cpu" }}<div class="k-top-row"><div><strong>{{ .String "name" }}</strong><small>{{
-        .String "host" }}</small></div><b>{{ printf "%.1f" (.Float "cpu") }}%</b></div>{{ else }}<p>CPU metrics unavailable</p>{{ end }}</section><section><h3>RAM
-        · top 5</h3>{{ range .JSON.Array "top_ram" }}<div class="k-top-row"><div><strong>{{ .String "name" }}</strong><small>{{ .String "host" }}</small></div><b>{{
-        .String "ram" }}</b></div>{{ else }}<p>RAM metrics unavailable</p>{{ end }}</section></div><div class="k-note">Measured by Docker via Komodo · running enabled
-        workloads · refresh 30s</div>
+      template: '<div class="k-top-grid"><section><h3>CPU · top 5</h3>{{ range .JSON.Array "top_cpu" }}<div class="k-top-row"><div><strong>{{ .String "name" }}</strong><small>{{
+        .String "host" }}</small></div><b>{{ printf "%.1f" (.Float "cpu") }}%</b></div>{{ else }}<p>CPU metrics unavailable</p>{{ end }}</section><section><h3>RAM · top 5</h3>{{
+        range .JSON.Array "top_ram" }}<div class="k-top-row"><div><strong>{{ .String "name" }}</strong><small>{{ .String "host" }}</small></div><b>{{ .String "ram" }}</b></div>{{
+        else }}<p>RAM metrics unavailable</p>{{ end }}</section><section><h3>Disk capacity · top 5 hosts</h3>{{ range .JSON.Array "top_disk" }}<div class="k-top-row"><div><strong>{{
+        .String "name" }}</strong><small>{{ printf "%.1f" (.Float "used") }} / {{ printf "%.1f" (.Float "total") }} GiB</small></div><b>{{ printf "%.1f" (.Float "percent")
+        }}%</b></div>{{ else }}<p>Disk metrics unavailable</p>{{ end }}</section></div><div class="k-note">Measured by Docker via Komodo · running enabled workloads · refresh
+        30s</div><div class="k-note">Disk: enabled reporting Komodo hosts ranked by aggregate filesystem % used. Not container size, physical HDD usage or I/O rate; mounts
+        may overlap. CPU/RAM: running containers; Docker CPU may exceed 100%.</div>'
   - size: small
     widgets:
     - type: custom-api
@@ -247,14 +283,24 @@ pages:
         type: GetSystemStats
         params:
           server: tools
-      template: '{{ range .JSON.Array "disks" }}<div class="k-volume"><label>{{ .String "mount" }} <b>{{ printf "%.0f" (mul (div (.Float "used_gb") (.Float "total_gb"))
-        100) }}%</b></label><meter min="0" max="{{ .Float "total_gb" }}" value="{{ .Float "used_gb" }}"></meter><small>{{ printf "%.2f" (.Float "used_gb") }} / {{
-        printf "%.2f" (.Float "total_gb") }} GiB · {{ .String "file_system" }}</small></div>{{ end }}<div class="k-fresh">Source sample <span data-dynamic-relative-time="{{
-        div (.JSON.Int "refresh_ts") 1000 }}"></span></div>'
-    - type: html
-      title: Proxmox · integration pending
-      source: <div class="k-note">Hypervisor resources &amp; VM/LXC overview require a read-only Proxmox API token. Current cards show Komodo guests, not hypervisors.
-        No Proxmox metrics are being collected.</div>
+      template: '{{ range .JSON.Array "disks" }}<div class="k-volume"><label>{{ .String "mount" }} <b>{{ printf "%.0f" (mul (div (.Float "used_gb") (.Float "total_gb")) 100)
+        }}%</b></label><meter min="0" max="{{ .Float "total_gb" }}" value="{{ .Float "used_gb" }}"></meter><small>{{ printf "%.2f" (.Float "used_gb") }} / {{ printf "%.2f"
+        (.Float "total_gb") }} GiB · {{ .String "file_system" }}</small></div>{{ end }}<div class="k-fresh">Source sample <span data-dynamic-relative-time="{{ div (.JSON.Int
+        "refresh_ts") 1000 }}"></span></div>'
+    - type: custom-api
+      title: Proxmox · hypervisors / VM / LXC
+      css-class: komodo-widget
+      cache: 15s
+      update-interval: 30s
+      url: http://workload-summary:8090/summary
+      template: '{{ if .JSON.String "pve.error" }}<div class="k-warning">{{ .JSON.String "pve.error" }}</div><div class="k-note">Token is wired server-side; current tools →
+        nodes :8006 probes time out. Allow HTTPS to 192.168.1.2–4. Cluster CA verification is enabled. No root SSH key is installed here.</div>{{ else }}{{ range .JSON.Array
+        "pve.nodes" }}<div class="k-volume"><label>{{ .String "name" }} <b>{{ .String "status" }}</b></label>{{ if .Exists "cpu_percent" }}<small>CPU {{ printf "%.1f" (.Float
+        "cpu_percent") }}%</small>{{ end }}{{ if .Exists "ram.percent" }}<small>RAM {{ printf "%.1f" (.Float "ram.percent") }}%</small><meter min="0" max="100" value="{{ .Float
+        "ram.percent" }}"></meter>{{ end }}{{ if .Exists "root_disk.percent" }}<small>Root filesystem {{ printf "%.1f" (.Float "root_disk.percent") }}%</small><meter min="0"
+        max="100" value="{{ .Float "root_disk.percent" }}"></meter>{{ end }}<small>VM {{ .Int "guests.qemu.running" }}/{{ .Int "guests.qemu.total" }} · LXC {{ .Int "guests.lxc.running"
+        }}/{{ .Int "guests.lxc.total" }} running</small></div>{{ end }}<div class="k-note">API-authorized inventory only · not physical HDD capacity · guest disabled policy
+        and network history not yet integrated</div>{{ end }}'
     - type: rss
       title: Infrastructure signal
       title-icon: mdi:rss
