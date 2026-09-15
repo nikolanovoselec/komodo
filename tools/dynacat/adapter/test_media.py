@@ -74,6 +74,16 @@ class MediaTests(unittest.TestCase):
             return {'totalRecords':31,'records':[{'title':'Fixture','size':100,'sizeleft':25,'status':'downloading'}]}
         with patch.object(media,'arr',side_effect=response):
             d=media.arr_data('radarr');self.assertTrue(d['truncated']);self.assertEqual(d['queue'][0]['progress'],75);self.assertNotIn('secret',json.dumps(d))
+    def test_partial_bandwidth_keeps_reported_value_and_coverage(self):
+        with patch.object(media,'plex',return_value={'Metadata':[{'Session':{'bandwidth':2384}},{}]}):
+            d=media.sessions();self.assertEqual(d['bandwidth_mbps'],2.38);self.assertEqual(d['bandwidth_coverage'],1);self.assertEqual(d['count'],2)
+    def test_qbittorrent_readonly_rates(self):
+        def read(url):
+            self.assertTrue(url.startswith('http://192.168.2.38:8080/api/v2/'))
+            if url.endswith('transfer/info'):return {'dl_info_speed':125000,'up_info_speed':250000,'connection_status':'connected'}
+            self.assertIn('filter=downloading&limit=12',url);return []
+        with patch.object(media,'read',side_effect=read):
+            d=media.qbittorrent();self.assertEqual(d['download_mbps'],1);self.assertEqual(d['upload_mbps'],2);self.assertEqual(d['downloads'],[])
     def test_media_routes_fixed(self):
         with self.assertRaises(KeyError):media.current('http://evil')
 if __name__=='__main__':unittest.main()

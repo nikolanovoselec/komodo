@@ -230,8 +230,8 @@ identity-mismatch, missing-stat and actionable-failure cases.
 
 ## Native Media Ops
 
-`/media-ops` is a native, theme-aware page with scoped styles. Directory and News
-configurations and all theme definitions remain unchanged. `adapter/media.py`
+`/media` is the native, theme-aware Media page with scoped styles; `/media-ops`
+redirects to it. All theme definitions remain unchanged. `adapter/media.py`
 provides fixed read-only `/media-current`, `/media-library` and `/media-arr`
 projections. No media control/write endpoint is exposed. The sidecar retains its
 unprivileged, read-only, private-network-only deployment.
@@ -249,14 +249,11 @@ unprivileged, read-only, private-network-only deployment.
 - Sonarr/Radarr reuse their existing protected Komodo variables in the sidecar.
   History uses eventType=3 (completed imports), queues retain bounded pagination
   and an explicit truncated flag. Failed reads are not displayed as empty queues.
-- Plex session and library collectors are implemented but require a separately
-  approved, server-scoped `DYNACAT_PLEX_TOKEN`. Compose tolerates its absence so
-  independent integrations still work. **Plex is not verified/complete while the
-  credential is absent.** Provision it as a protected Komodo variable, then add
-  `DYNACAT_PLEX_TOKEN = [[DYNACAT_PLEX_TOKEN]]` to this stack's TOML environment and
-  redeploy through Git/Komodo. Do not copy browser sessions or a broad personal
-  Plex account token. A missing protected variable is intentionally not referenced
-  in TOML yet, because unresolved secret substitution would block all deployment.
+- Plex uses the user-provisioned protected `DYNACAT_PLEX_TOKEN`, wired through
+  `tools_dynacat` TOML and the collector's Compose environment only. It is never
+  injected into the browser or copied from a browser session. Authenticated
+  staging reads verified all four libraries, actual playback sessions and 16
+  real latest-media posters. Missing/invalid credentials remain explicit errors.
 - Plex library requests ask for actual `type=4` episode items sorted by `addedAt`
   (not season-level recentlyAdded records); movie requests use `type=1`. Section
   totals count top-level library items (shows, movies, artists), not episodes for
@@ -280,6 +277,37 @@ Run `python3 -m unittest discover -s tools/dynacat/adapter -q` and
 The browser regression uses the actual app/upstreams, verifies loaded images,
 1s completion cadence, focus/disclosure retention, two contrasting persistent
 native themes, and four viewport widths; it never serves synthetic telemetry.
+
+## Navigation, launcher and Bern calendar
+
+The visible navigation is **Hardware & Workloads**, **Media**, and
+**Endpoints & Services**. Fixed hidden aliases preserve `/command-center`,
+`/media-ops`, `/directory`, and `/news` bookmarks. The launcher preserves all 86
+original links across eight categories and all three original news feeds in its
+secondary News desk, with client-local search and category filters. Start was
+inspected read-only as the visual reference; no endpoint credentials are copied.
+
+The native Clock widget uses Europe/Zurich, Europe/London, America/Los_Angeles,
+and America/New_York in Bern/London/San Francisco/New York order. The monthly Bern
+calendar is timezone-explicit and Monday-first with no agenda/holiday claims.
+Upstream Dynacat's calendar uses browser-local Date and has no timezone field, so
+this scoped native-style month grid uses Intl Europe/Zurich instead. It was tested
+with a Pacific/Kiritimati browser timezone to prove the Bern date stays correct.
+Weather and Renovate remain below it, retaining the existing rail width.
+
+Workloads has no metric-sources column; per-machine PVE source information is
+retained in link tooltips and the scope note. Expanded Docker rows have an explicit
+sticky Hide containers button, an expanded-header hint, native keyboard summary
+and synchronized aria-expanded/aria-controls. Empty unmatched/unassigned groups
+are omitted independently; unknown exception data retains an error state. Issue
+counts live at the title's right edge, vertically centered; zero uses normal text,
+positive counts alone use the theme's negative color.
+
+qBittorrent uses fixed transfer/info and downloading-filter GETs through its
+existing LAN access policy, verified from the collector. No login, controls or
+settings writes are used. Transfer speeds are measured API rates; Plex bandwidth
+is separately labeled reserved capacity with reported-session coverage, including
+partial coverage rather than silently treating unreported streams as zero.
 
 ## Browser-local theme compatibility
 

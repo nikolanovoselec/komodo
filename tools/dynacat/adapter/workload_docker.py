@@ -63,6 +63,12 @@ def _docker(server_id, server, containers, stacks, now):
     return result
 
 
+def exception_visibility(unmatched, definitions):
+    if not isinstance(unmatched, list) or not isinstance(definitions, list):
+        return {'error':'Exception inventory unavailable', 'show_any':False, 'show_unmatched':False, 'show_definitions':False}
+    return {'error':'', 'show_any':bool(unmatched or definitions), 'show_unmatched':bool(unmatched), 'show_definitions':bool(definitions)}
+
+
 def enrich(summary, servers):
     """Mutate only Docker projection fields and return summary for composition.
 
@@ -98,4 +104,5 @@ def enrich(summary, servers):
         dict(_docker(sid, by_id.get(sid), containers.get(sid, []), stacks.get(sid, []), now),
              reason='No verified current Proxmox guest identity')
         for sid in sorted((containers.keys() | stacks.keys()) - joined)]
+    summary['docker_exceptions'] = exception_visibility(summary['docker_unmatched'], summary.get('definition_issues'))
     return summary

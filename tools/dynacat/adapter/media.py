@@ -69,8 +69,8 @@ def sessions():
         rows.append(row)
     bw = [r['bandwidth_kbps'] for r in rows if isinstance(r['bandwidth_kbps'], (int, float))]
     return dict(streams=rows, count=len(rows), transcoding=sum(r['mode']=='Transcode' for r in rows),
-                direct=sum(r['mode']=='Direct play' for r in rows), has_bandwidth=len(bw)==len(rows),
-                bandwidth_mbps=round(sum(bw)/1000, 2) if len(bw)==len(rows) else None)
+                direct=sum(r['mode']=='Direct play' for r in rows), has_bandwidth=bool(bw) or not rows,
+                bandwidth_coverage=len(bw), bandwidth_mbps=round(sum(bw)/1000, 2) if bw or not rows else None)
 
 def poster(item):
     # Only Plex-generated numeric metadata thumbnail paths; never an input URL.
@@ -159,6 +159,21 @@ def import_gallery():
     return dict(recent=items)
 
 
+def qbittorrent():
+    # Existing LAN access policy permits these fixed read-only API routes.
+    # Never logs in, changes settings, or submits torrent/control operations.
+    base='http://192.168.2.38:8080/api/v2/'
+    transfer=read(base+'transfer/info')
+    rows=read(base+'torrents/info?filter=downloading&limit=12&sort=added_on&reverse=true')
+    return dict(download_mbps=round(transfer['dl_info_speed']*8/1e6,2),
+                upload_mbps=round(transfer['up_info_speed']*8/1e6,2),
+                state=transfer.get('connection_status','unknown'),
+                downloads=[dict(title=r.get('name','Download'),state=r.get('state','unknown'),
+                                progress=round(max(0,min(100,r.get('progress',0)*100)),1),
+                                remaining_gb=round(r.get('amount_left',0)/1e9,2)) for r in rows],
+                bounded=len(rows)>=12)
+
+
 def resources():
     import adapter
     data = adapter.api('ListAllDockerContainers', {'limit':0})
@@ -211,9 +226,10 @@ class Source:
 
 SOURCES = {'sessions':Source(sessions,5,30,'Plex playback'), 'library':Source(library,300,660,'Plex library'),
            'resources':Source(resources,5,30,'Komodo media resources'),
+           'qbittorrent':Source(qbittorrent,5,30,'qBittorrent'),
            'imports':Source(import_gallery,300,660,'Import artwork'),
            'sonarr':Source(lambda:arr_data('sonarr'),30,90,'Sonarr'), 'radarr':Source(lambda:arr_data('radarr'),30,90,'Radarr')}
 
 def current(kind):
-    names={'current':('sessions','resources'), 'library':('library','imports'), 'arr':('sonarr','radarr')}[kind]
+    names={'current':('sessions','resources','qbittorrent'), 'library':('library','imports'), 'arr':('sonarr','radarr')}[kind]
     return {name:SOURCES[name].snapshot() for name in names}

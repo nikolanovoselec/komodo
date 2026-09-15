@@ -6,7 +6,7 @@ from pathlib import Path
 from playwright.async_api import async_playwright
 
 async def main():
-    url=sys.argv[1].rstrip('/')+'/media-ops'; out=Path(sys.argv[2]);out.mkdir(parents=True,exist_ok=True)
+    url=sys.argv[1].rstrip('/')+'/media'; out=Path(sys.argv[2]);out.mkdir(parents=True,exist_ok=True)
     async with async_playwright() as p:
         browser=await p.chromium.launch(headless=True)
         page=await browser.new_page(viewport={'width':1600,'height':1100})

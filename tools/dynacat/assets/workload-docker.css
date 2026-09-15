@@ -1,10 +1,12 @@
 /* Cluster Workloads + Docker: confined to the merged guest widget. */
+.cw-merged>.widget-header{display:flex;align-items:center;justify-content:space-between;gap:10px 18px;flex-wrap:wrap}.cw-merged>.widget-header>h2{margin:0}.cw-merged .cw-status{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:11px;line-height:1.4;color:var(--color-text-base)}.cw-merged .cw-status .cw-normal{color:var(--color-text-base)}.cw-merged .cw-status .cw-issue{color:var(--color-negative)}
+.cw-merged .cw-collapse-bar{display:flex;justify-content:flex-end;position:sticky;top:8px;z-index:2;margin:0 0 8px}.cw-merged [data-cw-collapse]{min-height:44px;border:1px solid var(--color-primary);border-radius:5px;padding:8px 13px;background:var(--color-background);color:var(--color-primary);cursor:pointer;font-size:11px}.cw-merged .cw-hide-hint{display:none}.cw-merged .cw-docker[open]>summary .cw-hide-hint{display:inline-flex;margin-left:auto;color:var(--color-primary);font-size:11px}
 .pve-guests.cw-merged .cw-overview{display:flex;flex-wrap:wrap;gap:8px 22px;padding:2px 0 9px;border-bottom:1px solid var(--cc-border);font-size:11px;color:var(--color-text-subdue)}
 .pve-guests.cw-merged .cw-overview b{font-weight:500;font-size:14px;color:var(--color-text-highlight)}
 .pve-guests.cw-merged .cw-alert{color:var(--color-negative);font-size:10px;line-height:1.4}
 .pve-guests.cw-merged .cw-matrix-head,.pve-guests.cw-merged .cw-workload,.pve-guests.cw-merged .cw-stopped-guest{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:0 14px;align-items:start}
 .pve-guests.cw-merged .cw-matrix-head>span{font-size:10px;color:var(--color-text-subdue);padding:7px 8px;letter-spacing:.06em}
-.pve-guests.cw-merged .cw-matrix-head .pve-matrix-head,.pve-guests.cw-merged .k-host.cc-resource-link{grid-template-columns:minmax(155px,1.15fr) minmax(0,2.6fr) minmax(98px,.8fr);gap:12px}
+.pve-guests.cw-merged .cw-matrix-head .pve-matrix-head,.pve-guests.cw-merged .k-host.cc-resource-link{grid-template-columns:minmax(155px,1.15fr) minmax(0,2.6fr);gap:12px}
 .pve-guests.cw-merged .cw-workload{border-top:1px solid var(--cc-border)}
 .pve-guests.cw-merged .cw-workload:nth-child(even){background:color-mix(in srgb,var(--color-primary) 2%,transparent)}
 .pve-guests.cw-merged .cw-workload>.k-host{border:0;background:transparent;margin:0;min-height:52px;padding:7px 6px}

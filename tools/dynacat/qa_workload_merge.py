@@ -15,6 +15,18 @@ async def main():
   anchor=mapped.locator('.cw-container').first;await anchor.focus();href=await anchor.get_attribute('href');await page.wait_for_timeout(1600)
   assert await page.evaluate('document.activeElement.getAttribute("href")')==href
   assert await mapped.locator('details').get_attribute('open') is not None
+  assert await mapped.locator('summary').get_attribute('aria-expanded')=='true'
+  await mapped.locator('[data-cw-collapse]').click()
+  await page.wait_for_timeout(1300)
+  assert not await mapped.locator('details').evaluate('(e)=>e.open')
+  assert await mapped.locator('summary').get_attribute('aria-expanded')=='false'
+  assert await page.evaluate('document.activeElement.matches(".cw-docker summary")')
+  await mapped.locator('summary').click();await page.wait_for_timeout(1300)
+  assert await mapped.locator('details').evaluate('(e)=>e.open')
+  assert await mapped.locator('[data-cw-collapse]').is_visible()
+  assert await page.locator('.cw-merged .pve-guest-source').count()==0
+  assert await page.locator('.cw-merged>.widget-header .cw-status').count()==1
+  assert await page.locator('.cw-unmatched').count()==0
   await page.screenshot(path=str(out/'expanded.png'),full_page=True)
   await mapped.locator('summary').click()
   for theme in ['catppuccin-latte','midnight-navy']:
