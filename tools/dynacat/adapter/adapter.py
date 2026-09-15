@@ -23,7 +23,7 @@ def api(kind, params):
 
 def make_server(address, loader):
     lock = threading.Lock()
-    cached = {'at':0, 'data':None}
+    cached = {'at':None, 'data':None, 'failed':False}
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, format, *args):
             pass
@@ -33,9 +33,16 @@ def make_server(address, loader):
                 return
             try:
                 with lock:
-                    if time.monotonic() - cached['at'] > 15:
-                        cached['data'] = loader()
+                    if cached['at'] is None or time.monotonic() - cached['at'] >= 5:
+                        try:
+                            cached['data'] = loader()
+                            cached['failed'] = False
+                        except Exception:
+                            cached['data'] = None
+                            cached['failed'] = True
                         cached['at'] = time.monotonic()
+                    if cached['failed']:
+                        raise RuntimeError('Telemetry unavailable')
                     payload = json.dumps(cached['data']).encode()
                 status = 200
             except Exception:
@@ -105,7 +112,7 @@ def project(servers, stacks, tags, containers, disabled_members):
         stats = s['info'].get('stats') or {}
         used, total = number(stats.get('disk_used_gb')), number(stats.get('disk_total_gb'))
         if s['info']['state'] == 'Ok' and used is not None and total is not None and 0 <= used <= total and 0 < total < float('inf'):
-            disks.append(dict(name=s.get('name', s['id']), url=komodo_url(s['id']),
+            disks.append(dict(name=s.get('name', s['id']), server_id=s['id'], url=komodo_url(s['id']),
                               used=used, total=total, percent=100*used/total))
     return dict(top_disk=sorted(disks, key=lambda d:d['percent'], reverse=True)[:5],
                 fetched_at=int(time.time()), stacks_total=len(workloads), containers_total=len(kept),
@@ -135,6 +142,8 @@ def collect(api):
     result = project(servers, stacks, tags, containers, members)
     import vm_metrics
     result['pve'] = vm_metrics.enrich(proxmox.collect(), servers)
+    import navigation
+    navigation.link_ranked_hosts(result, servers)
     import renovate
     result['renovate'] = renovate.collect()
     return result

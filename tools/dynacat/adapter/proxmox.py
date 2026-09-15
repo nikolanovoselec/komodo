@@ -7,6 +7,43 @@ import re
 import ssl
 import urllib.request
 import urllib.parse
+import threading
+import copy
+
+
+class SlowReadCache:
+    """Single-flight 60s optional reads (including failures), not current status.
+
+    pvestatd's upstream loop targets 10s (PVE/Service/pvestatd.pm,
+    $updatetime = 10); 5s dashboard polling is not 5s source sampling.
+    Hour RRD is 60s buckets; ZFS/storage reads need not follow every poll.
+    """
+    def __init__(self, read, clock=time.monotonic):
+        self.read = read
+        self.clock = clock
+        self.lock = threading.Lock()
+        self.entries = {}
+
+    def __call__(self, path):
+        if path in ('/nodes', '/cluster/resources?type=vm'):
+            return self.read(path)
+        with self.lock:
+            now = self.clock()
+            entry = self.entries.get(path)
+            if entry is None or now - entry[0] >= 60:
+                try:
+                    data = self.read(path, allowed_rrd=frozenset([path]))
+                    failed = False
+                except Exception:
+                    data, failed = None, True
+                entry = (self.clock(), data, failed)
+                # Bound cache size when nodes disappear or are renamed.
+                self.entries = {k: v for k, v in self.entries.items()
+                                if now - v[0] < 60}
+                self.entries[path] = entry
+            if entry[2]:
+                raise RuntimeError('Optional Proxmox telemetry unavailable')
+            return copy.deepcopy(entry[1])
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -40,6 +77,22 @@ def _api(path, allowed_rrd=frozenset()):
         return json.load(response)['data']
 
 
+def resource_url(kind, identity):
+    """Installed PVE History.js v1 state: rid + resource-specific Summary tab."""
+    if kind == 'node':
+        valid = isinstance(identity, str) and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9-]*', identity)
+        suffix = '4:5::::::'
+    elif kind in ('qemu', 'lxc'):
+        valid = isinstance(identity, int) and not isinstance(identity, bool) and identity > 0
+        suffix = '4:::::5::' if kind == 'qemu' else '4::::::5:'
+    else:
+        return None
+    if not valid:
+        return None
+    rid = urllib.parse.quote(f'{kind}/{identity}', safe='')
+    return f'https://proxmox.graymatter.ch/#v1:0:={rid}:{suffix}'
+
+
 def _counts(guests):
     return {kind: {'running': sum(g.get('status') == 'running' for g in guests if g.get('type') == kind),
                    'total': sum(g.get('type') == kind for g in guests)} for kind in ('qemu', 'lxc')}
@@ -57,10 +110,13 @@ def _capacity(used, total):
     return {'used_bytes': used, 'total_bytes': total, 'percent': percent}
 
 
+_cached_api = SlowReadCache(_api)
+
+
 def collect(api=None):
     """Safe to embed as summary['pve']; errors do not fail Komodo collection."""
     try:
-        return _collect(api if api is not None else _api)
+        return _collect(api if api is not None else _cached_api)
     except Exception:
         return {'error': 'Proxmox telemetry unavailable; verify TLS, network and read API access',
                 'fetched_at': int(time.time()), 'nodes': [], 'guests': None}
@@ -214,6 +270,7 @@ def _guest_inventory(guests):
             ram['percent'] = 100 * ram['used_bytes'] / ram['total_bytes']
         result.append({'id': guest.get('vmid'), 'name': guest.get('name') or str(guest.get('vmid')),
                        'node': guest.get('node', 'unknown'), 'type': guest['type'],
+                       'url': resource_url(guest['type'], guest.get('vmid')),
                        'status': guest.get('status', 'unknown'),
                        'cpu_percent': cpu * 100 if cpu is not None and cpu <= 1 else None,
                        'ram': ram,
@@ -243,7 +300,8 @@ def _collect(api):
                 pass  # Optional history must never erase current node telemetry.
 
         cpu = _number(node.get('cpu'))
-        projected.append({'name': node['node'], 'status': node.get('status', 'unknown'), **history,
+        projected.append({'name': node['node'], 'url': resource_url('node', node['node']),
+                          'status': node.get('status', 'unknown'), **history,
                           **_zfs(node, api),
                           'cpu_percent': cpu * 100 if cpu is not None and cpu <= 1 else None,
                           'ram': _capacity(node.get('mem'), node.get('maxmem')),

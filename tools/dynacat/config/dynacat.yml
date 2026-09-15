@@ -1,3 +1,5 @@
+document:
+  head: '<script src="/assets/command-center.js" defer></script>'
 server:
   port: 8080
   assets-path: /app/assets
@@ -135,6 +137,7 @@ pages:
   - size: small
     widgets:
     - type: clock
+      css-class: cc-top-clock
       hour-format: 24h
       timezones:
       - timezone: Europe/Zurich
@@ -142,56 +145,26 @@ pages:
       - timezone: America/New_York
         label: New York
     - type: weather
+      css-class: cc-top-weather
       location: Bern, Switzerland
       units: metric
       hour-format: 24h
       show-area-name: false
-    - type: bookmarks
-      css-class: quick-links
-      groups:
-      - title: Control plane
-        color: 215 50 60
-        links:
-        - title: Komodo
-          url: https://komodo.graymatter.ch
-          icon: si:komodo
-        - title: Beszel
-          url: https://beszel.graymatter.ch
-          icon: mdi:chart-areaspline
-        - title: Dozzle
-          url: https://dozzle.local.graymatter.ch
-          icon: mdi:docker
-        - title: Proxmox
-          url: https://proxmox.graymatter.ch
-          icon: si:proxmox
-    - type: releases
-      title: Critical releases
-      title-icon: mdi:package-variant-closed
-      show-source-icon: true
-      name-only: true
-      limit: 7
-      collapse-after: 7
-      repositories:
-      - Panonim/dynacat
-      - dockerhub:linuxserver/plex
-      - dockerhub:linuxserver/sonarr
-      - dockerhub:linuxserver/radarr
-      - dockerhub:qbittorrentofficial/qbittorrent-nox
   - size: full
     widgets:
     - type: custom-api
       title: Resources · Proxmox
       css-class: komodo-widget pve-resources
-      cache: 15s
-      update-interval: 30s
+      cache: 5s
+      update-interval: 5s
       url: http://workload-summary:8090/summary
       template: '{{ if .JSON.String "pve.error" }}<div class="k-warning">{{ .JSON.String "pve.error" }}</div>{{ else }}
 
-        <div class="pve-heading"><span>PHYSICAL HYPERVISORS</span><span class="pve-live">● Proxmox API · 30s refresh</span></div>
+        <div class="pve-heading"><span>PHYSICAL HYPERVISORS</span><span class="pve-live">● PVE ~10s samples · 5s refresh</span></div>
 
-        <div class="pve-grid">{{ range .JSON.Array "pve.nodes" }}<article class="pve-node">
+        <div class="pve-grid">{{ range .JSON.Array "pve.nodes" }}<a class="pve-node cc-resource-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer">
 
-        <header><a href="https://proxmox.graymatter.ch">{{ .String "name" }}</a><span class="k-state {{ if ne (.String "status") "online" }}k-warning{{ end }}">● {{ .String "status"
+        <header><strong>{{ .String "name" }}</strong><span class="k-state {{ if ne (.String "status") "online" }}k-warning{{ end }}">● {{ .String "status"
         }}</span></header>
 
         <div class="pve-cpu"><span class="pve-label">CPU</span>{{ if ne (.String "cpu_percent") "" }}<strong>{{ printf "%.1f" (.Float "cpu_percent") }}<em>%</em></strong><meter aria-label="CPU
@@ -230,18 +203,18 @@ pages:
         <footer><span><b>{{ .Int "guests.qemu.running" }}</b>/{{ .Int "guests.qemu.total" }} VM</span><span><b>{{ .Int "guests.lxc.running" }}</b>/{{ .Int "guests.lxc.total" }} LXC</span><small>running
         / total</small></footer>
 
-        </article>{{ end }}</div><div class="k-note pve-source">Source: Proxmox node API + RRD + ZFS pools · collected <span class="pve-timestamp" data-dynamic-relative-time="{{ .JSON.Int
+        </a>{{ end }}</div><div class="k-note pve-source">Source: Proxmox node API + RRD + ZFS pools · collected <span class="pve-timestamp" data-dynamic-relative-time="{{ .JSON.Int
         "pve.fetched_at" }}"></span> · ZFS = physical pool allocation, not guest disk capacity.</div>{{ end }}'
       title-url: https://proxmox.graymatter.ch
     - type: custom-api
       title: Proxmox · workload overview
       title-url: https://proxmox.graymatter.ch
       css-class: komodo-widget komodo-hosts pve-guests
-      cache: 15s
-      update-interval: 30s
+      cache: 5s
+      update-interval: 5s
       url: http://workload-summary:8090/summary
       template: '{{ if .JSON.String "pve.error" }}<div class="k-warning">{{ .JSON.String "pve.error" }}</div>{{ else }}<div class="k-inventory-head"><span>{{ len (.JSON.Array `pve.guest_inventory.#(status=="running")#`)
-        }} running guests · Proxmox API</span><span>VM / LXC</span></div><div class="k-host-grid">{{ range .JSON.Array `pve.guest_inventory.#(status=="running")#` }}<article class="k-host"><header><strong>{{
+        }} running guests · Proxmox API</span><span>VM / LXC</span></div><div class="k-host-grid">{{ range .JSON.Array `pve.guest_inventory.#(status=="running")#` }}<a class="k-host cc-resource-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><header><strong>{{
         .String "name" }}</strong><span class="k-state">● {{ if eq (.String "type") "qemu" }}VM{{ else }}LXC{{ end }}</span></header><div class="pve-guest-meta">{{ .String "node" }}
         · #{{ .Int "id" }}</div><div class="k-metrics"><div><label>CPU {{ if ne (.String "cpu_percent") "" }}<b>{{ printf "%.1f" (.Float "cpu_percent") }}%</b></label><meter min="0"
         max="100" value="{{ .Float "cpu_percent" }}"></meter>{{ else }}<b>N/A</b></label><div class="k-unavailable-bar"></div>{{ end }}</div><div class="pve-guest-ram" title="{{ .String
@@ -252,17 +225,17 @@ pages:
         class="k-unavailable-bar"></div>{{ if gt (.Float "disk.total_bytes") 0.0 }}<small>{{ printf "%.0f" (div (.Float "disk.total_bytes") 1073741824) }} GiB allocated</small>{{ else
         }}<small>Not reported</small>{{ end }}{{ end }}</div></div><div class="pve-guest-source">CPU PVE · RAM {{ if eq (.String "memory_source") "Komodo" }}Komodo{{ else }}{{ if eq
         (.String "type") "qemu" }}PVE host{{ else }}PVE{{ end }}{{ end }} · disk {{ if eq (.String "disk_source") "Komodo" }}Komodo{{ else }}{{ if eq (.String "type") "qemu" }}unavailable{{
-        else }}PVE{{ end }}{{ end }}</div></article>{{ end }}</div><details class="k-stack-group pve-stopped"><summary><strong>{{ len (.JSON.Array `pve.guest_inventory.#(status!="running")#`)
-        }} stopped / other guests</strong><span>show inventory</span></summary>{{ range .JSON.Array `pve.guest_inventory.#(status!="running")#` }}<div class="k-top-row"><strong>{{ .String
-        "name" }}</strong><small>{{ .String "node" }} · {{ .String "type" }} #{{ .Int "id" }} · {{ .String "status" }}</small></div>{{ end }}</details><div class="k-note">Inventory /
+        else }}PVE{{ end }}{{ end }}</div></a>{{ end }}</div><details class="k-stack-group pve-stopped"><summary><strong>{{ len (.JSON.Array `pve.guest_inventory.#(status!="running")#`)
+        }} stopped / other guests</strong><span>show inventory</span></summary>{{ range .JSON.Array `pve.guest_inventory.#(status!="running")#` }}<a class="k-top-row cc-resource-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer"><strong>{{ .String
+        "name" }}</strong><small>{{ .String "node" }} · {{ .String "type" }} #{{ .Int "id" }} · {{ .String "status" }}</small></a>{{ end }}</details><div class="k-note">Inventory /
         CPU and LXC metrics: Proxmox. VM RAM / aggregate filesystem usage: identity-verified Komodo guests. PVE host RAM is used only if guest readings are unavailable (QEMU overhead
-        may exceed configured RAM). Allocated disk ≠ used space; mounts may overlap. Stopped ≠ disabled; no guest disable policy applied. Refresh 30s.</div>{{ end }}'
+        may exceed configured RAM). Allocated disk ≠ used space; mounts may overlap. Stopped ≠ disabled; no guest disable policy applied. Refresh 5s; PVE samples ~10s.</div>{{ end }}'
     - type: custom-api
       title: Workloads · attention first
       title-url: https://komodo.graymatter.ch
       css-class: komodo-widget workload-attention
-      cache: 15s
-      update-interval: 30s
+      cache: 5s
+      update-interval: 5s
       url: http://workload-summary:8090/summary
       template: '<div class="k-summary"><div><strong>{{ .JSON.Int "running_stacks" }}</strong><span>RUNNING STACKS</span></div><div><strong>{{ .JSON.Int "running_containers" }}</strong><span>RUNNING
         CONTAINERS</span></div><div><strong>{{ len (.JSON.Array "stack_problems") }}</strong><span>RUNTIME STACK ISSUES</span></div><div><strong>{{ len (.JSON.Array "container_problems")
@@ -274,7 +247,7 @@ pages:
         {{ range .JSON.Array "stack_problems" }}<div class="k-problem"><a href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ .String "name" }}</a><span>{{ .String "host"
         }} · {{ .String "state" }}</span></div>{{ end }}
 
-        {{ range .JSON.Array "container_problems" }}<div class="k-problem"><strong>{{ .String "name" }}</strong><span>{{ .String "host" }} · {{ .String "status" }}</span></div>{{ end
+        {{ range .JSON.Array "container_problems" }}<div class="k-problem"><a class="cc-container-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer">{{ .String "name" }}</a><span>{{ .String "host" }} · {{ .String "status" }}</span></div>{{ end
         }}
 
         <details class="k-stack-group"><summary><strong>{{ len (.JSON.Array "definition_issues") }} unassigned definitions</strong><span>runtime unknown</span></summary><div class="k-note">No
@@ -286,16 +259,15 @@ pages:
     - type: custom-api
       title: Top 5 · CPU / RAM / disk capacity
       css-class: komodo-widget top-consumers
-      cache: 15s
-      update-interval: 30s
+      cache: 5s
+      update-interval: 5s
       url: http://workload-summary:8090/summary
       template: '<div class="k-top-grid"><section><h3>CPU · top 5</h3>{{ range .JSON.Array "top_cpu" }}<div class="k-top-row"><div><a class="k-rank-link" href="{{ .String "url" }}" target="_blank"
         rel="noopener noreferrer">{{ .String "name" }}</a><small>{{ .String "host" }}</small></div><b>{{ printf "%.1f" (.Float "cpu") }}%</b></div>{{ else }}<p>CPU metrics unavailable</p>{{
         end }}</section><section><h3>RAM · top 5</h3>{{ range .JSON.Array "top_ram" }}<div class="k-top-row"><div><a class="k-rank-link" href="{{ .String "url" }}" target="_blank" rel="noopener
         noreferrer">{{ .String "name" }}</a><small>{{ .String "host" }}</small></div><b>{{ .String "ram" }}</b></div>{{ else }}<p>RAM metrics unavailable</p>{{ end }}</section><section><h3>Disk
-        capacity · top 5 hosts</h3>{{ range .JSON.Array "top_disk" }}<div class="k-top-row"><div><a class="k-rank-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer">{{
-        .String "name" }}</a><small>{{ printf "%.1f" (.Float "used") }} / {{ printf "%.1f" (.Float "total") }} GiB</small></div><b>{{ printf "%.1f" (.Float "percent") }}%</b></div>{{
-        else }}<p>Disk metrics unavailable</p>{{ end }}</section></div><div class="k-note">Measured by Docker via Komodo · running enabled workloads · refresh 30s</div><div class="k-note">Disk:
+        capacity · top 5 hosts</h3>{{ range .JSON.Array "top_disk" }}<div class="k-top-row"><div>{{ if .String "url" }}<a class="k-rank-link" href="{{ .String "url" }}" target="_blank" rel="noopener noreferrer">{{ .String "name" }}</a>{{ else }}<strong title="Proxmox identity not verified">{{ .String "name" }}</strong>{{ end }}<small>{{ printf "%.1f" (.Float "used") }} / {{ printf "%.1f" (.Float "total") }} GiB</small></div><b>{{ printf "%.1f" (.Float "percent") }}%</b></div>{{
+        else }}<p>Disk metrics unavailable</p>{{ end }}</section></div><div class="k-note">Measured by Docker via Komodo · running enabled workloads · refresh 5s</div><div class="k-note">Disk:
         enabled reporting Komodo hosts ranked by aggregate filesystem % used. Not container size, physical HDD usage or I/O rate; mounts may overlap. CPU/RAM: running containers; Docker
         CPU may exceed 100%.</div>'
   - size: small

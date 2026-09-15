@@ -27,7 +27,12 @@ Only `ListServers`, `ListStacks`, `ListTags`, `ListAllDockerContainers(limit=0)`
 `GetStack` are called. `GetStack` includes configuration; it is never logged,
 persisted, or forwarded. Only deployed container names are retained for filtering.
 Credentials are protected Komodo environment variables shared with the dashboard.
-The response cache lasts 15 seconds; the UI refreshes every 30 seconds.
+The summary cache lasts 5 seconds; operational widgets refresh every 5 seconds.
+PVE current CPU/RAM samples originate from pvestatd approximately every 10 seconds.
+Native one-minute RRD graph samples and ZFS/storage reads are cached for 60 seconds;
+GitHub retains its ten-minute cache. Faster polling does not invent graph samples.
+Native Dynacat polling pauses hidden documents and prevents overlapping widget reads;
+the collector serializes cache refreshes and throttles failed retries for 5 seconds.
 
 Run regression tests: `python3 -m unittest discover -s tools/dynacat/adapter -v`.
 Stage the actual two-service Compose application with isolated names/assets/ports,
@@ -143,3 +148,25 @@ LXC values, all physical node values, guest inventory/state/node and CPU stay PV
 Unmatched/offline/disabled/stale sources never substitute zero or invented readings.
 Shared/multiple guest mounts may overlap; aggregate usage is not a virtual disk
 allocation or a physical ZFS pool measurement.
+
+
+## Exact resource navigation and live header
+
+Node cards and every running/stopped VM/LXC card use the installed Proxmox
+History.js v1 encoded resource ID and resource-specific Summary tab. Public origin
+is `https://proxmox.graymatter.ch`; no API credentials or internal endpoint strings
+are placed in navigation URLs. Docker CPU/RAM and attention entries use deployed
+Komodo 2.3.2's `/servers/{server_id}/container/{encoded_name}` route.
+Disk-ranked host links use the same audited VM bindings plus LXC 101/128 bindings
+in `navigation.py`. Those LXC MAC/IP pairs were checked through `pct config` and
+`pct exec ... ip -j address show`: 101 `bc:24:11:ef:65:3b` / `192.168.2.205`,
+128 `bc:24:11:9e:fe:2b` / `192.168.3.12`. Identity mismatches retain telemetry but
+show an unavailable exact Proxmox link rather than guessing or redirecting Komodo.
+All current ranked hosts have verified mappings.
+
+The landing Control plane/Bookmarks and Critical releases widgets are removed;
+Directory, Media Ops and News are preserved. Native live Clock (browser-local date
+plus Bern/New York IANA zones) and Bern Weather now form a top horizontal strip,
+wrapping above resources on mobile. No date, timezone offset or weather is hardcoded.
+`command-center.js` uses the native `dynacat:widget-updated` event to preserve
+open disclosures and focused links across refreshes; it adds no polling.
