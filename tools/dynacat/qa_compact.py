@@ -32,6 +32,14 @@ async def main():
                 await page.evaluate('window.scrollTo(0, 0)')
                 await page.wait_for_timeout(1500)
                 assert await page.locator('html').get_attribute('data-theme') == theme
+                logo = page.locator('.header-container .logo')
+                assert (await logo.inner_text()).strip() == 'There is no spoon'
+                assert await logo.is_visible()
+                assert await logo.evaluate('e=>e.scrollWidth<=e.clientWidth && e.getBoundingClientRect().right<=innerWidth')
+                assert await page.locator('.header-container .nav a').count() == 4
+                for selector, title in [('.pve-resources','Proxmox Cluster'),('.pve-guests','Cluster Workloads'),('.workload-attention','Docker Hosts'),('.top-consumers','Docker Containers - Top Consumers')]:
+                    assert (await page.locator(selector+' .widget-header h2').text_content()).strip() == title
+                assert 'Not container size' in await page.locator('.top-consumers').inner_text()
                 sizes = await page.evaluate('''() => Object.fromEntries(
                     ['.pve-node','.pve-guests .k-host'].map(s => [s,
                     [...document.querySelectorAll(s)].map(e => {
@@ -73,6 +81,8 @@ async def main():
                 assert sum('RAM PVE' in x and 'disk PVE' in x for x in labels) == 3
                 assert 'rootfs' not in (await page.locator('.pve-resources').inner_text()).lower()
                 await page.screenshot(path=f'{prefix}-{width}-{theme}.png', full_page=True)
+                await logo.scroll_into_view_if_needed()
+                await page.wait_for_timeout(400)
                 await page.screenshot(path=f'{prefix}-{width}-{theme}-viewport.png')
                 await page.locator('.pve-node').first.screenshot(path=f'{prefix}-{width}-{theme}-node.png')
                 await page.locator('.pve-guests').screenshot(path=f'{prefix}-{width}-{theme}-guests.png')
@@ -97,6 +107,7 @@ async def main():
                     assert await page.locator('.pve-guests .pve-guest-source').evaluate_all('es => es.every(e => parseFloat(getComputedStyle(e).fontSize) >= 10 && e.scrollWidth <= e.clientWidth)')
                     assert await page.locator('.pve-guests .k-host').evaluate_all('es => es.every(e => e.scrollWidth <= e.clientWidth && e.querySelector("header strong").textContent.trim() && e.querySelector(".pve-guest-meta").textContent.includes("#"))')
                     assert await page.locator('.pve-stopped .cc-resource-link').count() == 10
+                    await page.locator('.pve-stopped summary').scroll_into_view_if_needed()
                     assert await page.locator('.pve-stopped summary').evaluate('e=>e.getBoundingClientRect().height>=44')
             assert not errors, errors
             await page.close()

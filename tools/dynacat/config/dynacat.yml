@@ -10,7 +10,7 @@ branding:
   app-name: Gray Matter Command Center
   hide-logo: false
   custom-footer: <span>Gray Matter · private operational workspace</span>
-  logo-text: GM
+  logo-text: There is no spoon
   hide-footer: true
   show-desktop-navigation-on-hover: false
   center-desktop-navigation: true
@@ -137,7 +137,7 @@ pages:
   - size: full
     widgets:
     - type: custom-api
-      title: Resources · Proxmox
+      title: Proxmox Cluster
       css-class: komodo-widget pve-resources
       cache: 1s
       update-interval: 1s
@@ -191,7 +191,7 @@ pages:
         "pve.fetched_at" }}"></span> · ZFS = physical pool allocation, not guest disk capacity.</div>{{ end }}{{ end }}'
       title-url: https://proxmox.graymatter.ch
     - type: custom-api
-      title: Proxmox · workload overview
+      title: Cluster Workloads
       title-url: https://proxmox.graymatter.ch
       css-class: komodo-widget komodo-hosts pve-guests
       cache: 1s
@@ -214,7 +214,7 @@ pages:
         CPU and LXC metrics: Proxmox. VM RAM / aggregate filesystem usage: identity-verified Komodo guests. PVE host RAM is used only if guest readings are unavailable (QEMU overhead
         may exceed configured RAM). Allocated disk ≠ used space; mounts may overlap. Stopped ≠ disabled; no guest disable policy applied. UI refresh 1s; collector cache 5s; PVE samples ~10s.</div>{{ end }}{{ end }}'
     - type: custom-api
-      title: Workloads · attention first
+      title: Docker Hosts
       title-url: https://komodo.graymatter.ch
       css-class: komodo-widget workload-attention
       cache: 1s
@@ -240,7 +240,7 @@ pages:
         class="k-stack-group"><summary><strong>{{ .String "host" }}</strong><span>{{ .Int "count" }} running</span></summary><div class="k-chips">{{ range .Array "stacks" }}<a class="k-stack-chip"
         href="https://komodo.graymatter.ch/stacks/{{ .String "id" }}">{{ trimPrefix (concat (.String "host") "_") (.String "name") }}</a>{{ end }}</div></details>{{ end }}</div>{{ end }}'
     - type: custom-api
-      title: Top 5 · CPU / RAM / disk capacity
+      title: Docker Containers - Top Consumers
       css-class: komodo-widget top-consumers
       cache: 1s
       update-interval: 1s
