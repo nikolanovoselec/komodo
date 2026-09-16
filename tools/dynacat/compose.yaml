@@ -45,7 +45,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "construct-networking-layout-48"
+      ch.graymatter.config-revision: "construct-networking-fill-49"
     expose: ["8080"]
     volumes:
       - ./config:/app/config

@@ -50,7 +50,7 @@ html[data-scheme="dark"] .nw-dashboard{color-scheme:dark}
 .nw-metric:nth-child(3){--nw-ink:light-dark(#24785d,#72cda8)}
 .nw-metric:nth-child(4){--nw-ink:light-dark(#8154aa,#c49ae9)}
 .nw-metric svg path:not(.nw-gridline){stroke:var(--nw-ink)}
-.nw-metric svg path.nw-area{fill:var(--nw-ink);fill-opacity:.22;stroke:none}
+.nw-metric svg path.nw-area{fill:var(--nw-ink);fill-opacity:.4;stroke:none}
 .nw-metric svg circle{fill:var(--nw-ink)}
 @media(max-width:700px){
  .nw-gateway .nw-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.nw-gateway{padding:14px}

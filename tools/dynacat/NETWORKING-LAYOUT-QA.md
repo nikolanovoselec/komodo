@@ -41,3 +41,9 @@ NODE_PATH=/tmp/networking-node-qa/node_modules node --test tools/dynacat/assets/
 ```
 
 Captured-real QA leaves its source immutable and checks public restoration events. Actual changed-data refresh uses the separately labeled synthetic contract harness. Native renderers block media playback. Deployment is tracked Git/Komodo only; SSH is read-only verification.
+
+## Area visibility correction
+
+Live inspection at `0eb87918` found 28 valid SVG areas in both themes, not missing paths or broken theme colors. Their computed fill opacity was only 0.22; low real CPU/traffic readings in compact charts made the fill look line-only. Increase only area opacity to 0.40 (still translucent), leaving the actual source area, line, scale, geometry, labels and grouping untouched. Low/zero values correctly retain a small/zero area rather than a fabricated rectangle.
+
+The new native-renderer regression failed first in all four theme/viewport combinations for both gateway and peripherals. It now requires a nontransparent, stroke-free fill with opacity at least 0.35 and below 1. Captured-real GREEN: 576 checks across dark/light at 1600/390, including verbatim source line/area mapping and separately closed subpaths. Existing null/time-gap unit regression also passes. Python suites: 17 frontend/config and 170 adapter tests; JS: 1 test. One initial screenshot attempt collided with native refresh and detached; clean rerun passed. Production backend and collector revision are unchanged. Before-release archive and RED/GREEN reports are retained under `networking-layout-qa/`.

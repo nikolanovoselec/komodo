@@ -149,11 +149,22 @@ async def inspect(args, report):
                             if history.get('samples', 0) > 1 and history.get('path'):
                                 check('path_' + device['id'] + key, await metric.locator('svg path:not(.nw-gridline):not(.nw-area)').get_attribute('d') == history['path'])
                                 if args.variant == 'candidate' and history.get('area_path'):
-                                    check('area_' + device['id'] + key, await metric.locator('.nw-area').get_attribute('d') == history['area_path'])
+                                    area = await metric.locator('.nw-area').get_attribute('d')
+                                    check('area_' + device['id'] + key, area == history['area_path'])
+                                    # Each line subpath closes separately, never across a
+                                    # null/time gap; no rectangle or invented baseline data.
+                                    lines = re.findall(r'M[^M]+', history['path'])
+                                    areas = re.findall(r'M[^M]+', area)
+                                    check('gap_segments_' + device['id'] + key, len(lines) == len(areas) and all(a.startswith(line.strip() + ' L') and a.rstrip().endswith('Z') for line, a in zip(lines, areas)))
                 prefix = OUT / f'{args.variant}-{theme}-{width}'
                 await page.screenshot(path=f'{prefix}-page.png', full_page=True)
                 await page.locator('.nw-dashboard').screenshot(path=f'{prefix}-network.png')
                 if args.variant in ('candidate', 'live'):
+                    # A merely nonzero fill passed QA while looking line-only at low
+                    # real readings. Require visibly translucent areas in both roles.
+                    for role in ('.nw-gateway', '.nw-group'):
+                        fills = await page.locator(role + ' .nw-area').evaluate_all("es=>es.map(e=>({fill:getComputedStyle(e).fill,alpha:Number(getComputedStyle(e).fillOpacity),stroke:getComputedStyle(e).stroke}))")
+                        check('visible_area_' + role, bool(fills) and all(f['fill'] not in ('none', 'transparent', 'rgba(0, 0, 0, 0)') and .35 <= f['alpha'] < 1 and f['stroke'] == 'none' for f in fills))
                     check('gateway_prominent', len(m['gateway']) == 1 and bool(m['compactRows']) and m['gateway'][0]['height'] > max(r['height'] for r in m['compactRows']))
                     check('group_headings', [g['heading'].casefold() for g in m['groups']] == ['switches', 'access points', 'internet backup'])
                     check('six_compact_rows', len(m['compactRows']) == 6)
