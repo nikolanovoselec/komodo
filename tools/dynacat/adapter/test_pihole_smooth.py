@@ -8,7 +8,7 @@ import pihole
 def history(values, stamps=None, now=2400):
     stamps = stamps or [900, 1500, 2100]
     rows = [{'history': [dict(timestamp=t, total=v, blocked=v//2) for t,v in zip(stamps,values) if v is not None]} for _ in range(2)]
-    return pihole.query_history(rows, now)
+    return pihole.query_history(rows, now, window_seconds=1800)
 
 
 class SmoothTests(unittest.TestCase):
@@ -16,8 +16,9 @@ class SmoothTests(unittest.TestCase):
         from pathlib import Path
         template = (Path(__file__).resolve().parents[1]/'config/dynacat.yml').read_text()
         self.assertIn('Smooth display interpolation', template)
-        self.assertIn('Observed 10-minute bin counts', template)
-        self.assertIn('.Int "timestamp"', template)
+        self.assertIn('10-minute query counts, UTC', template)
+        self.assertIn('pihole.query_history.start', template)
+        self.assertIn('pihole.query_history.end', template)
 
     def test_native_template_uses_curve_fields(self):
         from pathlib import Path

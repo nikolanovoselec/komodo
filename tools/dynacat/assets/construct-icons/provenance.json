@@ -1,0 +1,35 @@
+{
+  "source_filename": "rRziaa.png",
+  "source_origin": "User supplied /srv/hermes/workspaces/construct-icon-source/rRziaa.png",
+  "source_sha256": "c0bdd6ac38f6180e1da06ec28f49b322af5ab26f36c66699641765378cb8eec1",
+  "source_size": [
+    869,
+    755
+  ],
+  "padding_rgb": [
+    27,
+    31,
+    38
+  ],
+  "padding_sample": "Original source top-left pixel",
+  "square_size": [
+    869,
+    869
+  ],
+  "source_offset": [
+    0,
+    57
+  ],
+  "resampling": "Pillow LANCZOS; RGB; square pad before resize; no crop/stretch",
+  "pillow_version": "12.3.0",
+  "generated_sizes": [
+    32,
+    512
+  ],
+  "native_target": "panonim/dynacat:3.0.0",
+  "native_revision": "d67959b239a91ecd8288ee3b596f6685296127c2",
+  "asset_sha256": {
+    "icon-32.png": "7bbd94892a3fac2969f4c28495f08feec676d738df9a3d41fdc3ccbbd456b94b",
+    "icon-512.png": "b66e9aa383e1797cb4d4f12bf70e609b41af899e6b2f1ab35c8187c2d7299fb8"
+  }
+}

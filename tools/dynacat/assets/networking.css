@@ -83,3 +83,18 @@ html[data-scheme="dark"] .nw-dashboard{color-scheme:dark}
 /* Independent total requests and blocks, with real shaded areas. */
 .nw-dns-network{display:grid;gap:24px}.nw-dns-plot{min-width:0;--dns-ink:light-dark(#236eaf,#77baff)}.nw-dns-plot.nw-blocked{--dns-ink:light-dark(#b33354,#f48da7);padding-top:20px;border-top:1px solid var(--color-separator)}.nw-dns-plot header{display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:12px}.nw-dns-plot h4{font-size:15px;font-weight:600;letter-spacing:.08em;color:var(--dns-ink)}.nw-dns-plot header span{font-size:12px;color:var(--color-text-base)}.nw-dns-plot svg{display:block;width:100%;height:180px;overflow:visible}.nw-dns-plot .nw-query-line{stroke:var(--dns-ink);stroke-width:2;vector-effect:non-scaling-stroke;fill:none}.nw-dns-plot .nw-query-area{fill:var(--dns-ink);fill-opacity:.38;stroke:none}.nw-split-axis{display:flex;justify-content:space-between;gap:6px;font-size:11px;color:var(--color-text-base);margin-top:8px}.nw-split-axis span{white-space:nowrap}.nw-dns-overview{padding-top:3px}.nw-pihole .nw-dns-stats{grid-template-columns:1fr 1fr;row-gap:20px}.nw-pihole .nw-blocklist{margin-top:24px}
 @media(max-width:1000px){.nw-dns-network{width:100%}.nw-dns-plot svg{height:160px}.nw-dns-overview{grid-row:2}.nw-pihole .nw-dns-stats{grid-template-columns:1fr 1fr 1fr}.nw-split-axis{font-size:10px;gap:3px}.nw-dns-plot header span{font-size:11px}}
+
+/* Pi-hole: direct configuration and readable dated 24-hour endpoints only. */
+.nw-pihole .pm-dns-config{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;border-top:1px solid var(--color-separator);margin-top:12px;padding-top:10px}
+.nw-pihole .pm-dns-config>div{min-width:0}
+.nw-pihole .pm-dns-config strong{display:block;font-size:18px;font-weight:500;color:var(--color-text-highlight);font-variant-numeric:tabular-nums}
+.nw-pihole .pm-dns-config small{font-size:11px;line-height:1.4}
+.nw-pihole .pm-upstream-list{display:flex;flex-wrap:wrap;gap:2px 10px}
+.nw-pihole .pm-upstream-list code{font-size:12px;overflow-wrap:anywhere;color:var(--color-text-highlight)}
+.nw-pihole .pm-dns-config .nw-warning{color:var(--color-negative);margin:4px 0 0}
+.nw-pihole .pve-netaxis{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2px 8px;font-variant-numeric:tabular-nums}
+.nw-pihole .pve-netaxis>span{white-space:normal}
+.nw-pihole .pve-netaxis>span:nth-child(2){grid-column:1/-1;grid-row:2}
+.nw-pihole .pve-netaxis>span:last-child{text-align:right}
+.nw-pihole .pve-netgraph:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px}
+@media(max-width:420px){.nw-pihole .pm-dns-config{grid-template-columns:1fr;gap:10px}}

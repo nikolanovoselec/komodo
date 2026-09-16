@@ -72,6 +72,21 @@ def test_upstream_bounds_preserve_literal_values(monkeypatch, values, expected, 
     assert 'SECRET' not in json.dumps(row)
 
 
+@pytest.mark.parametrize('failed_names', [(), (pihole.NAMES[0],), (pihole.NAMES[1],), pihole.NAMES])
+def test_upstream_partial_is_independent_of_summary_availability(monkeypatch, failed_names):
+    monkeypatch.setenv('PIHOLE_API_KEY', 'test-password')
+    def fetch(name):
+        config = TimeoutError('SECRET') if name in failed_names else None
+        return pihole.fetch_instance(name, transport_for(FIXTURE['instances'][0], [], config))
+    result = pihole.collect(fetch, now=FIXTURE['captured_at'])
+    assert result['available'] is True and result['partial'] is False
+    assert result['total_queries'] == 40
+    assert result['query_history']['available'] is True
+    assert result['upstreams_available'] is (len(failed_names) < len(pihole.NAMES))
+    assert result['upstreams_partial'] is (0 < len(failed_names) < len(pihole.NAMES))
+    assert 'SECRET' not in json.dumps(result)
+
+
 def test_failed_instance_upstreams_are_unavailable_not_empty():
     def fail(name):
         raise TimeoutError('SECRET')

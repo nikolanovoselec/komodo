@@ -4,10 +4,11 @@ import math
 
 NAMES = ('pihole-master.lan', 'pihole-slave.lan')
 METRICS = ('total_queries', 'blocked_queries', 'gravity_entries')
+SNAPSHOT_MAX_BYTES = 1048576
 
 
-def query_history(rows, now):
-    start = now - 1800
+def query_history(rows, now, window_seconds=86400):
+    start = now - window_seconds
     maps = []
     for row in rows:
         data = {}
@@ -37,7 +38,7 @@ def query_history(rows, now):
     result = dict(available=any(p['permitted'] is not None for p in points),
                   max_total_count=maximum_total,
                   partial=truncated or any(p['permitted'] is None for p in points) or len(points) < 3 or any(b-a > 600 for a,b in zip(stamps, stamps[1:])),
-                  interval_seconds=600, window_seconds=1800, start=datetime.fromtimestamp(start, timezone.utc).strftime('%H:%M'), end=datetime.fromtimestamp(now, timezone.utc).strftime('%H:%M'),
+                  interval_seconds=600, window_seconds=window_seconds, start=datetime.fromtimestamp(start, timezone.utc).strftime('%H:%M'), end=datetime.fromtimestamp(now, timezone.utc).strftime('%H:%M'),
                   max_count=maximum, points=points, error=None)
     for key in ('total', 'permitted', 'blocked'):
         # Keep the permitted legacy scale; request and block charts scale independently.
@@ -49,7 +50,7 @@ def query_history(rows, now):
                 if segment: segments.append(segment)
                 segment=[]
             if p[key] is not None:
-                segment.append(((p['timestamp']-start)/1800*600,140-p[key]/max(series_maximum,1)*140))
+                segment.append(((p['timestamp']-start)/window_seconds*600,140-p[key]/max(series_maximum,1)*140))
             previous=p['timestamp']
         if segment: segments.append(segment)
         paths = ['M'+' L'.join(f'{x:.2f},{y:.2f}' for x,y in seg) for seg in segments]
@@ -62,7 +63,7 @@ def query_history(rows, now):
     # partial bin ends at collection time; never extend it into the future.
     observed = [t for data in maps for t in data if t % 600 == 300 and t - 300 < now]
     end = min(now, max(observed) + 300) if observed else now
-    start = end - 1800
+    start = end - window_seconds
     bin_stamps = sorted({t for data in maps for t in data
                          if t % 600 == 300 and t + 300 > start and t - 300 < end})
     bins = []
@@ -76,8 +77,8 @@ def query_history(rows, now):
                          blocked=sum(r['blocked'] for r in records) if complete else None))
     valid = [b for b in bins if b['total'] is not None]
     result.update(available=result['available'] or bool(valid), bins=bins, start_epoch=start, end_epoch=end,
-                  start=datetime.fromtimestamp(start, timezone.utc).strftime('%H:%M'),
-                  end=datetime.fromtimestamp(end, timezone.utc).strftime('%H:%M'),
+                  start=datetime.fromtimestamp(start, timezone.utc).strftime('%d %b %H:%M' if window_seconds == 86400 else '%H:%M'),
+                  end=datetime.fromtimestamp(end, timezone.utc).strftime('%d %b %H:%M' if window_seconds == 86400 else '%H:%M'),
                   stale=bool(observed) and now - end > 600,
                   timestamp_semantics='midpoint',
                   bin_value_semantics='observed_count_per_600_second_bin',
@@ -88,11 +89,11 @@ def query_history(rows, now):
     for b in valid:
         if b['start_epoch'] > cursor:
             result['missing_spans'].append(dict(start_epoch=cursor, end_epoch=b['start_epoch'],
-                                                x=(cursor-start)/3, width=(b['start_epoch']-cursor)/3))
+                                                x=(cursor-start)/window_seconds*600, width=(b['start_epoch']-cursor)/window_seconds*600))
         cursor = max(cursor, b['end_epoch'])
     if cursor < end:
         result['missing_spans'].append(dict(start_epoch=cursor, end_epoch=end,
-                                            x=(cursor-start)/3, width=(end-cursor)/3))
+                                            x=(cursor-start)/window_seconds*600, width=(end-cursor)/window_seconds*600))
     result['partial'] = truncated or bool(result['missing_spans']) or len(bin_stamps) > 181
     for key in ('total', 'permitted', 'blocked'):
         maximum = max([b[key] for b in valid] or [0])
@@ -104,8 +105,8 @@ def query_history(rows, now):
                 segment = []
             if b[key] is not None:
                 y = 140-b[key]/max(maximum, 1)*140
-                segment.extend((((b['start_epoch']-start)/1800*600, y),
-                                ((b['end_epoch']-start)/1800*600, y)))
+                segment.extend((((b['start_epoch']-start)/window_seconds*600, y),
+                                ((b['end_epoch']-start)/window_seconds*600, y)))
             previous_end = b['end_epoch']
         if segment:
             segments.append(segment)
@@ -129,9 +130,9 @@ def query_history(rows, now):
             runs.append(run)
         curves, areas = [], []
         for run in runs:
-            knots = [((max(b['start_epoch'], min(b['timestamp'], b['end_epoch']))-start)/3,
+            knots = [((max(b['start_epoch'], min(b['timestamp'], b['end_epoch']))-start)/window_seconds*600,
                       140-b[key]/max(maximum, 1)*140) for b in run]
-            left, right = (run[0]['start_epoch']-start)/3, (run[-1]['end_epoch']-start)/3
+            left, right = (run[0]['start_epoch']-start)/window_seconds*600, (run[-1]['end_epoch']-start)/window_seconds*600
             if left < knots[0][0]:
                 knots.insert(0, (left, knots[0][1]))
             if right > knots[-1][0]:
@@ -156,6 +157,32 @@ def query_history(rows, now):
     return result
 
 
+def aggregate_upstreams(instances):
+    """Configured IP literals only; preserve source ports, never resolve names."""
+    from ipaddress import ip_address
+    values = []
+    for instance in instances:
+        for value in instance.get('configured_upstreams') or []:
+            try:
+                host, separator, port = value.partition('#')
+                if '%' in host:  # Scoped/interface addresses are not portable resolvers.
+                    continue
+                address = str(ip_address(host))
+                if separator:
+                    if not port.isascii() or not port.isdecimal() or not 1 <= int(port) <= 65535:
+                        continue
+                    address += '#' + str(int(port))
+                if address not in values:
+                    values.append(address)
+            except (ValueError, AttributeError):
+                continue
+    return dict(configured_upstreams=values[:32],
+                upstreams_available=any(i.get('upstreams_available', False) for i in instances),
+                upstreams_partial=any(i.get('upstreams_available', False) for i in instances)
+                    and not all(i.get('upstreams_available', False) for i in instances),
+                upstreams_truncated=len(values) > 32 or any(i.get('upstreams_truncated', False) for i in instances))
+
+
 def collect(fetch, now=None):
     rows, instances = [], []
     for name in NAMES:
@@ -178,6 +205,7 @@ def collect(fetch, now=None):
     return dict(available=bool(rows), partial=partial, gravity_aggregation='sum_not_deduplicated',
                 error=('Partial Pi-hole data; sums cover available instances only.' if partial else
                        'Pi-hole unavailable; verify TLS, network and API authentication.' if not rows else None),
+                **aggregate_upstreams(instances),
                 instances=instances, query_history=query_history(rows, time.time() if now is None else now),
                 **{key: sum(row[key] for row in rows) if rows else None for key in METRICS})
 
@@ -276,6 +304,32 @@ def unavailable():
     return collect(missing)
 
 
+def migrate_snapshot(data):
+    """Reframe legacy geometry, retaining only its real observed coverage."""
+    import re
+    if any(not isinstance(instance, dict) for instance in data['instances']):
+        raise ValueError('Invalid snapshot instances')
+    data.update(aggregate_upstreams(data['instances']))
+    history = data['query_history']
+    if history.get('window_seconds') == 1800:
+        start = history['end_epoch'] - 86400
+        offset = (history['start_epoch']-start)/86400*600
+        ratio = 1800/86400
+        for key in ('total', 'permitted', 'blocked'):
+            for field in ('path', 'area_path', 'bin_path', 'bin_area_path', 'curve_path', 'curve_area_path'):
+                if field in history[key]:
+                    history[key][field] = re.sub(r'(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)',
+                        lambda m: f'{offset+float(m[1])*ratio:.6f},{m[2]}', history[key][field])
+        spans = [dict(start_epoch=start, end_epoch=history['start_epoch'], x=0.0, width=offset)]
+        for span in history.get('missing_spans', []):
+            spans.append(dict(span, x=offset+span['x']*ratio, width=span['width']*ratio))
+        history.update(window_seconds=86400, start_epoch=start,
+                       start=datetime.fromtimestamp(start, timezone.utc).strftime('%d %b %H:%M'),
+                       end=datetime.fromtimestamp(history['end_epoch'], timezone.utc).strftime('%d %b %H:%M'),
+                       missing_spans=spans, partial=True, stale=True)
+    return data
+
+
 class Snapshot:
     """Single-flight cache warmed by the server lifecycle, with atomic disk snapshots.
 
@@ -293,8 +347,8 @@ class Snapshot:
         if storage_path:
             try:
                 with open(storage_path, 'rb') as stream:
-                    raw = stream.read(262145)
-                if len(raw) > 262144:
+                    raw = stream.read(SNAPSHOT_MAX_BYTES + 1)
+                if len(raw) > SNAPSHOT_MAX_BYTES:
                     raise ValueError('Snapshot too large')
                 saved = json.loads(raw)
                 age = time.time() - saved['started_at']
@@ -302,6 +356,8 @@ class Snapshot:
                     raise ValueError('Invalid snapshot')
                 data = saved['data']
                 template = unavailable()
+                if isinstance(data, dict) and isinstance(data.get('instances'), list) and isinstance(data.get('query_history'), dict):
+                    data = migrate_snapshot(data)
                 if (not isinstance(data, dict) or set(data) != set(template) | {'fetched_at'}
                         or type(data['available']) is not bool or type(data['partial']) is not bool
                         or not isinstance(data['fetched_at'], (int, float))
@@ -322,7 +378,7 @@ class Snapshot:
         temporary = self.storage_path + '.tmp'
         try:
             payload = json.dumps(dict(version=1, started_at=time.time() - (self.clock()-started), data=data), allow_nan=False).encode()
-            if len(payload) > 262144:
+            if len(payload) > SNAPSHOT_MAX_BYTES:
                 raise ValueError('Snapshot too large')
             with open(temporary, 'wb') as stream:
                 stream.write(payload)
