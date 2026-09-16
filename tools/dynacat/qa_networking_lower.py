@@ -24,6 +24,7 @@ def capture(browser, url, variant):
             page=context.new_page(); errors=[]
             page.on('pageerror',lambda error:errors.append(str(error)))
             page.goto(url);page.locator('.nw-pihole').wait_for()
+            if variant=='live': page.locator('.nw-query-chart svg').wait_for(timeout=30000)
             page.locator(f'.theme-choices [data-key="{key}"]').first.evaluate('e=>e.click()')
             page.wait_for_timeout(250)
             tests.test_clients_removed_and_pihole_full_width_below_preserved_infrastructure(page) if variant=='candidate' else None

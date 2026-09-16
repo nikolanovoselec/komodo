@@ -1,30 +1,15 @@
-# Pi-hole frontend verification
+# Pi-hole history frontend QA
 
-## Scope / acceptance
+Supersedes previous DNS-list/client-layout acceptance.
 
-- [x] Available + partial renders actionable warning and labels totals as partial.
-- [x] Partial without an error has a partial-specific fallback, not a full-outage claim.
-- [x] Fully available uses `Across both instances.`; gravity sum is explicitly not deduplicated.
-- [x] Native history uses `Permitted DNS queries`, never claims successful resolution, and preserves provider status and source identity.
-- [x] Native renderer limits each supplied merged history to ten records.
-- [x] Expanded clients-left layout, filter refresh and mobile stacking remain covered.
-- [x] No CSS edits; infrastructure and client template bytes preserved.
-- [ ] Captured-real available Pi-hole screenshots in desktop/mobile and light/dark after deployment (release owner).
+- Native tests: 4 passed, with separate observed RED/GREEN for removal/full-width and combined chart replacement.
+- Backend+wiring: 220 passed, 92 subtests passed. Exact timestamp sums, privacy, null gaps, missing instances, official endpoint and compact UTC labels covered.
+- Production code release: `7900c2a60826f525638e918646f82503eaf10aa8`, deployed through Git/Komodo; all five services running, health-enabled collector and geoip healthy, Komodo running(5), no remote errors.
+- Live and captured-real native screenshots at 1600/390, dark/light: all passed; mobile contexts have touch and mobile emulation. Actual swipes and scroll stability through refresh checked. Wait for touch inertia before comparing scroll positions.
+- Exact captured backend line/area paths match native SVG for both series. Retained infrastructure paths also match captured real source. No clients or domain lists, no overflow or JS errors. Pi-hole width1534 desktop /348 mobile matches infrastructure.
+- Actual query series have 600-second resolution, three actual source points in last30minutes. Blank edges are not fabricated backfill. Both sources available.
+- Live screenshots visually inspected for readable short UTC endpoints, sensible stats wrapping, distinguishable shaded series in both themes.
 
-## Reproducible native regression command
+Artifacts untracked under `networking-query-qa/`: `live-{dark,light}-{1600,390}-{page,pihole}.png`, corresponding candidate captures and report JSON. Source `/tmp/network-query-current.json` is captured production JSON with client inventory removed; Pi-hole no longer exports domain records.
 
-From repository root:
-
-```sh
-/srv/hermes/workspaces/dynacat-qa-venv/bin/python -m pytest tools/dynacat/test_networking_lower.py -q --tb=short
-```
-
-Uses Docker Dynacat 3.0.0, existing captured UniFi response and **synthetic** Pi-hole states, a local read-only fixture HTTP server, production head/assets, and actual native widget polling. Does not deploy. Docker network `media-compact-qa` and the existing `networking-layout-qa/source/network-current` capture are prerequisites. Do not run concurrently with the other networking QA harness: its source container name is shared.
-
-TDD evidence: `-k partial -q` initially failed with `.nw-warning` absent despite `available=true`. After the minimal conditional/totals fix it passed (1 passed). Parameterizing the empty-error case then failed because the fallback incorrectly claimed complete integration unavailability. After its minimal fallback fix the full suite passed (9 passed). Existing permitted/non-deduplicated wording needed no production change; assertions protect that existing behavior.
-
-## Live verification handoff
-
-The existing `qa_networking_lower.py --url URL` captures full-page and lower-panel PNGs plus report JSON in `networking-lower-qa/`. It disables media `play()`, but only resizes its page; **do not present that alone as touch/mobile-emulation acceptance**. For complete live QA reuse the context/route guard from `qa_networking_layout.py`: independent contexts for widths 1600/390, `is_mobile` and `has_touch` true at 390, and block media, stream/radio and cross-origin requests. That older layout script's main inspection still expects the removed clients disclosure, so do not run it unchanged.
-
-Capture native rendered live data; never replace live histories with the synthetic test fixture. Check Pi-hole totals against the same captured adapter response, both instance names/states, ten permitted/blocked rows when supplied, exact source/status/time ordering, warning visibility for actual partial data, no overflow or JS errors, client filter and uninterrupted mobile scroll through native refreshes. Review screenshots visually. Do not start audio, modify Pi-hole settings, or imply available-data screenshots prove a synthetic partial-state outage occurred in production.
+Run `/srv/hermes/workspaces/dynacat-qa-venv/bin/python tools/dynacat/qa_networking_lower.py` for captured-real native QA, or add `--url http://127.0.0.1:18148/networking` for production via read-only SSH tunnel. Live QA waits up to30seconds for existing demand-cache refresh rather than declaring its initial unavailable response a permanent failure. No audio playback, Pi-hole changes, volume removal or direct service restart.

@@ -10,8 +10,8 @@
 - [x] Missing history shown unavailable; incomplete history warning independent of summary counters.
 - [x] CSS digest matches production asset wiring.
 - [x] Native 1600/390 dark/light capture, touch-emulated phone swipe and position retained across native refresh.
-- [ ] Captured-real populated query chart (current deployed API does not yet expose query_history).
-- [ ] Release and live post-release verification (release owner only).
+- [x] Captured-real populated query chart, backend paths checked exactly.
+- [x] Release and live post-release verification completed. See PIHOLE-FRONTEND-QA.md; the earlier handoff evidence below predates deployment and screenshots were subsequently replaced by populated real charts.
 
 ## Evidence
 Native TDD observed:
