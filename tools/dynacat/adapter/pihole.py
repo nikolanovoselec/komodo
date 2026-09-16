@@ -112,6 +112,47 @@ def query_history(rows, now):
         paths = ['M'+' L'.join(f'{x:.2f},{y:.2f}' for x,y in seg) for seg in segments]
         result[key].update(bin_max_count=maximum, bin_path=' '.join(paths),
                            bin_area_path=' '.join(path+f' L{seg[-1][0]:.2f},140 L{seg[0][0]:.2f},140 Z' for path,seg in zip(paths,segments)))
+        # Display interpolation only: keep every recorded/bin/legacy field intact.
+        # Midpoint counts are knots; a clipped midpoint uses that bin's visible
+        # edge. Flat end support stays strictly inside the real first/last bin.
+        # These edge anchors are geometry, not additional telemetry samples.
+        runs, run, previous_end = [], [], None
+        for b in bins:
+            if b[key] is None or b['start_epoch'] != previous_end:
+                if run:
+                    runs.append(run)
+                run = []
+            if b[key] is not None:
+                run.append(b)
+            previous_end = b['end_epoch']
+        if run:
+            runs.append(run)
+        curves, areas = [], []
+        for run in runs:
+            knots = [((max(b['start_epoch'], min(b['timestamp'], b['end_epoch']))-start)/3,
+                      140-b[key]/max(maximum, 1)*140) for b in run]
+            left, right = (run[0]['start_epoch']-start)/3, (run[-1]['end_epoch']-start)/3
+            if left < knots[0][0]:
+                knots.insert(0, (left, knots[0][1]))
+            if right > knots[-1][0]:
+                knots.append((right, knots[-1][1]))
+            widths = [b[0]-a[0] for a,b in zip(knots, knots[1:])]
+            slopes = [(b[1]-a[1])/w for a,b,w in zip(knots, knots[1:], widths)]
+            tangents = [0.0] * len(knots)
+            for i in range(1, len(knots)-1):
+                before, after = slopes[i-1], slopes[i]
+                if before * after > 0:
+                    # Shape-preserving weighted harmonic mean (PCHIP).
+                    w1, w2 = 2*widths[i]+widths[i-1], widths[i]+2*widths[i-1]
+                    tangents[i] = (w1+w2)/(w1/before+w2/after)
+            path = f'M{knots[0][0]:.6f},{knots[0][1]:.6f}'
+            for i, ((x,y),(nx,ny)) in enumerate(zip(knots, knots[1:])):
+                third = (nx-x)/3
+                path += (f' C{x+third:.6f},{y+third*tangents[i]:.6f}'
+                         f' {nx-third:.6f},{ny-third*tangents[i+1]:.6f} {nx:.6f},{ny:.6f}')
+            curves.append(path)
+            areas.append(path+f' L{right:.6f},140 L{left:.6f},140 Z')
+        result[key].update(curve_path=' '.join(curves), curve_area_path=' '.join(areas))
     return result
 
 
