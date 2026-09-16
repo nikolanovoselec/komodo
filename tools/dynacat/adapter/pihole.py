@@ -54,6 +54,64 @@ def query_history(rows, now):
         if segment: segments.append(segment)
         paths = ['M'+' L'.join(f'{x:.2f},{y:.2f}' for x,y in seg) for seg in segments]
         result[key] = dict(max_count=series_maximum, path=' '.join(paths), area_path=' '.join(path+f' L{seg[-1][0]:.2f},140 L{seg[0][0]:.2f},140 Z' for path,seg in zip(paths,segments)))
+    # FTL overTime.c::_getOverTimeID floors to 600s then adds 300s;
+    # api/history.c exports that midpoint verbatim. Keep legacy point geometry
+    # above, but include every real interval intersecting the requested window.
+    # Anchor DNS-only geometry to the latest observed interval, BEFORE the
+    # wall-clock filter can discard the oldest contributing midpoint. A current
+    # partial bin ends at collection time; never extend it into the future.
+    observed = [t for data in maps for t in data if t % 600 == 300 and t - 300 < now]
+    end = min(now, max(observed) + 300) if observed else now
+    start = end - 1800
+    bin_stamps = sorted({t for data in maps for t in data
+                         if t % 600 == 300 and t + 300 > start and t - 300 < end})
+    bins = []
+    for stamp in bin_stamps[-181:]:
+        records = [data[stamp] for data in maps if data.get(stamp) is not None]
+        complete = len(records) == len(NAMES)
+        bins.append(dict(timestamp=stamp, start_epoch=max(start, stamp-300),
+                         end_epoch=min(end, stamp+300), available_instances=len(records),
+                         total=sum(r['total'] for r in records) if complete else None,
+                         permitted=sum(r['total']-r['blocked'] for r in records) if complete else None,
+                         blocked=sum(r['blocked'] for r in records) if complete else None))
+    valid = [b for b in bins if b['total'] is not None]
+    result.update(available=result['available'] or bool(valid), bins=bins, start_epoch=start, end_epoch=end,
+                  start=datetime.fromtimestamp(start, timezone.utc).strftime('%H:%M'),
+                  end=datetime.fromtimestamp(end, timezone.utc).strftime('%H:%M'),
+                  stale=bool(observed) and now - end > 600,
+                  timestamp_semantics='midpoint',
+                  bin_value_semantics='observed_count_per_600_second_bin',
+                  coverage_start_epoch=valid[0]['start_epoch'] if valid else None,
+                  coverage_end_epoch=valid[-1]['end_epoch'] if valid else None,
+                  missing_spans=[])
+    cursor = start
+    for b in valid:
+        if b['start_epoch'] > cursor:
+            result['missing_spans'].append(dict(start_epoch=cursor, end_epoch=b['start_epoch'],
+                                                x=(cursor-start)/3, width=(b['start_epoch']-cursor)/3))
+        cursor = max(cursor, b['end_epoch'])
+    if cursor < end:
+        result['missing_spans'].append(dict(start_epoch=cursor, end_epoch=end,
+                                            x=(cursor-start)/3, width=(end-cursor)/3))
+    result['partial'] = truncated or bool(result['missing_spans']) or len(bin_stamps) > 181
+    for key in ('total', 'permitted', 'blocked'):
+        maximum = max([b[key] for b in valid] or [0])
+        segments, segment, previous_end = [], [], None
+        for b in bins:
+            if b[key] is None or b['start_epoch'] != previous_end:
+                if segment:
+                    segments.append(segment)
+                segment = []
+            if b[key] is not None:
+                y = 140-b[key]/max(maximum, 1)*140
+                segment.extend((((b['start_epoch']-start)/1800*600, y),
+                                ((b['end_epoch']-start)/1800*600, y)))
+            previous_end = b['end_epoch']
+        if segment:
+            segments.append(segment)
+        paths = ['M'+' L'.join(f'{x:.2f},{y:.2f}' for x,y in seg) for seg in segments]
+        result[key].update(bin_max_count=maximum, bin_path=' '.join(paths),
+                           bin_area_path=' '.join(path+f' L{seg[-1][0]:.2f},140 L{seg[0][0]:.2f},140 Z' for path,seg in zip(paths,segments)))
     return result
 
 
@@ -243,7 +301,8 @@ class Snapshot:
         except Exception:
             data = unavailable()
         data['fetched_at'] = time.time()
-        data['query_history'].update(fetched_at=data['fetched_at'], stale=False)
+        data['query_history'].update(fetched_at=data['fetched_at'])
+        data['query_history'].setdefault('stale', False)
         with self.lock:
             if not data['query_history']['available'] and self.data is not None:
                 data['query_history'] = copy.deepcopy(self.data['query_history'])

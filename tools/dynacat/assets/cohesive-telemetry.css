@@ -9,14 +9,82 @@ html[data-scheme="light"] :is(.cw-merged,.nw-dashboard){color-scheme:light}html[
 .nw-top-row .nw-resolvers{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px;margin-top:14px;padding-top:12px}.nw-top-row .nw-resolver-label{grid-column:1/-1;display:flex;justify-content:space-between;font-size:11px}.nw-top-row .nw-resolver-label small{margin:0;font-size:10px}.nw-top-row .nw-resolver strong{font-size:12px}.nw-top-row .nw-resolver-state{font-size:10px;display:block;margin:2px 0}.nw-top-row .nw-resolver-ips{gap:3px 10px;margin-top:4px}.nw-top-row .nw-resolver-ips code{font-size:11px}
 .nw-top-row .nw-gateway{display:flex;flex-direction:column}.nw-top-row .nw-gateway header{min-height:26px}.nw-top-row .nw-gateway .nw-eyebrow{display:none}.nw-top-row .nw-gateway .nw-meta{margin:4px 0 20px;font-size:11px}.nw-top-row .nw-gateway .nw-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 18px;flex:1;align-content:start}.nw-top-row .nw-gateway .nw-metric-label{font-size:11px;align-items:baseline}.nw-top-row .nw-gateway .nw-metric-label b{font-size:22px}.nw-top-row .nw-gateway .nw-metric svg{height:94px;margin-top:8px}.nw-top-row .nw-gateway footer{font-size:11px;padding-top:12px;margin-top:16px;gap:8px 18px}.nw-metric:nth-child(2){--nw-ink:var(--telemetry-ram)}
 .nw-dashboard :is(.nw-query-line,.nw-metric svg path:not(.nw-gridline):not(.nw-area)),.cw-merged .cw-history-line{stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}.nw-dashboard :is(.nw-gridline),.cw-merged .cw-history-grid{stroke:var(--telemetry-border);stroke-opacity:1;stroke-width:1;fill:none;vector-effect:non-scaling-stroke}.nw-dashboard .nw-query-area,.nw-dashboard .nw-metric svg path.nw-area,.cw-merged .cw-history-area{fill-opacity:.35}.nw-dashboard .nw-metric svg circle,.cw-merged .cw-history-chart circle{display:none}
-/* Resource matrix: readings at left, histories at right, secondary capacities below. */
+/* Resource matrix: each metric has a reading header, real plot, axis and capacity. */
 .pve-guests.cw-merged .cw-workloads *{box-sizing:border-box}
 @media(max-width:700px){.pve-guests.cw-merged .cw-workload .k-host header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 6px}.pve-guests.cw-merged .cw-workload .k-host header strong{grid-column:1;overflow-wrap:anywhere}.pve-guests.cw-merged .cw-workload .k-host header .pve-guest-meta{grid-column:1;font-size:10px}.pve-guests.cw-merged .cw-workload .k-host header .k-state{grid-column:2;grid-row:1/3;align-self:center}.pve-guests.cw-merged .cw-workload>.k-host.cc-resource-link{padding:5px 10px}.pve-guests.cw-merged .cw-workload .k-host header{margin-bottom:3px}.pve-guests.cw-merged .cw-workload .cw-history-chart{height:22px}.pve-guests.cw-merged .cw-workload .k-metrics{align-items:start}.pve-guests.cw-merged .cw-workload .cw-history-axis{line-height:10px}.pve-guests.cw-merged .cw-workload .cw-history-metric>small{margin-top:1px;line-height:10px}.pve-guests.cw-merged .cw-workload .cw-no-docker{min-height:0;height:auto;padding:0;box-sizing:border-box}.pve-guests.cw-merged .cw-workload .cw-docker>summary{padding-top:3px;padding-bottom:3px;min-height:44px}}
 
-.pve-guests.cw-merged .cw-workloads{display:grid;grid-template-columns:minmax(0,1fr);gap:5px}.pve-guests.cw-merged .cw-workload{border:1px solid var(--telemetry-border);border-radius:6px;background:var(--telemetry-surface);grid-template-columns:minmax(0,1fr) 180px;gap:10px;align-items:center;font-size:13px}.pve-guests.cw-merged .cw-workload>.k-host{padding:7px 10px;min-height:64px}.pve-guests.cw-merged .k-host.cc-resource-link{grid-template-columns:180px minmax(0,1fr);gap:20px}.pve-guests.cw-merged .k-host header strong{font-size:13px;font-weight:600}.pve-guests.cw-merged .k-host header .pve-guest-meta{font-size:11px;color:var(--color-text-base)}.pve-guests.cw-merged .k-metrics{gap:20px;align-items:center}
-.pve-guests.cw-merged .cw-history-metric{display:grid;grid-template-columns:58px minmax(0,1fr);column-gap:8px;align-items:center;position:relative}.pve-guests.cw-merged .cw-history-metric label{grid-column:1;grid-row:1/3;display:flex;flex-direction:column;align-items:start;gap:3px;font-size:10px;line-height:1.2}.pve-guests.cw-merged .cw-history-metric label b{font-size:15px;line-height:1.2}.pve-guests.cw-merged .cw-history-chart{grid-column:2;grid-row:1;height:27px;margin:0}.pve-guests.cw-merged .cw-history-axis{grid-column:2;grid-row:2;font-size:9px;line-height:11px;margin:0}.pve-guests.cw-merged .cw-history-metric>small{grid-column:1/-1;font-size:10px;line-height:12px;min-height:0;margin:3px 0 0;color:var(--color-text-base)}
+.pve-guests.cw-merged .cw-workloads{display:grid;grid-template-columns:minmax(0,1fr);gap:5px}.pve-guests.cw-merged .cw-workload{border:1px solid var(--telemetry-border);border-radius:6px;background:var(--telemetry-surface);grid-template-columns:minmax(0,1fr) 180px;gap:10px;align-items:center;font-size:13px}.pve-guests.cw-merged .cw-workload>.k-host{padding:7px 10px;min-height:64px}.pve-guests.cw-merged .k-host.cc-resource-link{grid-template-columns:180px minmax(0,1fr);gap:20px}.pve-guests.cw-merged .k-host header strong{font-size:13px;font-weight:600}.pve-guests.cw-merged .k-host header .pve-guest-meta{font-size:11px;color:var(--color-text-base)}.pve-guests.cw-merged .k-metrics{gap:20px;align-items:start}
+.pve-guests.cw-merged .cw-history-metric{display:grid;grid-template-columns:minmax(0,1fr);align-items:start;position:relative}.pve-guests.cw-merged .cw-history-metric label{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-size:10px;line-height:1.2;margin-bottom:6px}.pve-guests.cw-merged .cw-history-metric label b{font-size:16px;line-height:1.2}.pve-guests.cw-merged .cw-workload .cw-history-chart{height:48px;margin:0}.pve-guests.cw-merged .cw-history-axis{font-size:9px;line-height:12px;margin:3px 0 0}.pve-guests.cw-merged .cw-history-metric>small{font-size:10px;line-height:12px;min-height:12px;margin:3px 0 0;color:var(--color-text-base)}
 .pve-guests.cw-merged .cw-docker>summary{min-height:52px;padding:6px 10px;display:flex;flex-direction:column;justify-content:center;border-left:1px solid var(--telemetry-border)}.pve-guests.cw-merged .cw-docker-count{width:100%;gap:5px}.pve-guests.cw-merged .cw-docker-count>b{font-size:15px}.pve-guests.cw-merged .cw-docker-count>span{font-size:10px;color:var(--color-text-base)}.pve-guests.cw-merged .cw-docker-count small{display:inline}.pve-guests.cw-merged .cw-alert{font-size:10px}.pve-guests.cw-merged .cw-matrix-head{padding:4px 0}.pve-guests.cw-merged .cw-docker[open]{grid-column:1/-1}.pve-guests.cw-merged .cw-docker[open]>summary{min-height:44px;flex-direction:row;justify-content:start}.pve-guests.cw-merged .cw-docker[open] .cw-docker-count{width:auto}
 @media(max-width:1100px){.nw-top-row{grid-template-columns:1fr}.pve-guests.cw-merged .k-host.cc-resource-link{grid-template-columns:150px minmax(0,1fr);gap:12px}.pve-guests.cw-merged .k-metrics{gap:10px}}
 @media(max-width:700px){.nw-top-row{gap:16px}.nw-top-row>.nw-pihole,.nw-top-row>.nw-gateway{padding:14px}.nw-top-row .nw-dns-heading{flex-wrap:wrap;gap:6px}.nw-top-row .nw-dns-network{grid-template-columns:1fr;gap:16px}.nw-top-row .nw-dns-plot svg{height:94px}.nw-top-row .nw-dns-stat b{font-size:20px}.nw-top-row .nw-resolvers{grid-template-columns:1fr}.nw-top-row .nw-resolver-state{display:inline;margin-left:6px}.nw-top-row .nw-gateway .nw-metric-label b{font-size:19px}.nw-top-row .nw-gateway .nw-metric svg{height:65px}.nw-top-row .nw-gateway .nw-meta{margin-bottom:16px}.nw-top-row .nw-split-axis{display:flex;justify-content:space-between;flex-wrap:wrap}.nw-top-row .nw-split-axis span:nth-child(2){order:3;flex-basis:100%}
 .pve-guests.cw-merged .cw-workloads{gap:8px}.pve-guests.cw-merged .cw-workload{display:block}.pve-guests.cw-merged .cw-workload>.k-host{padding:8px 10px;display:block}.pve-guests.cw-merged .k-host header{margin-bottom:7px}.pve-guests.cw-merged .k-metrics{gap:10px}.pve-guests.cw-merged .cw-history-metric{display:block}.pve-guests.cw-merged .cw-history-metric label{flex-direction:row;justify-content:space-between;align-items:baseline;gap:3px;font-size:10px}.pve-guests.cw-merged .cw-history-metric label b{font-size:12px}.pve-guests.cw-merged .cw-history-chart{height:24px;margin-top:3px}.pve-guests.cw-merged .cw-history-axis{font-size:9px}.pve-guests.cw-merged .cw-history-axis span:nth-child(2){display:none}.pve-guests.cw-merged .cw-history-metric>small{font-size:9px;line-height:11px;white-space:nowrap}.pve-guests.cw-merged .cw-docker>summary{min-height:44px;border-left:0;border-top:1px solid var(--telemetry-border);padding:6px 10px;flex-direction:row;align-items:center;justify-content:space-between;gap:8px}.pve-guests.cw-merged .cw-docker-count{width:auto;white-space:nowrap}.pve-guests.cw-merged .cw-alert{font-size:9px;line-height:1.2}.pve-guests.cw-merged .cw-no-docker{padding:8px 10px;min-height:44px;display:flex;align-items:center}
 }
+
+.pve-guests.cw-merged .cw-history-area{fill-opacity:.14}.pve-guests.cw-merged .cw-history-line{stroke-width:1.4}.pve-guests.cw-merged .cw-history-grid{stroke:color-mix(in srgb,var(--color-primary) 18%,transparent)}
+
+/* Approved WORKLOADS node cards: additive, isolated from every other widget. */
+.pve-guests.cw-merged .cw-matrix-head{display:none}
+.pve-guests.cw-merged .cw-workloads{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start;margin-top:18px}
+.pve-guests.cw-merged .cw-workload{display:block;min-width:0;overflow:hidden;background:var(--telemetry-surface)}
+.pve-guests.cw-merged .cw-workload>.k-host.cc-resource-link{display:block;padding:18px 20px 16px}
+.pve-guests.cw-merged .cw-workload .k-host header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 12px;margin:0 0 20px}
+.pve-guests.cw-merged .cw-workload .k-host header strong{font-size:19px;line-height:25px;font-weight:600;grid-column:1;overflow-wrap:anywhere}
+.pve-guests.cw-merged .cw-workload .k-host header .pve-guest-meta{grid-column:1;grid-row:2;font-size:12px}
+.pve-guests.cw-merged .cw-workload .k-host header .k-state{grid-column:2;grid-row:1;align-self:center;font-size:11px}
+.pve-guests.cw-merged .cw-workload .k-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.pve-guests.cw-merged .cw-workload .cw-history-metric{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:30px 28px 92px 20px}
+.pve-guests.cw-merged .cw-workload .cw-history-metric label{grid-row:1;display:flex;align-items:baseline;justify-content:space-between;font-size:12px;margin:0;line-height:24px}
+.pve-guests.cw-merged .cw-workload .cw-history-metric label b{font-size:24px;font-weight:400;line-height:28px}
+.pve-guests.cw-merged .cw-workload .cw-history-metric>small{grid-row:2;margin:0;font-size:12px;line-height:18px;white-space:normal}
+.pve-guests.cw-merged .cw-workload .cw-history-chart{grid-row:3;height:92px;margin:0}
+.pve-guests.cw-merged .cw-workload .cw-history-axis{grid-row:4;font-size:10px;line-height:15px;margin-top:5px}
+.pve-guests.cw-merged .cw-workload .cw-docker,.pve-guests.cw-merged .cw-workload .cw-docker[open]{border:0;border-top:1px solid var(--telemetry-border)}
+.pve-guests.cw-merged .cw-workload .cw-docker>summary,.pve-guests.cw-merged .cw-workload .cw-docker[open]>summary{min-height:44px;border:0;padding:10px 20px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:5px 12px}
+.pve-guests.cw-merged .cw-workload .cw-docker-count,.pve-guests.cw-merged .cw-workload .cw-docker[open] .cw-docker-count{width:auto;flex:1;gap:6px;align-items:center}
+.pve-guests.cw-merged .cw-workload .cw-docker-count>b{font-size:12px;order:2;margin-left:auto;color:var(--color-text-base)}
+.pve-guests.cw-merged .cw-workload .cw-docker-count>span{font-size:12px;order:1}
+.pve-guests.cw-merged .cw-workload .cw-docker-count>i,.pve-guests.cw-merged .cw-workload .cw-docker[open] .cw-docker-count>i{order:0;margin:0;color:var(--color-text-base)}
+.pve-guests.cw-merged .cw-workload .cw-alert{font-size:11px}
+.pve-guests.cw-merged .cw-workload .cw-no-docker{padding:0;min-height:0;font-size:12px}
+@media(max-width:800px){
+.pve-guests.cw-merged .cw-workloads{grid-template-columns:minmax(0,1fr);gap:14px}
+.pve-guests.cw-merged .cw-workload>.k-host.cc-resource-link{padding:14px 16px 10px}
+.pve-guests.cw-merged .cw-workload .k-host header{margin-bottom:14px}
+.pve-guests.cw-merged .cw-workload .k-host header strong{font-size:18px}
+.pve-guests.cw-merged .cw-workload .k-metrics{grid-template-columns:minmax(0,1fr);gap:0}
+.pve-guests.cw-merged .cw-workload .cw-history-metric{grid-template-columns:94px minmax(0,1fr);grid-template-rows:auto auto 20px;column-gap:14px;padding:11px 0;border-top:1px solid var(--telemetry-border)}
+.pve-guests.cw-merged .cw-workload .cw-history-metric label{grid-column:1;grid-row:1;display:block;font-size:11px;line-height:16px;align-self:start}
+.pve-guests.cw-merged .cw-workload .cw-history-metric label b{display:block;font-size:22px;margin-top:6px;line-height:26px}
+.pve-guests.cw-merged .cw-workload .cw-history-metric>small{grid-column:1;grid-row:2;font-size:11px;line-height:15px;margin:3px 0 0}
+.pve-guests.cw-merged .cw-workload .cw-history-chart{grid-column:2;grid-row:1/3;height:76px}
+.pve-guests.cw-merged .cw-workload .cw-history-axis{grid-column:2;grid-row:3;font-size:10px}
+.pve-guests.cw-merged .cw-workload .cw-history-axis span:nth-child(2){display:inline}
+.pve-guests.cw-merged .cw-workload .cw-docker>summary,.pve-guests.cw-merged .cw-workload .cw-docker[open]>summary{padding:11px 16px}
+.pve-guests.cw-merged .cw-workload .cw-container{grid-template-columns:minmax(0,1fr) 76px;gap:5px 10px}
+}
+.pve-guests.cw-merged>.widget-header{min-height:44px}
+.pve-guests.cw-merged .cw-workload .k-state{color:var(--color-positive)}
+
+/* BEGIN approved Pi-hole Proxmox node — isolated DNS-only scope */
+.nw-top-row>.nw-pihole{padding:0;border:0;background:none}
+.nw-pihole .pm-node{min-width:0;margin:0;font-family:"JetBrains Mono",monospace;grid-template-columns:repeat(3,minmax(0,1fr))}
+.nw-pihole .pm-node .pve-network{grid-column:1/-1;min-width:0}
+.nw-pihole .pm-node .pve-netgraph{display:block;width:100%;height:116px;padding:4px 0;box-sizing:content-box;overflow:visible}
+.nw-pihole .pm-area{stroke:none;fill-opacity:.10}
+.nw-pihole .pm-requests{fill:var(--color-primary)}
+.nw-pihole .pm-blocks{fill:var(--color-positive)}
+.nw-pihole .pm-hatch{stroke:var(--color-text-subdue);stroke-width:1;opacity:.55}
+.nw-pihole .pm-bin:not(:last-child){display:none}
+.nw-pihole .pm-details{grid-column:1/-1;border-top:1px solid var(--cc-border);font-size:10px;min-width:0}
+.nw-pihole .pm-details summary{min-height:44px;display:flex;align-items:center;cursor:pointer;color:var(--color-text-subdue)}
+.nw-pihole .pm-details summary:before{content:'▸';margin-right:7px}
+.nw-pihole .pm-details[open] summary:before{content:'▾'}
+.nw-pihole .pm-details small{padding-bottom:6px;overflow-wrap:anywhere}
+.nw-pihole .pm-details a{display:inline-flex;min-height:44px;align-items:center}
+.nw-pihole .pm-scope,.nw-pihole .pm-note,.nw-pihole .pm-no-data{grid-column:1/-1;font-size:10px;line-height:1.5;margin:0;color:var(--color-text-subdue)}
+.nw-pihole .pm-no-data span{white-space:nowrap}
+.nw-pihole .pm-node .pve-netaxis{width:100%;gap:4px}
+.nw-pihole .pm-node :focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}
+@media(max-width:700px){.nw-pihole .pm-node .pve-network>.pve-label{flex-wrap:wrap;gap:3px}.nw-pihole .pm-node .pve-cpu strong{font-size:20px}}
+/* END approved Pi-hole Proxmox node */
