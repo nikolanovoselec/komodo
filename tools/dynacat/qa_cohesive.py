@@ -112,9 +112,18 @@ def live_interactions(page,context,slug,width):
     page.evaluate('document.activeElement?.blur()')
     if width==390:
         session=context.new_cdp_session(page)
-        for typ,pts in [('touchStart',[{'x':195,'y':900}]),('touchMove',[{'x':195,'y':350}]),('touchEnd',[])]:
-            session.send('Input.dispatchTouchEvent',{'type':typ,'touchPoints':pts})
+        session.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':195,'y':900}]})
+        for y in range(850,349,-50):
+            session.send('Input.dispatchTouchEvent',{'type':'touchMove','touchPoints':[{'x':195,'y':y}]})
+            page.wait_for_timeout(70)
+        # Release without fling: momentum is user scrolling, not refresh drift.
+        page.wait_for_timeout(250)
+        session.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]})
         page.wait_for_timeout(1500)
+        samples=[]
+        for _ in range(8):
+            samples.append(page.evaluate('scrollY'));page.wait_for_timeout(250)
+        assert len(set(samples[-4:]))==1,('Touch scroll not settled',samples)
     before=page.evaluate('scrollY')
     original=page.locator(selector).inner_text()
     page.wait_for_function('(a)=>document.querySelector(a.selector)?.innerText!==a.original',arg={'selector':selector,'original':original},timeout=45000)
