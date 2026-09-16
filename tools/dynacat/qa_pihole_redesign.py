@@ -14,6 +14,15 @@ with sync_playwright() as p:
    page.locator(f'.theme-choices [data-key="{key}"]').first.evaluate('e=>e.click()');page.wait_for_timeout(1000)
    panel=page.locator('.nw-pihole'); page.screenshot(path=str(OUT/f'{variant}-{theme}-{width}-page.png'),full_page=True);panel.screenshot(path=str(OUT/f'{variant}-{theme}-{width}-pihole.png'))
    m={'width':width,'theme':theme,'panel':panel.bounding_box(),'infrastructure':page.locator('.nw-infrastructure').bounding_box(),'overflow':page.evaluate('document.documentElement.scrollWidth>innerWidth'),'text':panel.inner_text()}
+   if variant in ('continuous-candidate','continuous-live'):
+    chart=panel.locator('.nw-query-timeline')
+    assert chart.count()==1 and chart.get_attribute('viewBox')=='0 0 600 140'
+    assert panel.locator('.nw-query-bars,.nw-query-bin').count()==0
+    m['chart']=chart.bounding_box();m['axis']=panel.locator('.nw-query-time').inner_text()
+    m['series']=chart.locator('.nw-query-line,.nw-query-area').evaluate_all('es=>es.map(e=>({path:e.getAttribute("d"),fill:getComputedStyle(e).fill,opacity:getComputedStyle(e).fillOpacity,stroke:getComputedStyle(e).stroke}))')
+    assert all(s['path'] for s in m['series'])
+    assert chart.bounding_box()['x']>=panel.bounding_box()['x'] and chart.bounding_box()['x']+chart.bounding_box()['width']<=panel.bounding_box()['x']+panel.bounding_box()['width']
+    assert panel.bounding_box()['y']<page.locator('.nw-infrastructure').bounding_box()['y']
    if width==390:
     page.evaluate('scrollTo(0,0)');s=c.new_cdp_session(page);s.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':195,'y':850}]})
     for y in (750,650,550,450,350):

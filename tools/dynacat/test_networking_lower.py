@@ -65,19 +65,29 @@ def test_network_css_cache_version_matches_content():
     actual=hashlib.sha256((ROOT/'assets/networking.css').read_bytes()).hexdigest()[:12]
     assert re.search(r'/assets/networking.css\?v=([a-f0-9]+)',config).group(1)==actual
 
-def test_null_history_has_no_fabricated_bar(page):
+def test_null_history_has_no_fabricated_connection(page):
+    # Explicit synthetic gap/zero cases through the real projection and native refresh.
+    import sys
+    sys.path.insert(0,str(ROOT/'adapter'))
+    from pihole import query_history
     path=OUT/'source/network-current'; original=path.read_text(); data=json.loads(original)
-    data['pihole']['query_history']['points'][1].update(permitted=None,blocked=None,permitted_percent=None,blocked_percent=None)
-    data['pihole']['query_history']['partial']=True
+    rows=[{'history':[{'timestamp':t,'total':10,'blocked':2} for t in (600,1200,1800)]} for _ in range(2)]
+    rows[1]['history'].pop(1)
+    h=query_history(rows,1800); data['pihole']['query_history']=h
     try:
         path.write_text(json.dumps(data))
-        expect(page.locator('.nw-bin-gap')).to_have_text('Unavailable',timeout=12000)
-        assert page.locator('.nw-bin-stack').count()==2
+        line=page.locator('.nw-query-line.nw-permitted');area=page.locator('.nw-query-area.nw-permitted')
+        expect(line).to_have_attribute('d',h['permitted']['path'],timeout=12000)
+        assert line.get_attribute('d').count('M')==2
+        assert area.get_attribute('d')==h['permitted']['area_path']
+        assert area.get_attribute('d').count('Z')==2
         assert 'Incomplete history' in page.locator('.nw-pihole').inner_text()
-        data['pihole']['query_history']['points'][0].update(permitted=0,blocked=0,permitted_percent=0,blocked_percent=0)
+        for row in rows:
+            row['history']=[{'timestamp':t,'total':0,'blocked':0} for t in (600,1200,1800)]
+        h=query_history(rows,1800); data['pihole']['query_history']=h
         path.write_text(json.dumps(data))
-        expect(page.locator('.nw-query-bin').first).to_have_attribute('data-permitted','0',timeout=12000)
-        assert page.locator('.nw-bin-permitted').first.bounding_box()['height']==0
+        expect(line).to_have_attribute('d',h['permitted']['path'],timeout=12000)
+        assert area.evaluate('e=>e.getBBox().height')==0
     finally:path.write_text(original)
 
 
