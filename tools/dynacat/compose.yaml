@@ -7,7 +7,7 @@ services:
     pull_policy: build
     container_name: tools_dynacat_workload_summary
     labels:
-      ch.graymatter.config-revision: "construct-networking-47"
+      ch.graymatter.config-revision: "construct-pihole-51"
     command: ["python", "-B", "/app/adapter.py"]
     user: "65534:65534"
     volumes:
@@ -23,6 +23,7 @@ services:
       DYNACAT_PLEX_TOKEN: ${DYNACAT_PLEX_TOKEN}
       DYNACAT_GITHUB_TOKEN: ${DYNACAT_GITHUB_TOKEN}
       DYNACAT_UNIFI_TOKEN: ${DYNACAT_UNIFI_TOKEN}
+      PIHOLE_API_KEY: ${PIHOLE_API_KEY}
       DYNACAT_KOMODO_API_KEY: ${DYNACAT_KOMODO_API_KEY}
       DYNACAT_KOMODO_API_SECRET: ${DYNACAT_KOMODO_API_SECRET}
       DYNACAT_PROXMOX_SECRET: ${DYNACAT_PROXMOX_SECRET}
@@ -45,7 +46,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "construct-networking-lower-50"
+      ch.graymatter.config-revision: "construct-pihole-51"
     expose: ["8080"]
     volumes:
       - ./config:/app/config

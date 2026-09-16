@@ -39,6 +39,14 @@ def page():
     finally:
         qa.cleanup()
 
+def test_overview_summary_and_wan_removed_without_losing_gateway(page):
+    assert page.locator('.nw-heading, .nw-summary, .nw-wan').count() == 0
+    assert 'NETWORK OVERVIEW' not in page.locator('.nw-dashboard').inner_text()
+    assert page.locator('.nw-gateway').count() > 0
+    assert page.locator('.nw-infrastructure .nw-area').count() > 0
+    assert page.locator('.nw-connected [data-nw-client]').count() > 0
+
+
 def test_network_css_cache_version_matches_content():
     import hashlib
     import re
@@ -77,7 +85,9 @@ def test_available_query_history_is_bounded_and_status_is_explicit(page):
     path=OUT/'source/network-current'
     original=path.read_text()
     data=json.loads(original)
-    data['pihole'].update(available=True,total_queries=0,blocked_queries=12,gravity_entries=2468)
+    data['pihole'].update(available=True,partial=False,error='',total_queries=0,blocked_queries=12,gravity_entries=2468)
+    for instance in data['pihole']['instances']:
+        instance['available']=True
     for kind in ('permitted','blocked'):
         data['pihole']['recent_'+kind]=[{'domain':f'{kind}-{i}.example','time':'2026-09-16T12:00:00Z','status':'FORWARDED' if kind=='permitted' else 'GRAVITY','instance':'pihole-master.lan'} for i in range(12)]
     try:
@@ -90,9 +100,39 @@ def test_available_query_history_is_bounded_and_status_is_explicit(page):
             assert 'Response status:' in rows.first.inner_text()
             assert 'pihole-master.lan' in rows.first.inner_text()
         assert page.locator('.nw-dns-stat b').all_text_contents()==['0','12','2468']
+        panel=page.locator('.nw-pihole')
+        assert panel.locator('.nw-warning').count()==0
+        assert 'Across both instances.' in panel.inner_text()
+        assert 'Gravity entries are summed, not deduplicated.' in panel.inner_text()
+        assert panel.get_by_role('heading',name='Permitted DNS queries',exact=True).count()==1
+        assert 'resolved' not in panel.inner_text().casefold()
+        assert 'FORWARDED' in panel.locator('[data-dns-kind="permitted"]').inner_text()
     finally:
         path.write_text(original)
         expect(page.locator('.nw-dns-stat b').first).to_have_text('Unavailable',timeout=12000)
+
+@pytest.mark.parametrize('error', ['pihole-slave.lan: API authentication unavailable', ''])
+def test_partial_pihole_warns_even_when_available(page, error):
+    from playwright.sync_api import expect
+    path=OUT/'source/network-current'
+    original=path.read_text()
+    data=json.loads(original)
+    data['pihole'].update(available=True, partial=True,
+        error=error,
+        total_queries=123, blocked_queries=45, gravity_entries=678)
+    data['pihole']['instances'][0]['available']=True
+    try:
+        path.write_text(json.dumps(data))
+        expect(page.locator('.nw-dns-stat b').first).to_have_text('123',timeout=12000)
+        panel=page.locator('.nw-pihole')
+        expect(panel.locator('.nw-warning')).to_contain_text(error or 'Partial Pi-hole data · one or more instances are unavailable.')
+        assert 'Partial totals · available instances only.' in panel.inner_text()
+        assert 'Across both instances.' not in panel.inner_text()
+        assert panel.locator('.nw-dns-stat b').all_text_contents()==['123','45','678']
+    finally:
+        path.write_text(original)
+        expect(page.locator('.nw-dns-stat b').first).to_have_text('Unavailable',timeout=12000)
+
 
 def test_expanded_client_filter_survives_native_refresh(page):
     from playwright.sync_api import expect

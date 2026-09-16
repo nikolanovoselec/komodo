@@ -118,7 +118,8 @@ def make_server(address, loader, *, continuous=False, warmers=None, sample_inter
         def do_GET(self):
             if self.path == '/network-current':
                 import unifi
-                data = unifi.current()
+                import pihole
+                data = dict(unifi.current(), pihole=pihole.current())
                 status = 200 if data['state'] == 'available' else 503
                 self.send_json(status, json.dumps(data).encode())
                 return
