@@ -135,6 +135,52 @@ def library():
     for row, image in zip(items, images): row.pop('_item'); row['poster'] = image
     return dict(libraries=totals, recent=items)
 
+_ARR_POSTER_CACHE = {}
+_ARR_POSTER_LOCK = threading.Lock()
+
+
+def _arr_poster_image(url, headers=None):
+    with _ARR_POSTER_LOCK:
+        now = time.monotonic()
+        cached = _ARR_POSTER_CACHE.get(url)
+        if cached and now - cached[0] < 300:
+            return dict(cached[1])
+    body = read(url, headers, binary=True, limit=1_000_000) if headers else read(url, binary=True, limit=1_000_000)
+    mime = ('image/jpeg' if body.startswith(b'\xff\xd8\xff') else
+            'image/png' if body.startswith(b'\x89PNG\r\n\x1a\n') else '')
+    result = dict(poster=base64.b64encode(body).decode() if mime else '', poster_mime=mime)
+    with _ARR_POSTER_LOCK:
+        _ARR_POSTER_CACHE.pop(url, None)
+        _ARR_POSTER_CACHE[url] = (time.monotonic(), result)
+        while len(_ARR_POSTER_CACHE) > 128:
+            _ARR_POSTER_CACHE.pop(next(iter(_ARR_POSTER_CACHE)))
+    return dict(result)
+
+
+def arr_poster(source, entity):
+    """Inline artwork only; upstream credentials never enter the projection."""
+    try:
+        if source == 'radarr':
+            key = entity.get('id')
+            if type(key) is not int or key <= 0:
+                return dict(poster='', poster_mime='')
+            return _arr_poster_image(ARR[source] + '/MediaCover/' + str(key) + '/poster-250.jpg',
+                                     {'X-Api-Key': os.environ['RADARR_API_KEY']})
+        elif source == 'sonarr':
+            url = next((i.get('remoteUrl', '') for i in entity.get('images', [])
+                        if i.get('coverType') == 'poster'), '')
+            if not isinstance(url, str) or not re.fullmatch(
+                    r'https://artworks\.thetvdb\.com/banners/[A-Za-z0-9/_\-]+(?:\.[A-Za-z0-9]+)?', url):
+                return dict(poster='', poster_mime='')
+            return _arr_poster_image(url)
+        else:
+            return dict(poster='', poster_mime='')
+
+    except Exception:
+        pass
+    return dict(poster='', poster_mime='')
+
+
 def arr_data(source):
     # AppRoutes uses the API's titleSlug, not a derived title or the library ID.
     ui = {'sonarr': 'https://sonarr.graymatter.ch/series/', 'radarr': 'https://radarr.graymatter.ch/movie/'}[source]
@@ -150,7 +196,7 @@ def arr_data(source):
         recent.append(dict(title=entity.get('title') or 'Imported media', imdb=imdb(entity.get('imdbId')), url=entity_url(entity),
                            subtitle=episode.get('title') or str(entity.get('year') or ''),
                            date=item.get('date'), quality=item.get('quality', {}).get('quality', {}).get('name', 'Unknown'),
-                           source=source.title()))
+                           source=source.title(), **arr_poster(source, entity)))
     for item in queue.get('records', []):
         entity = item.get('series') or item.get('movie') or {}
         size, left = item.get('size'), item.get('sizeleft')
@@ -158,7 +204,7 @@ def arr_data(source):
                               status=item.get('status', 'unknown'), tracked=item.get('trackedDownloadStatus', ''),
                               progress=round(max(0,min(100,100*(size-left)/size)),1) if size and left is not None else None,
                               remaining_gb=round(left/1e9,2) if left is not None else None,
-                              eta=item.get('timeleft') or '—', source=source.title()))
+                              eta=item.get('timeleft') or '—', source=source.title(), **arr_poster(source, entity)))
     return dict(recent=recent, queue=downloads, total=queue.get('totalRecords'), truncated=queue.get('totalRecords',0)>len(downloads))
 
 def import_gallery():
