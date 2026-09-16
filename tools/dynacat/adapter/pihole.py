@@ -25,6 +25,7 @@ def query_history(rows, now):
         records = [data[stamp] for data in maps if data.get(stamp) is not None]
         complete = len(records) == len(NAMES)
         points.append(dict(timestamp=stamp, available_instances=len(records),
+                           total=sum(r['total'] for r in records) if complete else None,
                            permitted=sum(r['total']-r['blocked'] for r in records) if complete else None,
                            blocked=sum(r['blocked'] for r in records) if complete else None))
     maximum = max([p[k] for p in points for k in ('permitted','blocked') if p[k] is not None] or [0])
@@ -38,7 +39,9 @@ def query_history(rows, now):
                   partial=truncated or any(p['permitted'] is None for p in points) or len(points) < 3 or any(b-a > 600 for a,b in zip(stamps, stamps[1:])),
                   interval_seconds=600, window_seconds=1800, start=datetime.fromtimestamp(start, timezone.utc).strftime('%H:%M'), end=datetime.fromtimestamp(now, timezone.utc).strftime('%H:%M'),
                   max_count=maximum, points=points, error=None)
-    for key in ('permitted','blocked'):
+    for key in ('total', 'permitted', 'blocked'):
+        # Keep the permitted legacy scale; request and block charts scale independently.
+        series_maximum = maximum if key == 'permitted' else max([p[key] for p in points if p[key] is not None] or [0])
         segments, segment = [], []
         previous = None
         for p in points:
@@ -46,11 +49,11 @@ def query_history(rows, now):
                 if segment: segments.append(segment)
                 segment=[]
             if p[key] is not None:
-                segment.append(((p['timestamp']-start)/1800*600,140-p[key]/max(maximum,1)*140))
+                segment.append(((p['timestamp']-start)/1800*600,140-p[key]/max(series_maximum,1)*140))
             previous=p['timestamp']
         if segment: segments.append(segment)
         paths = ['M'+' L'.join(f'{x:.2f},{y:.2f}' for x,y in seg) for seg in segments]
-        result[key] = dict(path=' '.join(paths), area_path=' '.join(path+f' L{seg[-1][0]:.2f},140 L{seg[0][0]:.2f},140 Z' for path,seg in zip(paths,segments)))
+        result[key] = dict(max_count=series_maximum, path=' '.join(paths), area_path=' '.join(path+f' L{seg[-1][0]:.2f},140 L{seg[0][0]:.2f},140 Z' for path,seg in zip(paths,segments)))
     return result
 
 

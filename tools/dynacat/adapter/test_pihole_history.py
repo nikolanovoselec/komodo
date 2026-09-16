@@ -1,4 +1,75 @@
 import pihole
+import pytest
+
+
+@pytest.mark.parametrize('second', [
+    {'timestamp': 2100, 'total': 10, 'blocked': 2},
+    {'timestamp': 2100, 'total': None, 'blocked': 2},
+    {'timestamp': 2100, 'total': -1, 'blocked': 2},
+    {'timestamp': 2100, 'total': '10', 'blocked': 2},
+    {'timestamp': 2100, 'total': True, 'blocked': 0},
+    {'timestamp': 2100, 'total': 10, 'blocked': 11},
+    {'timestamp': 2100, 'total': 10, 'blocked': None},
+    {'total': 10, 'blocked': 2},
+    {'timestamp': 2101, 'total': 10, 'blocked': 2},
+    None,
+])
+def test_total_is_exact_aligned_source_sum_or_null(second):
+    first = {'history': [dict(timestamp=2100, total=20, blocked=3)]}
+    rows = [first, {'history': [second] if second is not None else []}]
+    h = pihole.query_history(rows, 3000)
+    point = h['points'][0]
+    valid = second == {'timestamp': 2100, 'total': 10, 'blocked': 2}
+    assert point['total'] == (30 if valid else None)
+    assert point['permitted'] == (25 if valid else None)
+    assert point['available_instances'] == (2 if valid else 1)
+    assert all(p['total'] is None for p in h['points'][1:])
+
+
+@pytest.mark.parametrize('middle', ['valid', 'null', 'missing', 'zero'])
+def test_total_series_paths_respect_gaps_and_thirty_minute_bounds(middle):
+    records = [dict(timestamp=t, total=20, blocked=3)
+               for t in (1199, 1200, 1800, 2400, 3000, 3001)]
+    if middle == 'null':
+        records[2]['total'] = None
+    elif middle == 'missing':
+        records.pop(2)
+    elif middle == 'zero':
+        for record in records:
+            record.update(total=0, blocked=0)
+    h = pihole.query_history([{'history': records}, {'history': records}], 3000)
+    total = h['total']
+    assert total['max_count'] == (0 if middle == 'zero' else 40)
+    assert all(1200 <= p['timestamp'] <= 3000 for p in h['points'])
+    assert h['window_seconds'] == 1800 and h['interval_seconds'] == 600
+    segments = 2 if middle in ('null', 'missing') else 1
+    assert total['path'].count('M') == segments
+    assert total['area_path'].count('Z') == segments
+    assert total['path'].startswith('M0.00,')
+    assert '600.00,' in total['path']
+    if middle == 'valid':
+        assert total['path'] == 'M0.00,0.00 L200.00,0.00 L400.00,0.00 L600.00,0.00'
+    if middle == 'zero':
+        assert total['path'] == 'M0.00,140.00 L200.00,140.00 L400.00,140.00 L600.00,140.00'
+    if middle == 'null':
+        assert h['points'][1]['total'] is None
+    if middle == 'missing':
+        assert [p['timestamp'] for p in h['points']] == [1200, 2400, 3000]
+
+
+def test_blocked_uses_independent_scale_and_permitted_retains_legacy_scale():
+    first = dict(history=[dict(timestamp=1800, total=20, blocked=3),
+                          dict(timestamp=2400, total=10, blocked=1)])
+    second = dict(history=[dict(timestamp=1800, total=10, blocked=2),
+                           dict(timestamp=2400, total=5, blocked=1)])
+    h = pihole.query_history([first, second], 3000)
+    assert h['blocked']['max_count'] == 5
+    assert h['total']['max_count'] == 30
+    assert h['max_count'] == h['permitted']['max_count'] == 25
+    assert h['blocked']['path'] == 'M200.00,0.00 L400.00,84.00'
+    assert h['total']['path'] == 'M200.00,0.00 L400.00,70.00'
+    assert h['permitted']['path'] == 'M200.00,0.00 L400.00,67.20'
+    assert h['blocked']['area_path'] == 'M200.00,0.00 L400.00,84.00 L400.00,140 L200.00,140 Z'
 
 
 def test_aligned_history_exact_sums_and_privacy():
