@@ -17,11 +17,11 @@ class NetworkingTests(unittest.TestCase):
         self.assertEqual(widget['type'], 'custom-api')
         self.assertIn('nw-dashboard', widget['template'])
 
-    def test_firewall_and_sparse_samples_are_native_optional_sections(self):
+    def test_sparse_samples_remain_native_when_old_panels_are_removed(self):
         config = yaml.safe_load((ROOT/'config/dynacat.yml').read_text())
         t = next(p for p in config['pages'] if p.get('slug') == 'networking')['columns'][0]['widgets'][0]['template']
-        self.assertIn('firewall.available', t)
-        self.assertIn('firewall.rules', t)
+        self.assertNotIn('firewall.available', t)
+        self.assertNotIn('firewall.rules', t)
         self.assertIn('history.cpu.dots', t)
         self.assertIn('<circle', t)
 

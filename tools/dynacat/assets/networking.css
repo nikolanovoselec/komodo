@@ -1,4 +1,10 @@
 /* Native markup may be wrapper-free: scope to our explicit dashboard root. */
+.nw-lower{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:24px;align-items:start}
+.nw-lower>section{min-width:0;border-top:1px solid var(--color-separator);padding-top:16px}
+.nw-lower .nw-client-head,.nw-lower .nw-client{gap:10px;grid-template-columns:1.2fr 1fr 1fr .9fr}
+.nw-dns-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0 10px}.nw-dns-stat{min-width:0}.nw-dns-stat b{display:block;font-size:20px;font-weight:500;color:var(--color-text-highlight);overflow-wrap:anywhere}.nw-dns-stat span,.nw-dns-note{font-size:12px;color:var(--color-text-subdue)}
+.nw-dns-history{margin-top:24px}.nw-dns-history header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--color-separator)}.nw-dns-history h4{font-size:14px;font-weight:600;color:var(--color-text-highlight)}.nw-dns-history header>span{font-size:11px;color:var(--color-text-subdue);white-space:nowrap}.nw-dns-query{padding:10px 0;border-bottom:1px solid var(--color-separator);overflow-wrap:anywhere}.nw-pihole .nw-warning{overflow-wrap:anywhere}.nw-connected>h3>span{float:right;font-variant-numeric:tabular-nums}
+@media(max-width:900px){.nw-lower{grid-template-columns:1fr}.nw-lower .nw-client{grid-template-columns:1fr 1fr}.nw-dns-stat b{font-size:16px}}
 .nw-dashboard{font-size:14px;line-height:1.45;min-width:0;color:var(--color-text-base)}
 .nw-dashboard *{box-sizing:border-box}.nw-dashboard [hidden]{display:none!important}
 .nw-heading,.nw-device header,.nw-section-heading,.nw-wan{display:flex;align-items:center;justify-content:space-between;gap:12px}
