@@ -47,7 +47,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "construct-pihole-two-plots-57"
+      ch.graymatter.config-revision: "construct-cohesive-telemetry-58"
     expose: ["8080"]
     volumes:
       - ./config:/app/config
