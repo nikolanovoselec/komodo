@@ -47,7 +47,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "construct-pihole-udm-colors-60"
+      ch.graymatter.config-revision: "construct-mobile-scroll-state-61"
     expose: ["8080"]
     volumes:
       - ./config:/app/config
@@ -114,7 +114,7 @@ services:
     image: nginxinc/nginx-unprivileged:1.28.0-alpine@sha256:c97ff0bf7cbae369953c6da1232ec14ad9f971d66360c5698db0856a4cd657a0
     container_name: tools_dynacat_gateway
     labels:
-      ch.graymatter.config-revision: "construct-navigation-47"
+      ch.graymatter.config-revision: "construct-mobile-scroll-state-61"
     depends_on: [dynacat, radio]
     ports: ["8080:8080"]
     volumes:
