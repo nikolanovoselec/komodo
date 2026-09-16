@@ -7,7 +7,7 @@ const source = `${__dirname}/plex-radio.js`;
 function make(options={}) {
   const {createRadio} = require(source);
   const audio = new EventTarget();
-  Object.assign(audio, {paused:true, src:'', plays:0, pause(){this.paused=true;}, load(){}, removeAttribute(){this.src='';}, async play(){this.plays++; this.paused=false;}});
+  Object.assign(audio, {paused:true, src:'', plays:0, pause(){this.paused=true;this.dispatchEvent(new Event('pause'));}, load(){}, removeAttribute(){this.src='';}, async play(){this.plays++; this.paused=false;this.dispatchEvent(new Event('playing'));}});
   const tracks = [1,2,3].map(id => ({id:String(id), title:`Track ${id}`, artist:'Artist', album:'Album',stream:`/radio/stream/${id}`}));
   let calls=0;
   const radio = createRadio({audio, fetch:async()=>{calls++;return {ok:true,json:async()=>({tracks})};}, random:()=>0, ...options});
@@ -80,6 +80,12 @@ test('queue failures and unsafe URLs are visible without starting media',async()
     assert.ok(radio.state.error);assert.equal(radio.state.busy,false);assert.equal(audio.plays,0);
   }
 });
+test('native end-of-track pause hides immediately but still advances the queue',async()=>{
+  const {radio,audio}=make();await radio.play();
+  audio.ended=true;audio.pause();assert.equal(radio.state.playing,false);
+  audio.dispatchEvent(new Event('ended'));await new Promise(setImmediate);
+  assert.equal(audio.src,'/radio/stream/2');assert.equal(audio.plays,2);
+});
 test('ended advances only after Play; media errors stop rather than skip forever',async()=>{
   const {radio,audio}=make();audio.dispatchEvent(new Event('ended'));assert.equal(audio.plays,0);
   await radio.play();audio.dispatchEvent(new Event('ended'));await new Promise(setImmediate);
@@ -97,8 +103,8 @@ test('native server preview is enhanced in place and polling cannot replace curr
   const native=w.document.querySelector('.pr-server-preview');
   native.querySelector('.pr-title').textContent='Server chosen song';native.querySelector('.pr-artist').textContent='Server artist';native.querySelector('.pr-album').textContent='Server album';
   native.querySelector('img').setAttribute('src','data:image/jpeg;base64,/9g=');
-  w.HTMLMediaElement.prototype.pause=function(){};w.HTMLMediaElement.prototype.load=function(){};
-  w.HTMLMediaElement.prototype.play=async function(){plays++;};
+  w.HTMLMediaElement.prototype.pause=function(){Object.defineProperty(this,'paused',{configurable:true,value:true});this.dispatchEvent(new w.Event('pause'));};w.HTMLMediaElement.prototype.load=function(){};
+  w.HTMLMediaElement.prototype.play=async function(){plays++;Object.defineProperty(this,'paused',{configurable:true,value:false});this.dispatchEvent(new w.Event('playing'));};
   w.fetch=async()=>{requests++;return {ok:true,json:async()=>({tracks:[{id:'1',stream:'/radio/stream/1'}]})};};
   w.eval(fs.readFileSync(source,'utf8'));
   t.after(()=>{w.dispatchEvent(new w.Event('pagehide'));w.close();});
@@ -119,9 +125,9 @@ test('persistent media card survives widget replacement and internal navigation'
   const {JSDOM}=require('jsdom');
   const dom=new JSDOM('<div class="page-columns"><div class="page-column"><div class="media-ops-widget">old</div></div></div>',{url:'https://test/media',runScripts:'outside-only'});
   const w=dom.window;let plays=0,requests=0;
-  w.HTMLMediaElement.prototype.pause=function(){};
+  w.HTMLMediaElement.prototype.pause=function(){Object.defineProperty(this,'paused',{configurable:true,value:true});this.dispatchEvent(new w.Event('pause'));};
   w.HTMLMediaElement.prototype.load=function(){};
-  w.HTMLMediaElement.prototype.play=async function(){plays++;};
+  w.HTMLMediaElement.prototype.play=async function(){plays++;Object.defineProperty(this,'paused',{configurable:true,value:false});this.dispatchEvent(new w.Event('playing'));};
   w.fetch=async()=>{requests++;return {ok:true,json:async()=>({tracks:[{id:'1',stream:'/radio/stream/1',title:'<script>bad</script>',poster:'https://evil/poster'}]})};};
   w.eval(fs.readFileSync(source,'utf8'));w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
   const card=w.document.querySelector('#plex-radio');assert.ok(card);
@@ -144,15 +150,56 @@ function mountControls(t) {
   const {JSDOM}=require('jsdom');
   const dom=new JSDOM('<div class="page-columns"><div class="page-column"></div></div>',{url:'https://test/media',runScripts:'outside-only'});
   const w=dom.window;let plays=0,requests=0;
-  w.HTMLMediaElement.prototype.pause=function(){};
+  w.HTMLMediaElement.prototype.pause=function(){Object.defineProperty(this,'paused',{configurable:true,value:true});this.dispatchEvent(new w.Event('pause'));};
   w.HTMLMediaElement.prototype.load=function(){};
-  w.HTMLMediaElement.prototype.play=async function(){plays++;};
+  w.HTMLMediaElement.prototype.play=async function(){plays++;Object.defineProperty(this,'paused',{configurable:true,value:false});this.dispatchEvent(new w.Event('playing'));};
   w.fetch=async()=>{requests++;return {ok:true,json:async()=>({tracks:[{id:'1',stream:'/radio/stream/1'},{id:'2',stream:'/radio/stream/2'}]})};};
   w.eval(fs.readFileSync(source,'utf8'));
   t.after(()=>{w.dispatchEvent(new w.Event('pagehide'));w.close();});
   const card=w.document.querySelector('#plex-radio');
   return {w,card,audio:w.document.querySelector('#plex-radio-audio'),plays:()=>plays,requests:()=>requests};
 }
+test('idle preview never becomes a mini player through navigation or refresh',(t)=>{
+  const {w,card,audio,plays,requests}=mountControls(t);
+  const preview=card.cloneNode(true);preview.removeAttribute('id');preview.classList.add('pr-server-preview');preview.dataset.previewId='99';
+  preview.querySelector('.pr-title').textContent='Populated preview';
+  w.document.querySelector('.page-column').append(preview);
+  w.document.dispatchEvent(new w.Event('dynacat:widget-updated'));
+  for (const route of ['/hardware-workloads','/networking','/endpoints-services']) {
+    w.history.pushState({},'',route);
+    w.document.dispatchEvent(new w.Event('dynacat:widget-updated'));
+    assert.equal(card.hidden,true,'idle populated preview must stay hidden off Media');
+  }
+  w.history.pushState({},'','/media');assert.equal(card.hidden,false);
+  assert.equal(plays(),0);assert.equal(requests(),0);assert.equal(audio.hasAttribute('src'),false);
+});
+test('mini visibility follows actual audio lifecycle, not play intent or promise resolution',async(t)=>{
+  const {w,card,audio}=mountControls(t);
+  Object.defineProperty(audio,'paused',{configurable:true,writable:true,value:true});
+  let resolve;
+  audio.play=()=>{audio.paused=false;return new Promise(r=>resolve=r);};
+  audio.pause=()=>{audio.paused=true;audio.dispatchEvent(new w.Event('pause'));};
+  card.querySelector('[data-action="play"]').click();await new Promise(setImmediate);
+  w.history.pushState({},'','/networking');assert.equal(card.hidden,true,'pending initial play hidden');
+  resolve();await new Promise(setImmediate);assert.equal(card.hidden,true,'resolved promise without playing event hidden');
+  audio.dispatchEvent(new w.Event('playing'));assert.equal(card.hidden,false,'playing event reveals mini');
+  audio.dispatchEvent(new w.Event('waiting'));assert.equal(card.hidden,false,'active buffering can retain mini');
+  audio.pause();assert.equal(card.hidden,true,'native pause immediately hides mini');
+  audio.dispatchEvent(new w.Event('playing'));assert.equal(card.hidden,true,'stale playing event while paused ignored');
+  audio.paused=false;audio.dispatchEvent(new w.Event('playing'));assert.equal(card.hidden,false);
+  audio.dispatchEvent(new w.Event('ended'));assert.equal(card.hidden,true,'ended hides before next track starts');
+  await new Promise(setImmediate);
+  audio.dispatchEvent(new w.Event('error'));assert.equal(card.hidden,true);
+  w.document.dispatchEvent(new w.Event('dynacat:widget-updated'));assert.equal(card.hidden,true);
+  w.history.pushState({},'','/media');assert.equal(card.hidden,false);
+});
+test('rejected playback never reveals a mini player',async(t)=>{
+  const {w,card,audio}=mountControls(t);
+  audio.play=async()=>{throw new w.DOMException('blocked','NotAllowedError');};
+  card.querySelector('[data-action="play"]').click();
+  w.history.pushState({},'','/networking');await new Promise(setImmediate);
+  assert.equal(card.hidden,true);assert.match(card.querySelector('.pr-status').textContent,/blocked/);
+});
 test('late native render seeds the idle fallback without a queue request',async(t)=>{
   const {w,card,audio,plays,requests}=mountControls(t);
   const preview=card.cloneNode(true);preview.removeAttribute('id');preview.classList.add('pr-server-preview');preview.dataset.previewId='99';
@@ -226,6 +273,10 @@ test('sliders have compact responsive layout and visible keyboard focus',()=>{
   const css=fs.readFileSync(`${__dirname}/plex-radio.css`,'utf8');
   for (const rule of ['.pr-sliders{','.pr-seek{','.pr-volume{','.pr-sliders input[type=range]:focus-visible{','.pr-time{']) assert.ok(css.includes(rule),`missing ${rule}`);
   assert.match(css,/@media[\s\S]*\.pr-sliders\{[^}]*grid-template-columns:minmax\(0,1fr\) 100px/);
+});
+test('radio script cache key matches its exact content digest',()=>{
+  const digest=require('node:crypto').createHash('sha256').update(fs.readFileSync(source)).digest('hex').slice(0,12);
+  assert.ok(fs.readFileSync(`${__dirname}/../config/dynacat.yml`,'utf8').includes(`plex-radio.js?v=${digest}`));
 });
 test('radio exists and never loads media or queue until explicit Play',()=>{
   assert.ok(fs.existsSync(source),'Plex radio implementation missing');

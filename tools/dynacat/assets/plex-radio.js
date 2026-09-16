@@ -12,7 +12,7 @@
       if (state.index>=0 || state.busy || !safeTrack(track)) return;
       state.tracks=[track];state.index=0;state.error='';emit();
     }
-    let generation=0, controller=null;
+    let generation=0, controller=null, endedAdvance=false;
     async function play(randomize = false) {
       if (state.busy || state.playing) return;
       const token=++generation;
@@ -37,7 +37,7 @@
         if (!audio.src) audio.src = state.tracks[state.index].stream;
         await audio.play();
         if (token!==generation) return;
-        state.playing=true;
+        // Only the media playing event confirms playback, never play intent.
       } catch (error) {
         if (token!==generation) return;
         audio.pause();state.playing=false;
@@ -46,7 +46,7 @@
         if (token===generation) {state.busy=false;emit();}
       }
     }
-    function pause() {generation++;controller?.abort();audio.pause();state.playing=false;state.busy=false;emit();}
+    function pause() {generation++;controller?.abort();audio.pause();endedAdvance=false;state.playing=false;state.busy=false;emit();}
     function stop() {pause();audio.removeAttribute('src');audio.load();}
     async function select(index) {
       const resume=state.playing;audio.pause();state.playing=false;
@@ -83,7 +83,22 @@
       await next();
       if (!state.playing) await play();
     }
-    audio.addEventListener('ended', () => {if (state.playing) void next();});
+    audio.addEventListener('playing', () => {
+      if (audio.paused || audio.ended || audio.error) return;
+      endedAdvance=false;state.playing=true;emit();
+    });
+    for (const event of ['pause','emptied']) {
+      audio.addEventListener(event,()=>{
+        endedAdvance=event==='pause' && audio.ended && state.playing;
+        state.playing=false;emit();
+      });
+    }
+    audio.addEventListener('ended', () => {
+      const advance=state.playing || endedAdvance, token=generation;
+      endedAdvance=false;
+      state.playing=false;emit();
+      if (advance) void next().then(()=>{if (token===generation) return play();});
+    });
     audio.addEventListener('error', () => {
       if (!audio.src) return;
       pause();state.error='This track could not be played. Try Next or Play.';emit();
@@ -100,7 +115,7 @@
     if(target && card.parentNode!==target) {if(onMedia())target.prepend(card);else target.append(card);}
     card.classList.toggle('pr-mini',!onMedia());
     if(onMedia()) miniDismissed=false;
-    card.hidden=!onMedia() && miniDismissed;
+    card.hidden=!onMedia() && (miniDismissed || !radio?.state.playing);
     card.querySelector('.pr-dismiss').hidden=onMedia();
   }
   function mount() {
@@ -159,6 +174,7 @@
       get('.pr-mode').textContent=state.shuffle ? 'YOUR MUSIC · ON SHUFFLE' : 'YOUR MUSIC · IN ORDER';
       get('.pr-status').textContent=state.error || (state.busy ? 'Tuning in…' : state.playing ? 'Playing from your Plex library' : track ? 'Paused · ready when you are' : 'Press Play to begin. Audio stays off until you do.');
       root.classList.toggle('pr-error',Boolean(state.error));root.classList.toggle('pr-playing',state.playing);
+      placeCard();
     }
     const player=createRadio({audio,preview,previewError:native?.dataset.previewError || '',fetch:window.fetch.bind(window),changed:render});radio=player;render(player.state);
     get('#pr-seek').addEventListener('input',event=>player.seek(Number(event.target.value)));
