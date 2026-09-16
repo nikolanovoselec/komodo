@@ -2,44 +2,57 @@
 from datetime import datetime, timezone
 import math
 
-PERMITTED = frozenset({'FORWARDED', 'CACHE', 'CACHE_STALE', 'RETRIED', 'RETRIED_DNSSEC', 'IN_PROGRESS'})
-BLOCKED = frozenset({'GRAVITY', 'REGEX', 'DENYLIST', 'EXTERNAL_BLOCKED_IP',
-                     'EXTERNAL_BLOCKED_NULL', 'EXTERNAL_BLOCKED_NXRA', 'EXTERNAL_BLOCKED_EDE15',
-                     'GRAVITY_CNAME', 'REGEX_CNAME', 'DENYLIST_CNAME', 'DBBUSY', 'SPECIAL_DOMAIN'})
 NAMES = ('pihole-master.lan', 'pihole-slave.lan')
 METRICS = ('total_queries', 'blocked_queries', 'gravity_entries')
 
 
-def history(records, name, statuses):
-    out = []
-    for record in records:
-        try:
-            stamp = record['time']
-            domain, status = record['domain'], record['status']
-            if (status not in statuses or not isinstance(domain, str) or not 0 < len(domain) <= 253
-                    or isinstance(stamp, bool) or not isinstance(stamp, (int, float)) or not math.isfinite(stamp)):
+def query_history(rows, now):
+    start = now - 1800
+    maps = []
+    for row in rows:
+        data = {}
+        for r in row.get('history') or []:
+            if not isinstance(r, dict) or type(r.get('timestamp')) is not int:
                 continue
-            out.append(dict(domain=domain, status=status, timestamp=stamp,
-                            time=datetime.fromtimestamp(stamp, timezone.utc).isoformat(), instance=name))
-        except (KeyError, TypeError, ValueError, OverflowError, OSError):
-            continue
-    return out
+            valid = all(type(r.get(k)) is int and r[k] >= 0 for k in ('total','blocked'))
+            data[r['timestamp']] = r if valid and r['blocked'] <= r['total'] else None
+        maps.append(data)
+    stamps = sorted({t for data in maps for t in data if start <= t <= now})
+    points = []
+    for stamp in stamps:
+        records = [data[stamp] for data in maps if data.get(stamp) is not None]
+        complete = len(records) == len(NAMES)
+        points.append(dict(timestamp=stamp, available_instances=len(records),
+                           permitted=sum(r['total']-r['blocked'] for r in records) if complete else None,
+                           blocked=sum(r['blocked'] for r in records) if complete else None))
+    maximum = max([p[k] for p in points for k in ('permitted','blocked') if p[k] is not None] or [0])
+    result = dict(available=any(p['permitted'] is not None for p in points),
+                  partial=any(p['permitted'] is None for p in points) or len(points) < 3 or any(b-a > 600 for a,b in zip(stamps, stamps[1:])),
+                  interval_seconds=600, window_seconds=1800, start=datetime.fromtimestamp(start, timezone.utc).strftime('%H:%M'), end=datetime.fromtimestamp(now, timezone.utc).strftime('%H:%M'),
+                  max_count=maximum, points=points, error=None)
+    for key in ('permitted','blocked'):
+        segments, segment = [], []
+        previous = None
+        for p in points:
+            if p[key] is None or (previous is not None and p['timestamp']-previous > 600):
+                if segment: segments.append(segment)
+                segment=[]
+            if p[key] is not None:
+                segment.append(((p['timestamp']-start)/1800*600,140-p[key]/max(maximum,1)*140))
+            previous=p['timestamp']
+        if segment: segments.append(segment)
+        paths = ['M'+' L'.join(f'{x:.2f},{y:.2f}' for x,y in seg) for seg in segments]
+        result[key] = dict(path=' '.join(paths), area_path=' '.join(path+f' L{seg[-1][0]:.2f},140 L{seg[0][0]:.2f},140 Z' for path,seg in zip(paths,segments)))
+    return result
 
 
-def collect(fetch):
+def collect(fetch, now=None):
     rows, instances = [], []
-    histories = {'recent_permitted': [], 'recent_blocked': []}
     for name in NAMES:
         try:
             row = fetch(name)
             if any(type(row[key]) is not int or row[key] < 0 for key in METRICS):
                 raise ValueError('Pi-hole metrics unavailable')
-            if not all(isinstance(row[key], list) for key in histories):
-                raise ValueError('Pi-hole history unavailable')
-            permitted = history(row['recent_permitted'], name, PERMITTED)
-            blocked = history(row['recent_blocked'], name, BLOCKED)
-            histories['recent_permitted'].extend(permitted)
-            histories['recent_blocked'].extend(blocked)
             rows.append(row)
             instances.append(dict(name=name, available=True))
         except Exception:
@@ -48,8 +61,7 @@ def collect(fetch):
     return dict(available=bool(rows), partial=partial, gravity_aggregation='sum_not_deduplicated',
                 error=('Partial Pi-hole data; sums cover available instances only.' if partial else
                        'Pi-hole unavailable; verify TLS, network and API authentication.' if not rows else None),
-                instances=instances,
-                **{key: sorted(items, key=lambda item: item['timestamp'], reverse=True)[:10] for key, items in histories.items()},
+                instances=instances, query_history=query_history(rows, time.time() if now is None else now),
                 **{key: sum(row[key] for row in rows) if rows else None for key in METRICS})
 
 
@@ -118,11 +130,10 @@ def fetch_instance(name, transport=None):
         if not session.get('valid') or not isinstance(sid, str) or not sid:
             raise ValueError('Pi-hole authentication unavailable')
         summary = transport(url, pin, 'GET', '/api/stats/summary', sid=sid)
-        permitted = transport(url, pin, 'GET', '/api/queries?length=10&upstream=permitted', sid=sid)
-        blocked = transport(url, pin, 'GET', '/api/queries?length=10&upstream=blocklist', sid=sid)
+        history = transport(url, pin, 'GET', '/api/history', sid=sid)
         return dict(total_queries=summary['queries']['total'], blocked_queries=summary['queries']['blocked'],
                     gravity_entries=summary['gravity']['domains_being_blocked'],
-                    recent_permitted=permitted['queries'], recent_blocked=blocked['queries'])
+                    history=history['history'])
     finally:
         if isinstance(sid, str) and sid:
             transport(url, pin, 'DELETE', '/api/auth', sid=sid)

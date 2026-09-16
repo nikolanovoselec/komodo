@@ -9,7 +9,7 @@ def module():
 
 def source(name):
     return dict(total_queries=20, blocked_queries=3, gravity_entries=100,
-                recent_permitted=[], recent_blocked=[])
+                history=[])
 
 
 @pytest.mark.parametrize('failed', [1, 2])
@@ -25,21 +25,6 @@ def test_failed_instances_are_not_zero_or_secret_errors(failed):
     assert 'SECRET' not in json.dumps(r)
     assert r['error']
 
-
-def test_history_whitelist_privacy_sorting_and_latest_ten():
-    def fetch(name):
-        r = source(name)
-        r['recent_permitted'] = [dict(domain='example.org', time=i + (0.5 if 'slave' in name else 0), status=s, client={'ip':'PRIVATE'}, sid='SECRET') for i,s in enumerate(['CACHE', 'FORWARDED', 'CACHE_STALE', 'RETRIED', 'RETRIED_DNSSEC', 'IN_PROGRESS', 'UNKNOWN', 'GRAVITY'] * 3)]
-        r['recent_blocked'] = [dict(domain='ads.example', time=i, status='GRAVITY', client='PRIVATE') for i in range(12)]
-        return r
-    r = module().collect(fetch)
-    for key in ('recent_permitted', 'recent_blocked'):
-        assert len(r[key]) == 10
-        assert [x['timestamp'] for x in r[key]] == sorted([x['timestamp'] for x in r[key]], reverse=True)
-        assert all(set(x) == {'domain', 'timestamp', 'time', 'status', 'instance'} for x in r[key])
-    assert {x['status'] for x in r['recent_permitted']} <= {'CACHE', 'FORWARDED', 'CACHE_STALE', 'RETRIED', 'RETRIED_DNSSEC', 'IN_PROGRESS'}
-    assert {'pihole-master.lan','pihole-slave.lan'} == {x['instance'] for x in r['recent_permitted']}
-    assert 'SECRET' not in json.dumps(r) and 'PRIVATE' not in json.dumps(r)
 
 
 def test_merge_sums_are_explicitly_not_deduplicated():
@@ -118,7 +103,7 @@ def test_v6_session_logs_out_even_after_timeout(monkeypatch, fail):
         if fail: raise TimeoutError('SECRET')
         if path == '/api/stats/summary':
             return {'queries':{'total':20,'blocked':3}, 'gravity':{'domains_being_blocked':100}}
-        return {'queries':[]}
+        return {'history':[]}
     if fail:
         with pytest.raises(TimeoutError): p.fetch_instance(p.NAMES[0], transport=request)
     else:
@@ -184,22 +169,4 @@ def test_invalid_metrics_fail_instance_closed(value):
     r = module().collect(fetch)
     assert not r['available']
     assert r['total_queries'] is None
-    assert r['recent_permitted'] == []
-
-
-def test_malformed_history_cannot_leak_from_failed_instance():
-    def fetch(name):
-        r = source(name)
-        r['recent_permitted'] = [{'domain':'example.org', 'time':1, 'status':'CACHE'}]
-        r['recent_blocked'] = None
-        return r
-    r = module().collect(fetch)
-    assert not r['available']
-    assert r['recent_permitted'] == []
-
-
-def test_v6_external_ede15_is_blocked_not_permitted():
-    p = module()
-    record = {'domain':'ads.example', 'time':1, 'status':'EXTERNAL_BLOCKED_EDE15'}
-    assert len(p.history([record], p.NAMES[0], p.BLOCKED)) == 1
-    assert p.history([record], p.NAMES[0], p.PERMITTED) == []
+    assert r['query_history']['points'] == []

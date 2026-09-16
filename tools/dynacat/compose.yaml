@@ -7,7 +7,7 @@ services:
     pull_policy: build
     container_name: tools_dynacat_workload_summary
     labels:
-      ch.graymatter.config-revision: "construct-pihole-51"
+      ch.graymatter.config-revision: "construct-pihole-history-52"
     command: ["python", "-B", "/app/adapter.py"]
     user: "65534:65534"
     volumes:
@@ -46,7 +46,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "construct-pihole-51"
+      ch.graymatter.config-revision: "construct-pihole-history-52"
     expose: ["8080"]
     volumes:
       - ./config:/app/config

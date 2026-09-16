@@ -1,22 +1,11 @@
-# Pi-hole v6 integration
+# Pi-hole combined query history
 
-The NETWORKING collector reads both `pihole-master.lan` (192.168.5.162) and `pihole-slave.lan` (192.168.5.92). Reuses the existing protected Komodo `PIHOLE_API_KEY` for both; `komodo_core/main.toml` references it and Compose injects it into **workload-summary only**. No credential is placed in frontend configuration or source control.
+The Networking page retains infrastructure and makes Pi-hole full width. Connected clients and both DNS domain lists were removed by the superseding user request.
 
-## Security and semantics
-- HTTPS leaf SHA-256 pins independently matched against SSH-local certificates on both Pi-holes. Pin verification precedes password/SID transmission on every connection. Certificate rotation fails closed; reverify independently before updating the pin.
-- Only session login/logout and read-only summary/query API calls; no DNS setting changes.
-- Requests use 3-second socket inactivity timeouts and 256-KiB response limits. Async single-flight snapshot refresh, ten-second retry, thirty-second expiry. Inactivity timeout is not a total refresh deadline; a stalled refresh yields unavailable after expiry rather than accumulating workers.
-- Totals sum available instances. Partial failures are visibly labelled; complete failure yields null/unavailable rather than zero.
-- Gravity entries are summed, **not deduplicated unique domains**.
-- Latest ten permitted and blocked query records merge both sources chronologically, retaining source, actual whitelisted status, domain and UTC time only. Permitted is not a claim of successful resolution; forwarded/cached/retried/in-progress statuses are explicit. Unsupported statuses are discarded.
-- Credentials, sessions and DNS client identities are never included in the dashboard projection.
+Server-side collector uses existing protected PIHOLE_API_KEY and pinned HTTPS for both v6 instances. Read-only `/api/stats/summary` supplies total/blocked counters and gravity domains (sum, not deduplicated). `/api/history` supplies `history[].timestamp`, `total`, `blocked`; actual source bins are 600 seconds apart. No `/api/queries` requests or DNS domain/client export in the Pi-hole projection.
 
-## Release acceptance
-- Backend: 218 tests and 92 subtests passed, including 18 Pi-hole tests.
-- Native-renderer/frontend/wiring: 13 tests passed; networking JavaScript: one test passed.
-- Strict RED/GREEN exercised backend, partial states, removed summary/WAN, and secret-reference wiring.
-- Source warning and per-device real warnings retained; the redundant NETWORK OVERVIEW header, summary counters and WAN panel are removed. UDM SE prominence, infrastructure histories and expanded clients remain.
-- TOML parses; Compose validates with dummy values only. Named telemetry-history and geoip-city volumes remain untouched.
-- Saved Komodo stack environment updated by existing authorized browser operator session using a narrow UpdateStack environment edit; protected reference read back before deployment. No collector privilege changes. Broad Resource Sync was not run, avoiding unrelated resource changes.
+Last-30-minute query diagram aligns exact provider timestamps and sums both instances. Permitted = total minus blocked, not guaranteed successful resolution. Shared counts scale, distinct shaded series, queries per 10 minutes, UTC endpoints. It is activity per interval, not a cumulative running counter. Only actual bins within the window are drawn; no synthetic backfill. A missing/invalid source bin makes the combined point null, never zero or a misleading single-instance total. Null points and >600-second gaps break line and area paths independently. Counters still sum available instances and label partial state.
 
-Runtime evidence is collected separately in `pihole-live-qa/` (not committed, as it contains private DNS history). The earlier NETWORKING-LOWER-QA.md describes the historical blocked release, not the current integration.
+Security remains unchanged: leaf SHA256 pins verified before credential/session transmission, bounded response size and inactivity timeout, server-only credentials, logout in finally, single-flight cache. No Pi-hole settings changes. Named volumes preserved. Collector and renderer revisions advance through Git/Komodo only.
+
+Verification: strict RED/GREEN for aggregation/privacy, missing/null gaps, official endpoint replacement and time labels; native RED/GREEN for removal/full-width/chart. See NETWORKING-QUERY-QA.md. Captured-real artifacts remain untracked.

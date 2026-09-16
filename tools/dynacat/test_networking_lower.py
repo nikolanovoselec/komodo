@@ -1,26 +1,28 @@
-"""Native renderer lower-page acceptance. Source capture is real; Pi-hole fixtures are synthetic."""
-import copy
+"""Native networking acceptance; real inventory plus explicitly synthetic edge-case history."""
+import hashlib
 import json
-import shutil
-import subprocess
+import os
+import re
 import time
 from pathlib import Path
 import pytest
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 import qa_networking_layout as qa
 
-ROOT = Path(__file__).parent
-OUT = ROOT.parents[1] / 'networking-lower-qa'
+ROOT=Path(__file__).parent
+OUT=ROOT.parents[1]/'networking-query-qa'
+SOURCE=Path(os.environ.get('NETWORK_QA_SOURCE','/tmp/network-query-current.json'))
 
 @pytest.fixture(scope='module')
 def page():
-    OUT.mkdir(exist_ok=True)
-    (OUT/'source').mkdir(exist_ok=True)
-    source = json.loads((ROOT.parents[1]/'networking-layout-qa/source/network-current').read_text())
-    source['pihole'] = {'available':False,'error':'Pi-hole integration unavailable: collector cannot reach either instance.','instances':[{'name':n,'available':False} for n in ('pihole-master.lan','pihole-slave.lan')], 'total_queries':None,'blocked_queries':None,'gravity_entries':None,'recent_permitted':[],'recent_blocked':[]}
+    (OUT/'source').mkdir(parents=True,exist_ok=True)
+    source=json.loads(SOURCE.read_text())
+    source.pop('clients',None)
+    for key in ('recent_permitted','recent_blocked'):
+        source.get('pihole',{}).pop(key,None)
     (OUT/'source/network-current').write_text(json.dumps(source))
-    qa.OUT = OUT
-    qa.NAMES = ('networking-lower-renderer','networking-layout-source')
+    qa.OUT=OUT
+    qa.NAMES=('networking-query-renderer','networking-layout-source')
     qa.prepare('candidate',18146)
     try:
         with sync_playwright() as p:
@@ -32,152 +34,86 @@ def page():
                     page.locator('.nw-dashboard').wait_for(timeout=1500)
                     break
                 except Exception:
-                    if attempt == 29: raise
+                    if attempt==29: raise
                     time.sleep(.2)
             yield page
             browser.close()
-    finally:
-        qa.cleanup()
+    finally: qa.cleanup()
 
-def test_overview_summary_and_wan_removed_without_losing_gateway(page):
-    assert page.locator('.nw-heading, .nw-summary, .nw-wan').count() == 0
-    assert 'NETWORK OVERVIEW' not in page.locator('.nw-dashboard').inner_text()
-    assert page.locator('.nw-gateway').count() > 0
-    assert page.locator('.nw-infrastructure .nw-area').count() > 0
-    assert page.locator('.nw-connected [data-nw-client]').count() > 0
-
+def test_clients_removed_and_pihole_full_width_below_preserved_infrastructure(page):
+    assert page.locator('.nw-connected,[data-nw-client],[data-nw-search]').count()==0
+    source=json.loads(SOURCE.read_text())
+    assert page.locator('.nw-device').count()==len(source['devices'])
+    assert page.locator('.nw-gateway').count()==1
+    a=page.locator('.nw-infrastructure').bounding_box()
+    b=page.locator('.nw-pihole').bounding_box()
+    assert b['y']>=a['y']+a['height']
+    assert abs(a['width']-b['width'])<2
+    for device in source['devices']:
+        card=page.locator('.nw-device').filter(has=page.locator('h4',has_text=re.compile('^'+re.escape(device['name'])+'(?: ↗)?$')))
+        for index,key in enumerate(('cpu','ram','rx','tx')):
+            h=device['history'][key]
+            if h.get('samples',0)>1 and h.get('path'):
+                metric=card.locator('.nw-metric').nth(index)
+                assert metric.locator('path:not(.nw-area):not(.nw-gridline)').get_attribute('d')==h['path']
+                assert metric.locator('.nw-area').get_attribute('d')==h['area_path']
+    for heading in ('Networks & VLANs','WiFi','Firewall rules','Source capabilities'):
+        assert page.get_by_role('heading',name=heading,exact=True).count()==0
 
 def test_network_css_cache_version_matches_content():
-    import hashlib
-    import re
     config=(ROOT/'config/dynacat.yml').read_text()
     actual=hashlib.sha256((ROOT/'assets/networking.css').read_bytes()).hexdigest()[:12]
     assert re.search(r'/assets/networking.css\?v=([a-f0-9]+)',config).group(1)==actual
 
-def test_missing_pihole_source_explains_blocker(page):
-    from playwright.sync_api import expect
+def test_combined_chart_replaces_lists_and_preserves_gap_paths(page):
     path=OUT/'source/network-current'
     original=path.read_text()
     data=json.loads(original)
-    del data['pihole']
+    h={'available':True,'partial':True,'interval_seconds':600,'window_seconds':1800,
+       'start':'2026-09-16T12:00:00Z','end':'2026-09-16T12:30:00Z','max_count':100,
+       'points':[], 'error':'',
+       'permitted':{'path':'M0 70 L200 28 M600 42','area_path':'M0 70 L200 28 L200 140 L0 140 Z M600 42 L600 140 L600 140 Z'},
+       'blocked':{'path':'M0 126 L200 112 M600 119','area_path':'M0 126 L200 112 L200 140 L0 140 Z M600 119 L600 140 L600 140 Z'}}
+    data['pihole']['query_history']=h
     try:
         path.write_text(json.dumps(data))
-        expect(page.locator('.nw-pihole .nw-warning')).to_contain_text('network access and protected API authentication',timeout=12000)
-        for name in ('pihole-master.lan','pihole-slave.lan'):
-            assert name in page.locator('.nw-pihole').inner_text()
-    finally:
-        path.write_text(original)
-        expect(page.locator('.nw-pihole .nw-warning')).to_contain_text('collector cannot reach',timeout=12000)
-
-def test_pihole_unavailable_is_not_zero(page):
-    panel=page.locator('.nw-pihole')
-    assert 'collector cannot reach either instance' in panel.inner_text()
-    assert panel.locator('.nw-dns-stat b').all_text_contents()==['Unavailable']*3
-    assert 'Gravity entries · sum' in panel.inner_text()
-    for name in ('pihole-master.lan','pihole-slave.lan'):
-        assert name in panel.inner_text()
-    assert panel.get_by_role('heading',name='Permitted DNS queries').count()==1
-    assert panel.get_by_role('heading',name='Blocked DNS queries').count()==1
-    assert panel.locator('.nw-dns-history .nw-empty').all_text_contents()==['Query history unavailable.']*2
-
-def test_available_query_history_is_bounded_and_status_is_explicit(page):
-    from playwright.sync_api import expect
-    path=OUT/'source/network-current'
-    original=path.read_text()
-    data=json.loads(original)
-    data['pihole'].update(available=True,partial=False,error='',total_queries=0,blocked_queries=12,gravity_entries=2468)
-    for instance in data['pihole']['instances']:
-        instance['available']=True
-    for kind in ('permitted','blocked'):
-        data['pihole']['recent_'+kind]=[{'domain':f'{kind}-{i}.example','time':'2026-09-16T12:00:00Z','status':'FORWARDED' if kind=='permitted' else 'GRAVITY','instance':'pihole-master.lan'} for i in range(12)]
-    try:
-        path.write_text(json.dumps(data))
-        expect(page.locator('.nw-dns-stat b').first).to_have_text('0',timeout=12000)
-        for kind in ('permitted','blocked'):
-            rows=page.locator('[data-dns-kind="'+kind+'"] .nw-dns-query')
-            assert rows.count()==10
-            assert f'{kind}-0.example' in rows.first.inner_text()
-            assert 'Response status:' in rows.first.inner_text()
-            assert 'pihole-master.lan' in rows.first.inner_text()
-        assert page.locator('.nw-dns-stat b').all_text_contents()==['0','12','2468']
+        expect(page.locator('.nw-query-line[data-series="permitted"]')).to_have_attribute('d',h['permitted']['path'],timeout=12000)
         panel=page.locator('.nw-pihole')
-        assert panel.locator('.nw-warning').count()==0
-        assert 'Across both instances.' in panel.inner_text()
-        assert 'Gravity entries are summed, not deduplicated.' in panel.inner_text()
-        assert panel.get_by_role('heading',name='Permitted DNS queries',exact=True).count()==1
-        assert 'resolved' not in panel.inner_text().casefold()
-        assert 'FORWARDED' in panel.locator('[data-dns-kind="permitted"]').inner_text()
+        assert panel.locator('.nw-dns-query,.nw-dns-history').count()==0
+        assert page.locator('.nw-query-chart svg').get_attribute('viewBox')=='0 0 600 140'
+        for kind in ('permitted','blocked'):
+            assert panel.locator('.nw-query-line[data-series="'+kind+'"]').get_attribute('d')==h[kind]['path']
+            assert panel.locator('.nw-query-area[data-series="'+kind+'"]').get_attribute('d')==h[kind]['area_path']
+        assert 'Queries / 10 min' in panel.inner_text()
+        assert 'Last 30 minutes' in panel.inner_text()
+        assert 'Permitted (total−blocked; not guaranteed successful resolutions)' in panel.inner_text()
+        assert panel.locator('.nw-query-axis time').all_text_contents()==[h['start'],h['end']]
+        assert 'UTC' in panel.locator('.nw-query-axis').inner_text()
+        assert 'Incomplete history' in panel.inner_text()
+        assert panel.locator('.nw-dns-stat b').all_text_contents()==[str(data['pihole'][k]) for k in ('total_queries','blocked_queries','gravity_entries')]
+        for theme,key in (('dark','midnight-navy'),('light','catppuccin-latte')):
+            page.locator(f'.theme-choices [data-key="{key}"]').first.evaluate('e=>e.click()')
+            styles=panel.locator('.nw-query-area').evaluate_all('es=>es.map(e=>({fill:getComputedStyle(e).fill,opacity:+getComputedStyle(e).fillOpacity}))')
+            assert len({s['fill'] for s in styles})==2
+            assert all(s['fill']!='none' and .3<=s['opacity']<1 for s in styles)
     finally:
         path.write_text(original)
-        expect(page.locator('.nw-dns-stat b').first).to_have_text('Unavailable',timeout=12000)
 
-@pytest.mark.parametrize('error', ['pihole-slave.lan: API authentication unavailable', ''])
-def test_partial_pihole_warns_even_when_available(page, error):
-    from playwright.sync_api import expect
-    path=OUT/'source/network-current'
-    original=path.read_text()
-    data=json.loads(original)
-    data['pihole'].update(available=True, partial=True,
-        error=error,
-        total_queries=123, blocked_queries=45, gravity_entries=678)
-    data['pihole']['instances'][0]['available']=True
+
+
+def test_missing_history_is_unavailable_not_zero_and_partial_totals_remain(page):
+    path=OUT/'source/network-current'; original=path.read_text(); data=json.loads(original)
+    data['pihole'].pop('query_history',None)
+    data['pihole'].update(partial=True,error='',available=True,total_queries=123,blocked_queries=45,gravity_entries=678)
     try:
         path.write_text(json.dumps(data))
         expect(page.locator('.nw-dns-stat b').first).to_have_text('123',timeout=12000)
-        panel=page.locator('.nw-pihole')
-        expect(panel.locator('.nw-warning')).to_contain_text(error or 'Partial Pi-hole data · one or more instances are unavailable.')
-        assert 'Partial totals · available instances only.' in panel.inner_text()
-        assert 'Across both instances.' not in panel.inner_text()
-        assert panel.locator('.nw-dns-stat b').all_text_contents()==['123','45','678']
-    finally:
-        path.write_text(original)
-        expect(page.locator('.nw-dns-stat b').first).to_have_text('Unavailable',timeout=12000)
-
-
-def test_expanded_client_filter_survives_native_refresh(page):
-    from playwright.sync_api import expect
-    path=OUT/'source/network-current'
-    original=path.read_text()
-    data=json.loads(original)
-    query=data['clients'][0]['ip']
-    search=page.locator('[data-nw-search]')
-    try:
-        search.fill(query)
-        search.focus()
-        search.evaluate('e=>e.setSelectionRange(2,2)')
-        data['pihole']['error']='Native refresh acceptance marker'
+        expect(page.locator('.nw-query-unavailable')).to_contain_text('Query history unavailable.')
+        assert page.locator('.nw-query-chart svg').count()==0
+        assert 'Partial totals · available instances only.' in page.locator('.nw-pihole').inner_text()
+        assert page.locator('.nw-dns-stat b').all_text_contents()==['123','45','678']
+        data['pihole'].update(available=False,total_queries=None,blocked_queries=None,gravity_entries=None)
         path.write_text(json.dumps(data))
-        expect(page.locator('.nw-pihole .nw-warning')).to_have_text('Native refresh acceptance marker',timeout=12000)
-        assert search.input_value()==query
-        assert search.evaluate('e=>e.selectionStart')==2
-        assert page.locator('[data-nw-client]:visible').count()==1
-        assert page.locator('.nw-connected details').count()==0
-    finally:
-        search.fill('')
-        path.write_text(original)
-        expect(page.locator('.nw-pihole .nw-warning')).to_contain_text('collector cannot reach',timeout=12000)
-
-def test_metric_hierarchy_and_mobile_stack(page):
-    stats=page.locator('.nw-dns-stat')
-    rects=[stats.nth(i).bounding_box() for i in range(3)]
-    assert len({r['y'] for r in rects})==1, 'Metrics must share a compact summary row'
-    assert rects[0]['x']<rects[1]['x']<rects[2]['x']
-    page.set_viewport_size({'width':390,'height':1100})
-    a=page.locator('.nw-connected').bounding_box();b=page.locator('.nw-pihole').bounding_box()
-    assert b['y']>=a['y']+a['height']
-    assert not page.evaluate('document.documentElement.scrollWidth>innerWidth')
-    page.set_viewport_size({'width':1600,'height':1100})
-
-def test_lower_page_is_expanded_clients_left_pihole_right(page):
-    lower=page.locator('.nw-lower')
-    assert lower.count()==1, 'Missing split lower-page section'
-    clients=lower.locator('.nw-connected')
-    assert clients.locator('[data-nw-client]:visible').count()>0
-    assert clients.locator('details').count()==0
-    assert lower.locator('.nw-pihole').count()==1
-    for heading in ('Networks & VLANs','WiFi','Firewall rules','Source capabilities'):
-        assert page.get_by_role('heading',name=heading,exact=True).count()==0
-    assert page.locator('[data-nw-disclosure="firewall"],[data-nw-disclosure="capabilities"]').count()==0
-    a=clients.bounding_box(); b=lower.locator('.nw-pihole').bounding_box()
-    assert a['x']<b['x'] and abs(a['width']-b['width'])<2
-    assert abs(a['y']-b['y'])<2
+        expect(page.locator('.nw-dns-stat b').first).to_have_text('Unavailable',timeout=12000)
+        assert page.locator('.nw-dns-stat b').all_text_contents()==['Unavailable']*3
+    finally: path.write_text(original)
