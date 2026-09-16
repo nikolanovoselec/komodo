@@ -107,7 +107,7 @@ def test_v6_session_logs_out_even_after_timeout(monkeypatch, fail):
     if fail:
         with pytest.raises(TimeoutError): p.fetch_instance(p.NAMES[0], transport=request)
     else:
-        assert p.fetch_instance(p.NAMES[0], transport=request) == source('master')
+        assert p.fetch_instance(p.NAMES[0], transport=request) == dict(source('master'), configured_upstreams=None, upstreams_error='Configured upstream DNS unavailable.', upstreams_truncated=False)
     assert calls[-1] == ('DELETE','/api/auth')
 
 

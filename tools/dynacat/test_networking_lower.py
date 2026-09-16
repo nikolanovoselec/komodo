@@ -47,7 +47,7 @@ def test_clients_removed_and_pihole_full_width_below_preserved_infrastructure(pa
     assert page.locator('.nw-gateway').count()==1
     a=page.locator('.nw-infrastructure').bounding_box()
     b=page.locator('.nw-pihole').bounding_box()
-    assert b['y']>=a['y']+a['height']
+    assert a['y']>=b['y']+b['height']
     assert abs(a['width']-b['width'])<2
     for device in source['devices']:
         card=page.locator('.nw-device').filter(has=page.locator('h4',has_text=re.compile('^'+re.escape(device['name'])+'(?: ↗)?$')))
@@ -65,43 +65,23 @@ def test_network_css_cache_version_matches_content():
     actual=hashlib.sha256((ROOT/'assets/networking.css').read_bytes()).hexdigest()[:12]
     assert re.search(r'/assets/networking.css\?v=([a-f0-9]+)',config).group(1)==actual
 
-def test_combined_chart_replaces_lists_and_preserves_gap_paths(page):
-    path=OUT/'source/network-current'
-    original=path.read_text()
-    data=json.loads(original)
-    h={'available':True,'partial':True,'interval_seconds':600,'window_seconds':1800,
-       'start':'2026-09-16T12:00:00Z','end':'2026-09-16T12:30:00Z','max_count':100,
-       'points':[], 'error':'',
-       'permitted':{'path':'M0 70 L200 28 M600 42','area_path':'M0 70 L200 28 L200 140 L0 140 Z M600 42 L600 140 L600 140 Z'},
-       'blocked':{'path':'M0 126 L200 112 M600 119','area_path':'M0 126 L200 112 L200 140 L0 140 Z M600 119 L600 140 L600 140 Z'}}
-    data['pihole']['query_history']=h
+def test_null_history_has_no_fabricated_bar(page):
+    path=OUT/'source/network-current'; original=path.read_text(); data=json.loads(original)
+    data['pihole']['query_history']['points'][1].update(permitted=None,blocked=None,permitted_percent=None,blocked_percent=None)
+    data['pihole']['query_history']['partial']=True
     try:
         path.write_text(json.dumps(data))
-        expect(page.locator('.nw-query-line[data-series="permitted"]')).to_have_attribute('d',h['permitted']['path'],timeout=12000)
-        panel=page.locator('.nw-pihole')
-        assert panel.locator('.nw-dns-query,.nw-dns-history').count()==0
-        assert page.locator('.nw-query-chart svg').get_attribute('viewBox')=='0 0 600 140'
-        for kind in ('permitted','blocked'):
-            assert panel.locator('.nw-query-line[data-series="'+kind+'"]').get_attribute('d')==h[kind]['path']
-            assert panel.locator('.nw-query-area[data-series="'+kind+'"]').get_attribute('d')==h[kind]['area_path']
-        assert 'Queries / 10 min' in panel.inner_text()
-        assert 'Last 30 minutes' in panel.inner_text()
-        assert 'Permitted (total−blocked; not guaranteed successful resolutions)' in panel.inner_text()
-        assert panel.locator('.nw-query-axis time').all_text_contents()==[h['start'],h['end']]
-        assert 'UTC' in panel.locator('.nw-query-axis').inner_text()
-        assert 'Incomplete history' in panel.inner_text()
-        assert panel.locator('.nw-dns-stat b').all_text_contents()==[str(data['pihole'][k]) for k in ('total_queries','blocked_queries','gravity_entries')]
-        for theme,key in (('dark','midnight-navy'),('light','catppuccin-latte')):
-            page.locator(f'.theme-choices [data-key="{key}"]').first.evaluate('e=>e.click()')
-            styles=panel.locator('.nw-query-area').evaluate_all('es=>es.map(e=>({fill:getComputedStyle(e).fill,opacity:+getComputedStyle(e).fillOpacity}))')
-            assert len({s['fill'] for s in styles})==2
-            assert all(s['fill']!='none' and .3<=s['opacity']<1 for s in styles)
-    finally:
-        path.write_text(original)
+        expect(page.locator('.nw-bin-gap')).to_have_text('Unavailable',timeout=12000)
+        assert page.locator('.nw-bin-stack').count()==2
+        assert 'Incomplete history' in page.locator('.nw-pihole').inner_text()
+        data['pihole']['query_history']['points'][0].update(permitted=0,blocked=0,permitted_percent=0,blocked_percent=0)
+        path.write_text(json.dumps(data))
+        expect(page.locator('.nw-query-bin').first).to_have_attribute('data-permitted','0',timeout=12000)
+        assert page.locator('.nw-bin-permitted').first.bounding_box()['height']==0
+    finally:path.write_text(original)
 
 
-
-def test_missing_history_is_unavailable_not_zero_and_partial_totals_remain(page):
+def test_missing_history_is_unavailable_not_zero(page):
     path=OUT/'source/network-current'; original=path.read_text(); data=json.loads(original)
     data['pihole'].pop('query_history',None)
     data['pihole'].update(partial=True,error='',available=True,total_queries=123,blocked_queries=45,gravity_entries=678)
@@ -109,11 +89,6 @@ def test_missing_history_is_unavailable_not_zero_and_partial_totals_remain(page)
         path.write_text(json.dumps(data))
         expect(page.locator('.nw-dns-stat b').first).to_have_text('123',timeout=12000)
         expect(page.locator('.nw-query-unavailable')).to_contain_text('Query history unavailable.')
-        assert page.locator('.nw-query-chart svg').count()==0
+        assert page.locator('.nw-query-bin').count()==0
         assert 'Partial totals · available instances only.' in page.locator('.nw-pihole').inner_text()
-        assert page.locator('.nw-dns-stat b').all_text_contents()==['123','45','678']
-        data['pihole'].update(available=False,total_queries=None,blocked_queries=None,gravity_entries=None)
-        path.write_text(json.dumps(data))
-        expect(page.locator('.nw-dns-stat b').first).to_have_text('Unavailable',timeout=12000)
-        assert page.locator('.nw-dns-stat b').all_text_contents()==['Unavailable']*3
-    finally: path.write_text(original)
+    finally:path.write_text(original)

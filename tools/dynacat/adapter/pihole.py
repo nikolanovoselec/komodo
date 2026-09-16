@@ -26,7 +26,13 @@ def query_history(rows, now):
                            permitted=sum(r['total']-r['blocked'] for r in records) if complete else None,
                            blocked=sum(r['blocked'] for r in records) if complete else None))
     maximum = max([p[k] for p in points for k in ('permitted','blocked') if p[k] is not None] or [0])
+    maximum_total = max([p['permitted'] + p['blocked'] for p in points if p['permitted'] is not None] or [0])
+    for point in points:
+        point['label'] = datetime.fromtimestamp(point['timestamp'], timezone.utc).strftime('%H:%M')
+        for key in ('permitted', 'blocked'):
+            point[key + '_percent'] = point[key] / max(maximum_total, 1) * 100 if point[key] is not None else None
     result = dict(available=any(p['permitted'] is not None for p in points),
+                  max_total_count=maximum_total,
                   partial=any(p['permitted'] is None for p in points) or len(points) < 3 or any(b-a > 600 for a,b in zip(stamps, stamps[1:])),
                   interval_seconds=600, window_seconds=1800, start=datetime.fromtimestamp(start, timezone.utc).strftime('%H:%M'), end=datetime.fromtimestamp(now, timezone.utc).strftime('%H:%M'),
                   max_count=maximum, points=points, error=None)
@@ -54,9 +60,16 @@ def collect(fetch, now=None):
             if any(type(row[key]) is not int or row[key] < 0 for key in METRICS):
                 raise ValueError('Pi-hole metrics unavailable')
             rows.append(row)
-            instances.append(dict(name=name, available=True))
+            instances.append(dict(name=name, available=True,
+                                  configured_upstreams=row.get('configured_upstreams'),
+                                  upstreams_available=row.get('configured_upstreams') is not None,
+                                  upstreams_error=row.get('upstreams_error'),
+                                  upstreams_truncated=row.get('upstreams_truncated', False)))
         except Exception:
-            instances.append(dict(name=name, available=False, error='Pi-hole unavailable; verify TLS, network and API authentication.'))
+            instances.append(dict(name=name, available=False, configured_upstreams=None,
+                                  upstreams_available=False, upstreams_error='Configured upstream DNS unavailable.',
+                                  upstreams_truncated=False,
+                                  error='Pi-hole unavailable; verify TLS, network and API authentication.'))
     partial = 0 < len(rows) < len(NAMES)
     return dict(available=bool(rows), partial=partial, gravity_aggregation='sum_not_deduplicated',
                 error=('Partial Pi-hole data; sums cover available instances only.' if partial else
@@ -131,9 +144,18 @@ def fetch_instance(name, transport=None):
             raise ValueError('Pi-hole authentication unavailable')
         summary = transport(url, pin, 'GET', '/api/stats/summary', sid=sid)
         history = transport(url, pin, 'GET', '/api/history', sid=sid)
+        upstreams_error = None
+        try:
+            upstreams = transport(url, pin, 'GET', '/api/config/dns/upstreams', sid=sid)['config']['dns']['upstreams']
+            if not isinstance(upstreams, list) or any(not isinstance(v, str) or not 1 <= len(v) <= 256 or not v.isprintable() for v in upstreams):
+                raise ValueError('Invalid upstream list')
+        except Exception:
+            upstreams = None
+            upstreams_error = 'Configured upstream DNS unavailable.'
         return dict(total_queries=summary['queries']['total'], blocked_queries=summary['queries']['blocked'],
                     gravity_entries=summary['gravity']['domains_being_blocked'],
-                    history=history['history'])
+                    history=history['history'], configured_upstreams=upstreams[:16] if upstreams is not None else None,
+                    upstreams_error=upstreams_error, upstreams_truncated=upstreams is not None and len(upstreams) > 16)
     finally:
         if isinstance(sid, str) and sid:
             transport(url, pin, 'DELETE', '/api/auth', sid=sid)

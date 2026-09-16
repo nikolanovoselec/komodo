@@ -41,6 +41,7 @@ def test_official_history_only_no_dns_query_export(monkeypatch):
         if method=='POST': return {'session':{'sid':'SID','valid':True}}
         if method=='DELETE': return
         if path=='/api/stats/summary': return {'queries':{'total':20,'blocked':3},'gravity':{'domains_being_blocked':100}}
+        if path=='/api/config/dns/upstreams': return {'config': {'dns': {'upstreams': []}}}
         assert path=='/api/history'
         return {'history':[{'timestamp':1500,'total':20,'blocked':3}]}
     row=pihole.fetch_instance(pihole.NAMES[0],transport)
