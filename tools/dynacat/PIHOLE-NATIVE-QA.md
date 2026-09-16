@@ -1,4 +1,12 @@
-# Pi-hole native Proxmox chart match and precollected backend
+# Pi-hole native styling, enlarged diagram and precollected backend
+
+## Superseding size correction
+The requested large desktop diagram replaces ONLY the earlier 38px/node-sized geometry below. Acceptance: one plot at 50–70% of Pi-hole content width (target 65%) and 180px high on desktop; full-width 160px plot on mobile. Compact metrics remain alongside on desktop, upstream IPs remain below, and Pi-hole remains first. All actual paths, gaps, theme styles, ten-minute-bin labels and backend/cache code are unchanged. Only the renderer revision is bumped; collector revision remains precollected-55.
+
+Native RED failed desktop width and all four height checks before CSS changes. Captured-real native GREEN passes 1600/390 dark/light; 250 tests and 92 subtests pass including real-path, gap, zero and unavailable cases. New evidence is in `pihole-size-qa/`; the prior native evidence below is historical. `qa_pihole_native_match.py` now checks the enlarged geometry while preserving color/style comparisons.
+
+## Previous native-style release (historical geometry)
+
 
 Supersedes the continuous-area interpretation. Tracked baseline was clean at origin/main 4f043938; existing untracked evidence and other checkout preserved. Live deployment backup archived locally before edits.
 

@@ -11,12 +11,12 @@ from playwright.sync_api import sync_playwright
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / 'pihole-native-qa'
+OUT = ROOT / 'pihole-size-qa'
 MEASURE = r'''root => {
  const box=e=>{if(!e)return null;const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom}};
  const inspect=e=>{if(!e)return null;const s=getComputedStyle(e);return {tag:e.tagName,classes:e.getAttribute('class'),box:box(e),fill:s.fill,stroke:s.stroke,strokeWidth:s.strokeWidth,dash:s.strokeDasharray,opacity:s.opacity,fontSize:s.fontSize,lineHeight:s.lineHeight,display:s.display,gap:s.gap,marginTop:s.marginTop,viewBox:e.getAttribute('viewBox'),d:e.getAttribute('d'),text:e.textContent}};
  const svg=root.querySelector('svg');
- return {root:inspect(root),svg:inspect(svg),axis:inspect(root.querySelector('.pve-netaxis')),rx:inspect(root.querySelector('.pve-rx')),tx:inspect(root.querySelector('.pve-tx')),grid:inspect(root.querySelector('.pve-gridline')),rxLabel:inspect(root.querySelector('.pve-rx-label')),txLabel:inspect(root.querySelector('.pve-tx-label')),areaCount:root.querySelectorAll('.nw-query-area').length,html:root.outerHTML,text:root.innerText,overflow:document.documentElement.scrollWidth>innerWidth};
+ return {contentWidth:root.closest('.nw-pihole')?.querySelector('.nw-dns-body')?.getBoundingClientRect().width,root:inspect(root),svg:inspect(svg),axis:inspect(root.querySelector('.pve-netaxis')),rx:inspect(root.querySelector('.pve-rx')),tx:inspect(root.querySelector('.pve-tx')),grid:inspect(root.querySelector('.pve-gridline')),rxLabel:inspect(root.querySelector('.pve-rx-label')),txLabel:inspect(root.querySelector('.pve-tx-label')),areaCount:root.querySelectorAll('.nw-query-area').length,html:root.outerHTML,text:root.innerText,overflow:document.documentElement.scrollWidth>innerWidth};
 }'''
 
 
@@ -70,7 +70,9 @@ def compare(ref, target):
         check(item and cls in (item['classes'] or '').split(), 'shared '+cls)
     svg=target['svg']
     check(svg and svg['viewBox']=='0 0 100 30', 'viewBox 0 0 100 30')
-    check(svg and abs(svg['box']['height']-38)<.1, 'native chart height 38px')
+    check(svg and svg['box']['height']>=140, 'large chart height at least 140px')
+    ratio=svg['box']['width']/target['contentWidth'] if svg else 0
+    check(.5<=ratio<=.7 if target['width']>700 else .95<=ratio<=1.01, 'desktop chart 50–70% content width; mobile full width')
     check(target['areaCount']==0, 'no area fills')
     check(target['grid'] and target['grid']['d']==ref['grid']['d'], 'exact native three-line grid geometry')
     if svg and ref['svg']:

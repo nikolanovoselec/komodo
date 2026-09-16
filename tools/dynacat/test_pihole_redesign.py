@@ -20,11 +20,12 @@ def test_pihole_first_compact_operational_panel(page):
  for key in ('permitted','blocked'):
   assert chart.locator(f'.nw-{key}.nw-query-line').get_attribute('d')==h[key]['path']
  assert p.locator('.pve-netaxis').inner_text().split()==['30m','ago',f"0–{h['max_count']}",'queries','/','10','min','latest']
- assert chart.bounding_box()['height']==38
+ assert 160<=chart.bounding_box()['height']<=200
+ assert .5<=chart.bounding_box()['width']/p.locator('.nw-dns-body').bounding_box()['width']<=.7
  assert p.locator('.nw-query-area').count()==0
  for cls,key in (('pve-rx-label','permitted'),('pve-tx-label','blocked')):
   assert p.locator('.'+cls+' b').inner_text()==str(h['points'][-1][key])
  assert p.locator('.nw-dns-stats').evaluate('e=>getComputedStyle(e).display')=='grid'
  assert p.locator('.pve-netaxis').evaluate('e=>getComputedStyle(e).display')=='flex'
- assert p.bounding_box()['height']<420
+ assert p.bounding_box()['height']<500  # Larger plot supersedes the old compact-panel cap.
  assert not page.evaluate('document.documentElement.scrollWidth>innerWidth')

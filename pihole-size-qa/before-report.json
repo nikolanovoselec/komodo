@@ -1,0 +1,37 @@
+{
+  "mode": "live",
+  "status": "RED",
+  "checks": [
+    {
+      "width": 1600,
+      "theme": "dark",
+      "failures": [
+        "large chart height at least 140px",
+        "desktop chart 50\u201370% content width; mobile full width"
+      ]
+    },
+    {
+      "width": 1600,
+      "theme": "light",
+      "failures": [
+        "large chart height at least 140px",
+        "desktop chart 50\u201370% content width; mobile full width"
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "failures": [
+        "large chart height at least 140px"
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "failures": [
+        "large chart height at least 140px"
+      ]
+    }
+  ],
+  "sourceSha256": "00160cddbb392afccc80a6696ba2abb7bf96d97e11b5cb2e299d6d198fefde38"
+}
