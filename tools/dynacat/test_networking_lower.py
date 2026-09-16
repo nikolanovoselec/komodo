@@ -76,18 +76,17 @@ def test_null_history_has_no_fabricated_connection(page):
     h=query_history(rows,1800); data['pihole']['query_history']=h
     try:
         path.write_text(json.dumps(data))
-        line=page.locator('.nw-query-line.nw-permitted');area=page.locator('.nw-query-area.nw-permitted')
+        line=page.locator('.nw-query-line.nw-permitted')
         expect(line).to_have_attribute('d',h['permitted']['path'],timeout=12000)
         assert line.get_attribute('d').count('M')==2
-        assert area.get_attribute('d')==h['permitted']['area_path']
-        assert area.get_attribute('d').count('Z')==2
+        assert page.locator('.nw-query-area').count()==0
         assert 'Incomplete history' in page.locator('.nw-pihole').inner_text()
         for row in rows:
             row['history']=[{'timestamp':t,'total':0,'blocked':0} for t in (600,1200,1800)]
         h=query_history(rows,1800); data['pihole']['query_history']=h
         path.write_text(json.dumps(data))
         expect(line).to_have_attribute('d',h['permitted']['path'],timeout=12000)
-        assert area.evaluate('e=>e.getBBox().height')==0
+        assert line.evaluate('e=>e.getBBox().height')==0
     finally:path.write_text(original)
 
 

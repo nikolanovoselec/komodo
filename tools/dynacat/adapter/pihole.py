@@ -18,6 +18,8 @@ def query_history(rows, now):
             data[r['timestamp']] = r if valid and r['blocked'] <= r['total'] else None
         maps.append(data)
     stamps = sorted({t for data in maps for t in data if start <= t <= now})
+    truncated = len(stamps) > 181
+    stamps = stamps[-181:]
     points = []
     for stamp in stamps:
         records = [data[stamp] for data in maps if data.get(stamp) is not None]
@@ -33,7 +35,7 @@ def query_history(rows, now):
             point[key + '_percent'] = point[key] / max(maximum_total, 1) * 100 if point[key] is not None else None
     result = dict(available=any(p['permitted'] is not None for p in points),
                   max_total_count=maximum_total,
-                  partial=any(p['permitted'] is None for p in points) or len(points) < 3 or any(b-a > 600 for a,b in zip(stamps, stamps[1:])),
+                  partial=truncated or any(p['permitted'] is None for p in points) or len(points) < 3 or any(b-a > 600 for a,b in zip(stamps, stamps[1:])),
                   interval_seconds=600, window_seconds=1800, start=datetime.fromtimestamp(start, timezone.utc).strftime('%H:%M'), end=datetime.fromtimestamp(now, timezone.utc).strftime('%H:%M'),
                   max_count=maximum, points=points, error=None)
     for key in ('permitted','blocked'):
@@ -173,22 +175,78 @@ def unavailable():
 
 
 class Snapshot:
-    """Single-flight async demand cache: 10s retry, 30s max sample age."""
-    def __init__(self, loader=None, clock=None):
+    """Single-flight cache warmed by the server lifecycle, with atomic disk snapshots.
+
+    Reads never perform upstream/disk I/O. Retry 10s after completion; health
+    expires 30s after collection start. Persist only the bounded public projection.
+    """
+    def __init__(self, loader=None, clock=None, storage_path=None):
         self.loader = loader or (lambda: collect(fetch_instance))
         self.clock = clock or time.monotonic
+        self.storage_path = storage_path
         self.lock = threading.Lock()
         self.worker = None
         self.data = None
         self.started = self.completed = None
+        if storage_path:
+            try:
+                with open(storage_path, 'rb') as stream:
+                    raw = stream.read(262145)
+                if len(raw) > 262144:
+                    raise ValueError('Snapshot too large')
+                saved = json.loads(raw)
+                age = time.time() - saved['started_at']
+                if saved['version'] != 1 or not math.isfinite(age) or age < 0:
+                    raise ValueError('Invalid snapshot')
+                data = saved['data']
+                template = unavailable()
+                if (not isinstance(data, dict) or set(data) != set(template) | {'fetched_at'}
+                        or type(data['available']) is not bool or type(data['partial']) is not bool
+                        or not isinstance(data['fetched_at'], (int, float))
+                        or not isinstance(data['query_history'], dict)
+                        or set(data['query_history']) != set(template['query_history']) | {'fetched_at', 'stale'}
+                        or not isinstance(data['query_history']['points'], list)
+                        or len(data['query_history']['points']) > 181
+                        or not isinstance(data['instances'], list) or len(data['instances']) != len(NAMES)):
+                    raise ValueError('Invalid projection')
+                self.data = data
+                self.started = self.clock() - age
+            except (OSError, ValueError, KeyError, TypeError):
+                self.data = None
+
+    def _persist(self, data, started):
+        if not self.storage_path:
+            return
+        temporary = self.storage_path + '.tmp'
+        try:
+            payload = json.dumps(dict(version=1, started_at=time.time() - (self.clock()-started), data=data), allow_nan=False).encode()
+            if len(payload) > 262144:
+                raise ValueError('Snapshot too large')
+            with open(temporary, 'wb') as stream:
+                stream.write(payload)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, self.storage_path)
+        except (OSError, ValueError, TypeError):
+            # Persistence failure must not suppress live telemetry or leak secrets.
+            try:
+                os.unlink(temporary)
+            except OSError:
+                pass
 
     def _refresh(self, started):
         try:
             data = self.loader()
         except Exception:
             data = unavailable()
+        data['fetched_at'] = time.time()
+        data['query_history'].update(fetched_at=data['fetched_at'], stale=False)
         with self.lock:
+            if not data['query_history']['available'] and self.data is not None:
+                data['query_history'] = copy.deepcopy(self.data['query_history'])
+                data['query_history'].update(stale=True, partial=True)
             self.data, self.started, self.completed = data, started, self.clock()
+        self._persist(data, started)
 
     def current(self):
         with self.lock:
@@ -196,12 +254,23 @@ class Snapshot:
             if (self.worker is None or not self.worker.is_alive()) and (self.completed is None or now - self.completed >= 10):
                 self.worker = threading.Thread(target=self._refresh, args=(now,), daemon=True)
                 self.worker.start()
-            if self.data is None or now - self.started >= 30:
-                return unavailable()
-            return copy.deepcopy(self.data)
+            age = None if self.started is None else max(0, now - self.started)
+            stale = age is not None and age >= 30
+            result = copy.deepcopy(self.data) if self.data is not None else unavailable()
+            if stale:
+                history = result['query_history']
+                result = unavailable()
+                result['query_history'] = history
+                history.update(stale=True, partial=True)
+                result['fetched_at'] = self.data.get('fetched_at')
+            result.setdefault('fetched_at', None)
+            result['freshness'] = dict(state='starting' if self.data is None else 'stale' if stale else 'unavailable' if not result['available'] else 'partial' if result['partial'] else 'cached',
+                age_seconds=age, max_age_seconds=30, collecting=self.worker.is_alive(),
+                age_basis='collection_started', fetched_at_basis='collection_completed_not_source_sample')
+            return result
 
 
-_snapshot = Snapshot()
+_snapshot = Snapshot(storage_path=os.environ.get('PIHOLE_HISTORY_PATH'))
 
 
 def current():

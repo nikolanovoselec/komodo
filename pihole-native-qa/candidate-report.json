@@ -1,0 +1,27 @@
+{
+  "mode": "candidate",
+  "status": "GREEN",
+  "checks": [
+    {
+      "width": 1600,
+      "theme": "dark",
+      "failures": []
+    },
+    {
+      "width": 1600,
+      "theme": "light",
+      "failures": []
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "failures": []
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "failures": []
+    }
+  ],
+  "sourceSha256": "00160cddbb392afccc80a6696ba2abb7bf96d97e11b5cb2e299d6d198fefde38"
+}

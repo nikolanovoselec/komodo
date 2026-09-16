@@ -76,3 +76,7 @@ html[data-scheme="dark"] .nw-dashboard{color-scheme:dark}
  .nw-group .nw-device footer{margin-top:8px}.nw-group .nw-metric svg{height:24px}
  .nw-section-heading{align-items:start}.nw-section-heading>span{text-align:right;max-width:175px}
 }
+
+/* Native Proxmox NETWORK ACTIVITY component: preserve its actual 38px graph. */
+.nw-dns-body{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);align-items:start;gap:24px}.nw-dns-overview{grid-template-columns:1fr}.nw-pihole .nw-blocklist{border:0;padding:0;margin-top:10px}.nw-dns-network{min-width:0;line-height:1.3}.nw-dns-network .nw-query-line{stroke-width:1.4;fill:none}.nw-dns-network .nw-last-bin{display:block;margin-top:5px;color:var(--color-text-subdue)}
+@media(max-width:700px){.nw-dns-body{grid-template-columns:1fr;gap:12px}}

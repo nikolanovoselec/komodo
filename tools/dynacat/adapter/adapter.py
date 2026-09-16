@@ -300,6 +300,9 @@ def visible_stacks(servers, stacks, tags):
 def main():
     import media
     warmers = [_pve_cache.snapshot, *(source.snapshot for source in media.SOURCES.values())]
+    if os.environ.get('PIHOLE_API_KEY'):
+        import pihole
+        warmers.append(pihole.current)
     if os.environ.get('DYNACAT_UNIFI_TOKEN'):
         import unifi
         warmers.append(unifi.current)

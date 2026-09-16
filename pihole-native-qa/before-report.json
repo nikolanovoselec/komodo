@@ -1,0 +1,83 @@
+{
+  "mode": "live",
+  "status": "RED",
+  "checks": [
+    {
+      "width": 1600,
+      "theme": "dark",
+      "failures": [
+        "shared pve-network container",
+        "shared pve-netgraph",
+        "shared pve-netaxis",
+        "shared pve-rx",
+        "shared pve-tx",
+        "shared pve-gridline",
+        "shared pve-rx-label",
+        "shared pve-tx-label",
+        "viewBox 0 0 100 30",
+        "native chart height 38px",
+        "no area fills",
+        "exact native three-line grid geometry",
+        "svg.marginTop native match"
+      ]
+    },
+    {
+      "width": 1600,
+      "theme": "light",
+      "failures": [
+        "shared pve-network container",
+        "shared pve-netgraph",
+        "shared pve-netaxis",
+        "shared pve-rx",
+        "shared pve-tx",
+        "shared pve-gridline",
+        "shared pve-rx-label",
+        "shared pve-tx-label",
+        "viewBox 0 0 100 30",
+        "native chart height 38px",
+        "no area fills",
+        "exact native three-line grid geometry",
+        "svg.marginTop native match"
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "failures": [
+        "shared pve-network container",
+        "shared pve-netgraph",
+        "shared pve-netaxis",
+        "shared pve-rx",
+        "shared pve-tx",
+        "shared pve-gridline",
+        "shared pve-rx-label",
+        "shared pve-tx-label",
+        "viewBox 0 0 100 30",
+        "native chart height 38px",
+        "no area fills",
+        "exact native three-line grid geometry",
+        "svg.marginTop native match"
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "failures": [
+        "shared pve-network container",
+        "shared pve-netgraph",
+        "shared pve-netaxis",
+        "shared pve-rx",
+        "shared pve-tx",
+        "shared pve-gridline",
+        "shared pve-rx-label",
+        "shared pve-tx-label",
+        "viewBox 0 0 100 30",
+        "native chart height 38px",
+        "no area fills",
+        "exact native three-line grid geometry",
+        "svg.marginTop native match"
+      ]
+    }
+  ],
+  "sourceSha256": "00160cddbb392afccc80a6696ba2abb7bf96d97e11b5cb2e299d6d198fefde38"
+}

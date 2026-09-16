@@ -7,7 +7,7 @@ services:
     pull_policy: build
     container_name: tools_dynacat_workload_summary
     labels:
-      ch.graymatter.config-revision: "construct-pihole-cockpit-53"
+      ch.graymatter.config-revision: "construct-pihole-precollected-55"
     command: ["python", "-B", "/app/adapter.py"]
     user: "65534:65534"
     volumes:
@@ -18,6 +18,7 @@ services:
       WORKLOAD_HISTORY_PATH: /history/workloads.sqlite
       MEDIA_HISTORY_PATH: /history/media.sqlite
       UNIFI_HISTORY_PATH: /history/unifi.sqlite
+      PIHOLE_HISTORY_PATH: /history/pihole.json
       SONARR_API_KEY: ${SONARR_API_KEY}
       RADARR_API_KEY: ${RADARR_API_KEY}
       DYNACAT_PLEX_TOKEN: ${DYNACAT_PLEX_TOKEN}
@@ -46,7 +47,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "construct-pihole-continuous-54"
+      ch.graymatter.config-revision: "construct-pihole-native-55"
     expose: ["8080"]
     volumes:
       - ./config:/app/config

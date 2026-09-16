@@ -91,6 +91,8 @@ def test_production_main_enables_all_cache_warmers(monkeypatch):
     for name, source in media.SOURCES.items():
         monkeypatch.setattr(source, 'snapshot', lambda name=name: calls.append(name))
     monkeypatch.setattr(adapter._pve_cache, 'snapshot', lambda: calls.append('pve'))
+    monkeypatch.setenv('PIHOLE_API_KEY', 'not-a-real-credential')
+    monkeypatch.setitem(sys.modules, 'pihole', types.SimpleNamespace(current=lambda: calls.append('pihole')))
     monkeypatch.setenv('DYNACAT_UNIFI_TOKEN', 'not-a-real-credential')
     monkeypatch.setitem(sys.modules, 'unifi', types.SimpleNamespace(current=lambda: calls.append('unifi')))
     class FakeServer:
@@ -105,7 +107,7 @@ def test_production_main_enables_all_cache_warmers(monkeypatch):
     monkeypatch.setattr(adapter, 'make_server', make_server)
     assert hasattr(adapter, 'main'), 'Production lifecycle entrypoint is missing'
     adapter.main()
-    assert set(calls) == set(media.SOURCES) | {'pve', 'unifi', 'served', 'closed'}
+    assert set(calls) == set(media.SOURCES) | {'pve', 'unifi', 'pihole', 'served', 'closed'}
 
 
 def test_shutdown_stops_sampler_and_blocked_flight_never_overlaps():
