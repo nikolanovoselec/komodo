@@ -174,5 +174,5 @@ meter::-webkit-meter-bar{border:0;background:color-mix(in srgb,var(--color-prima
 @media(max-width:550px){.pve-heading{flex-wrap:wrap}}
 /* Keep the native theme menu usable with the full preset catalog. */
 .theme-picker{max-height:min(34rem,calc(100vh - 1rem));overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
-.theme-picker .theme-choices{max-height:min(30rem,calc(100vh - 5rem));overflow-y:auto;overscroll-behavior:contain}
-@media(max-width:600px){.theme-picker{max-width:calc(100vw - 1rem)}.theme-picker .theme-choices{max-height:calc(100vh - 7rem)}}
+.theme-choices{max-height:min(30rem,calc(100vh - 5rem));overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+@media(max-width:600px){.theme-picker{max-width:calc(100vw - 1rem)}.theme-choices{max-height:calc(100vh - 7rem)}}
