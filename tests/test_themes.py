@@ -32,11 +32,12 @@ def test_new_theme_keys_are_unique_and_have_complete_palette():
         assert len(set(presets[key]) & {"background-color", "primary-color", "positive-color", "negative-color"}) == 4
 
 
-def test_oled_high_contrast_uses_red_primary_on_black():
+def test_oled_high_contrast_uses_exact_bright_orange_primary_on_black():
     oled = load_config()["theme"]["presets"]["oled-high-contrast"]
     assert oled["background-color"] == "0 0 0"
-    assert oled["primary-color"] == "0 100 68"
+    assert oled["primary-color"] == "28 100 65"
     assert oled["positive-color"] == "145 78 62"
+    assert oled["negative-color"] == "4 90 67"
 
 
 def test_picker_is_bounded_and_scrollable():
@@ -45,4 +46,4 @@ def test_picker_is_bounded_and_scrollable():
     assert "overflow-y:auto" in css
     assert "max-height" in css
     assert ".theme-choices{max-height" in css
-    assert "ch.graymatter.config-revision: \"themes-24-oled-red\"" in (ROOT / "tools/dynacat/compose.yaml").read_text()
+    assert "ch.graymatter.config-revision: \"themes-23-oled-orange\"" in (ROOT / "tools/dynacat/compose.yaml").read_text()
