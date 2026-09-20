@@ -1,5 +1,5 @@
 document:
-  head: '<link rel="stylesheet" href="/assets/plex-radio.css?v=85181d88158c"><script src="/assets/plex-radio.js?v=96cae9dd4e50" defer></script><link rel="stylesheet" href="/assets/workload-docker.css?v=a78b00b687a6"><link rel="stylesheet" href="/assets/telemetry-history.css?v=6880fe43e248"><link rel="stylesheet" href="/assets/endpoints.css?v=cf10b40960c3"><script src="/assets/endpoints.js?v=32889b1de226" defer></script><script src="/assets/bern-calendar.js?v=aa4be363a757" defer></script><link rel="stylesheet" href="/assets/bern-calendar.css?v=019088fb0348"><script src="/assets/workload-docker.js?v=d4b76a14fabd" defer></script><link rel="stylesheet" href="/assets/media-ops.css?v=ec8df5cbd43c"><script src="/assets/media-ops.js?v=4f9829b028d5" defer></script><script src="/assets/local-theme.js?v=f2e2d81779e8"></script><script src="/assets/command-center.js?v=c6a44620aeb3" defer></script><link rel="stylesheet" href="/assets/networking.css?v=ff66067efa24"><script src="/assets/networking.js?v=76c28ac95349" defer></script><link rel="stylesheet" href="/assets/cohesive-telemetry.css?v=d8eb742b4ac7"><script src="/assets/same-tab-links.js?v=c1300bb20b9f" defer></script>'
+  head: '<link rel="stylesheet" href="/assets/plex-radio.css?v=fbddb4445228"><script src="/assets/plex-radio.js?v=96cae9dd4e50" defer></script><link rel="stylesheet" href="/assets/workload-docker.css?v=18a1dcd1c7c9"><link rel="stylesheet" href="/assets/telemetry-history.css?v=5c86866e4382"><link rel="stylesheet" href="/assets/endpoints.css?v=0be983ecb8ad"><script src="/assets/endpoints.js?v=32889b1de226" defer></script><script src="/assets/bern-calendar.js?v=aa4be363a757" defer></script><link rel="stylesheet" href="/assets/bern-calendar.css?v=b72a8e88fd85"><script src="/assets/workload-docker.js?v=d4b76a14fabd" defer></script><link rel="stylesheet" href="/assets/media-ops.css?v=9e2658b06564"><script src="/assets/media-ops.js?v=4f9829b028d5" defer></script><script src="/assets/local-theme.js?v=f2e2d81779e8"></script><script src="/assets/command-center.js?v=c6a44620aeb3" defer></script><link rel="stylesheet" href="/assets/networking.css?v=162152b04304"><script src="/assets/networking.js?v=76c28ac95349" defer></script><link rel="stylesheet" href="/assets/cohesive-telemetry.css?v=3157fc5f27a9"><script src="/assets/same-tab-links.js?v=c1300bb20b9f" defer></script>'
 server:
   port: 8080
   assets-path: /app/assets
@@ -263,7 +263,7 @@ theme:
       negative-color: 4 90 67
       contrast-multiplier: 1.4
       text-saturation-multiplier: 1.0
-  custom-css-file: /assets/command-center.css
+  custom-css-file: /assets/command-center.css?v=499ff8fbcb2e
 pages:
 - name: HARDWARE & WORKLOADS
   slug: hardware-workloads
