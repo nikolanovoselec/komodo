@@ -42,6 +42,13 @@ def test_oled_high_contrast_uses_bright_distinct_semantic_colors():
     assert len({primary, positive, negative}) == 3
 
 
+def test_oled_high_contrast_primary_is_accessible_orange():
+    primary = hsl(oled_theme()["primary-color"])
+    assert 20 <= primary[0] <= 35
+    assert primary[1] >= 90
+    assert primary[2] >= 60
+
+
 def test_oled_high_contrast_scopes_an_accessible_amber_warning_token():
     css = (CONFIG.parent.parent / "assets" / "command-center.css").read_text()
     assert 'data-theme="oled-high-contrast"' in css

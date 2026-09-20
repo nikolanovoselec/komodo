@@ -258,7 +258,7 @@ theme:
       # OLED: absolute black surface; keep every lifted surface transparent/black.
       light: false
       background-color: 0 0 0
-      primary-color: 190 100 72
+      primary-color: 28 100 65
       positive-color: 145 78 62
       negative-color: 4 90 67
       contrast-multiplier: 1.4
