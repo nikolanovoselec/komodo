@@ -8,7 +8,7 @@ CSS = Path(__file__).parent / "assets" / "command-center.css"
 def test_command_center_has_single_documented_default_type_scale():
     text = CSS.read_text()
     assert text.count("--cc-type-scale:") == 1
-    assert "--cc-type-scale:1.15" in text
+    assert "--cc-type-scale:1.4" in text
     assert "/* Central typography control:" in text
 
 

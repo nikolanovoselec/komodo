@@ -1,6 +1,6 @@
 :root{
  /* Central typography control: adjust this one multiplier for all small dashboard text. */
- --cc-type-scale:1.15;--cc-border:color-mix(in srgb,var(--color-primary) 18%,transparent)}
+ --cc-type-scale:1.4;--cc-border:color-mix(in srgb,var(--color-primary) 18%,transparent)}
 body{letter-spacing:.015em}
 .header-container .logo{white-space:nowrap;flex-shrink:0}
 .header-container .nav{column-gap:32px}
