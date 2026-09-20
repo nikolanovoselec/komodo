@@ -47,7 +47,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "themes-21-oled-high-contrast"
+      ch.graymatter.config-revision: "themes-22-oled-high-contrast"
     expose: ["8080"]
     volumes:
       - ./config:/app/config
