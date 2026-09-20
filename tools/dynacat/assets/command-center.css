@@ -172,3 +172,7 @@ meter::-webkit-meter-bar{border:0;background:color-mix(in srgb,var(--color-prima
 .cc-container-link:hover{text-decoration:underline}
 @media(max-width:1100px){.page-columns:has(.cc-rail-clock){grid-template-columns:minmax(0,1fr)}}
 @media(max-width:550px){.pve-heading{flex-wrap:wrap}}
+/* Keep the native theme menu usable with the full preset catalog. */
+.theme-picker{max-height:min(34rem,calc(100vh - 1rem));overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+.theme-picker .theme-choices{max-height:min(30rem,calc(100vh - 5rem));overflow-y:auto;overscroll-behavior:contain}
+@media(max-width:600px){.theme-picker{max-width:calc(100vw - 1rem)}.theme-picker .theme-choices{max-height:calc(100vh - 7rem)}}
