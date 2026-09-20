@@ -40,3 +40,9 @@ def test_oled_high_contrast_uses_bright_distinct_semantic_colors():
     assert positive[2] >= 55
     assert negative[2] >= 55
     assert len({primary, positive, negative}) == 3
+
+
+def test_oled_high_contrast_scopes_an_accessible_amber_warning_token():
+    css = (CONFIG.parent.parent / "assets" / "command-center.css").read_text()
+    assert 'data-theme="oled-high-contrast"' in css
+    assert "#ffd166" in css

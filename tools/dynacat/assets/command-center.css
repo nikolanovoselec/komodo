@@ -176,3 +176,4 @@ meter::-webkit-meter-bar{border:0;background:color-mix(in srgb,var(--color-prima
 .theme-picker{max-height:min(34rem,calc(100vh - 1rem));overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
 .theme-choices{max-height:min(30rem,calc(100vh - 5rem));overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
 @media(max-width:600px){.theme-picker{max-width:calc(100vw - 1rem)}.theme-choices{max-height:calc(100vh - 7rem)}}
+html[data-theme="oled-high-contrast"] :is(.k-warning,.nw-warning){color:#ffd166}
