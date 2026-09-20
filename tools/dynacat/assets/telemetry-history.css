@@ -11,8 +11,8 @@
 .cw-merged .cw-history-line{stroke:var(--history-color);stroke-width:1.8;fill:none;vector-effect:non-scaling-stroke}
 .cw-merged .cw-history-chart circle{fill:var(--history-color)}
 .cw-merged .cw-history-metric label b{color:var(--history-color);font-weight:600}
-.cw-merged .cw-history-axis{display:flex;justify-content:space-between;gap:3px;font-size:10px;line-height:1.1;color:var(--color-text-base);font-variant-numeric:tabular-nums;white-space:nowrap}
-.cw-merged .cw-history-empty{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;color:var(--color-text-base)}
+.cw-merged .cw-history-axis{display:flex;justify-content:space-between;gap:3px;font-size:calc(var(--cc-type-scale) * 10px);line-height:1.1;color:var(--color-text-base);font-variant-numeric:tabular-nums;white-space:nowrap}
+.cw-merged .cw-history-empty{position:absolute;inset:0;display:grid;place-items:center;font-size:calc(var(--cc-type-scale) * 11px);color:var(--color-text-base)}
 .cw-merged .cw-history-metric>small{white-space:normal;min-height:12px;line-height:1.2}
 .cw-merged .cw-workload>.k-host{padding-top:3px;padding-bottom:3px;min-height:44px}
-@media(max-width:550px){.cw-merged .cw-history-chart{height:24px}.cw-merged .cw-history-axis{font-size:10px}}
+@media(max-width:550px){.cw-merged .cw-history-chart{height:24px}.cw-merged .cw-history-axis{font-size:calc(var(--cc-type-scale) * 10px)}}
