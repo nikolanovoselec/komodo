@@ -254,6 +254,15 @@ theme:
       positive-color: 158 55 62
       negative-color: 12 80 65
       contrast-multiplier: 1.2
+    oled-high-contrast:
+      # OLED: absolute black surface; keep every lifted surface transparent/black.
+      light: false
+      background-color: 0 0 0
+      primary-color: 190 100 72
+      positive-color: 145 78 62
+      negative-color: 4 90 67
+      contrast-multiplier: 1.4
+      text-saturation-multiplier: 1.0
   custom-css-file: /assets/command-center.css
 pages:
 - name: HARDWARE & WORKLOADS
