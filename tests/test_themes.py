@@ -46,4 +46,4 @@ def test_picker_is_bounded_and_scrollable():
     assert "overflow-y:auto" in css
     assert "max-height" in css
     assert ".theme-choices{max-height" in css
-    assert "ch.graymatter.config-revision: \"themes-23-oled-orange\"" in (ROOT / "tools/dynacat/compose.yaml").read_text()
+    assert "ch.graymatter.config-revision: \"typography-scale-1.15\"" in (ROOT / "tools/dynacat/compose.yaml").read_text()

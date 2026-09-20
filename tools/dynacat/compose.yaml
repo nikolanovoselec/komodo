@@ -47,7 +47,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "themes-23-oled-orange"
+      ch.graymatter.config-revision: "typography-scale-1.15"
     expose: ["8080"]
     volumes:
       - ./config:/app/config
