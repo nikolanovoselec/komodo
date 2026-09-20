@@ -19,7 +19,7 @@ def referenced_css_assets():
 def test_command_center_defines_the_single_central_multiplier():
     text = (ASSETS / "command-center.css").read_text()
     assert text.count("--cc-type-scale:") == 1
-    assert "--cc-type-scale:1.4" in text
+    assert "--cc-type-scale:1.2" in text
     assert "/* Central typography control:" in text
 
 

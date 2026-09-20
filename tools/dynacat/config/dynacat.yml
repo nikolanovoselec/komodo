@@ -263,7 +263,7 @@ theme:
       negative-color: 4 90 67
       contrast-multiplier: 1.4
       text-saturation-multiplier: 1.0
-  custom-css-file: /assets/command-center.css?v=499ff8fbcb2e
+  custom-css-file: /assets/command-center.css?v=999fdf5aef16
 pages:
 - name: HARDWARE & WORKLOADS
   slug: hardware-workloads
