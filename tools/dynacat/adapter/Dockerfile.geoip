@@ -1,5 +1,5 @@
 # Same pinned Python base as the existing collector, plus the offline MMDB reader.
-FROM python:3.14-slim@sha256:caaf356f40667c496d405780745b9ac25771c189a51dfcc42430d531ea09f8a2
+FROM python:3.14-slim@sha256:51dafde81dbdb6ebde285137a295cf18a47ca95234fe388a343719cb97305b3d
 RUN pip install --no-cache-dir maxminddb==3.2.0 \
     && mkdir -p /geoip /history \
     && chown 65534:65534 /geoip /history
