@@ -1,6 +1,6 @@
 services:
   bazarr:
-    image: lscr.io/linuxserver/bazarr:v1.6.1-ls364
+    image: lscr.io/linuxserver/bazarr:v1.6.2-ls366
     container_name: servarr_bazarr
     #dns:
     #  - 100.64.0.2
