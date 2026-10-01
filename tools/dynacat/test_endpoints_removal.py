@@ -59,9 +59,13 @@ def endpoint_links(config):
 class EndpointsRemoval(unittest.TestCase):
     def test_exact_requested_cards_are_absent_and_retained_cards_remain(self):
         config = yaml.safe_load((ROOT / "config/dynacat.yml").read_text())
-        links = endpoint_links(config)
-        self.assertTrue(REMOVED.isdisjoint(links), f"requested cards still visible: {sorted(REMOVED & links)}")
-        self.assertTrue(RETAINED.issubset(links), f"retained cards missing: {sorted(RETAINED - links)}")
+        # Card identity is its exact name and URL. Descriptions may be clarified
+        # without either resurrecting a removed card or losing a retained one.
+        links = {(name, url) for name, url, _ in endpoint_links(config)}
+        removed = {(name, url) for name, url, _ in REMOVED}
+        retained = {(name, url) for name, url, _ in RETAINED}
+        self.assertTrue(removed.isdisjoint(links), f"requested cards still visible: {sorted(removed & links)}")
+        self.assertTrue(retained.issubset(links), f"retained cards missing: {sorted(retained - links)}")
         self.assertEqual(len(links), 77)
 
 

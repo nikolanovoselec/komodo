@@ -1,11 +1,13 @@
 """Native-renderer acceptance for the rebuilt directory. No external links followed."""
 import json
+import os
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
-BASE = 'http://127.0.0.1:18185'
-OUT = Path('/srv/hermes/workspaces/endpoints-rebuild-review')
-original = json.loads((OUT/'original-inventory.json').read_text())
+BASE = os.environ.get('DYNACAT_QA_BASE', 'http://127.0.0.1:18185').rstrip('/')
+OUT = Path(os.environ.get('DYNACAT_QA_OUT', '/srv/hermes/workspaces/endpoints-rebuild-review'))
+OUT.mkdir(parents=True, exist_ok=True)
+original = json.loads((Path(__file__).parent/'fixtures/endpoints-before-rebuild.json').read_text())
 with sync_playwright() as p:
     b=p.chromium.launch(executable_path='/usr/bin/chromium', args=['--no-sandbox'])
     context=b.new_context(viewport={'width':1600,'height':1100}, device_scale_factor=1)
