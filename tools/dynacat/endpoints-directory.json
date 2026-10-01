@@ -1,0 +1,497 @@
+{
+  "version": 1,
+  "order": "Purpose groups; alphabetical within each group",
+  "domains": [
+    {
+      "id": "infrastructure",
+      "title": "Infrastructure",
+      "description": "Run, connect, observe and protect.",
+      "groups": [
+        {
+          "id": "compute",
+          "title": "Compute & containers",
+          "links": [
+            {
+              "name": "Komodo",
+              "url": "https://komodo.graymatter.ch",
+              "description": "Servers & deployments"
+            },
+            {
+              "name": "Portainer",
+              "url": "https://portainer.graymatter.ch",
+              "description": "Docker management"
+            },
+            {
+              "name": "Proxmox",
+              "url": "https://proxmox.graymatter.ch",
+              "description": "Virtual machines & containers"
+            },
+            {
+              "name": "Termix",
+              "url": "https://termix.novoselec.ch",
+              "description": "SSH connections"
+            }
+          ]
+        },
+        {
+          "id": "network-access",
+          "title": "Network & access",
+          "links": [
+            {
+              "name": "Authentik",
+              "url": "https://authentik.graymatter.ch/if/admin/#/administration/overview",
+              "description": "Identity & single sign-on"
+            },
+            {
+              "name": "Cloudflare",
+              "url": "https://dash.cloudflare.com/ab75f75941a21a81db27bf12e99c620b/home/overview",
+              "description": "DNS & edge services"
+            },
+            {
+              "name": "Fast",
+              "url": "https://fast.com",
+              "description": "Internet speed test"
+            },
+            {
+              "name": "NGINX Proxy Manager",
+              "url": "https://npm.graymatter.ch/",
+              "description": "Reverse proxy & certificates"
+            },
+            {
+              "name": "Openspeedtest",
+              "url": "https://speedtest.graymatter.ch",
+              "description": "Local network speed test"
+            },
+            {
+              "name": "Pihole Master",
+              "url": "https://pihole-master.graymatter.ch",
+              "description": "DNS filtering · master"
+            },
+            {
+              "name": "Pihole Slave",
+              "url": "https://pihole-slave.graymatter.ch",
+              "description": "DNS filtering · secondary"
+            },
+            {
+              "name": "Pihole Storage",
+              "url": "https://pihole-storage.graymatter.ch",
+              "description": "DNS filtering · storage"
+            },
+            {
+              "name": "Unifi",
+              "url": "https://unifi.ui.com",
+              "description": "Network management"
+            }
+          ]
+        },
+        {
+          "id": "monitoring",
+          "title": "Monitoring & logs",
+          "links": [
+            {
+              "name": "Beszel",
+              "url": "https://beszel.graymatter.ch",
+              "description": "Host monitoring"
+            },
+            {
+              "name": "Dozzle",
+              "url": "https://dozzle.graymatter.ch",
+              "description": "Container logs"
+            },
+            {
+              "name": "Uptime Kuma",
+              "url": "https://status.graymatter.ch/dashboard",
+              "description": "Availability monitoring"
+            }
+          ]
+        },
+        {
+          "id": "backups",
+          "title": "Backups & recovery",
+          "links": [
+            {
+              "name": "Backrest Komodo",
+              "url": "https://backrest-komodo.graymatter.ch",
+              "description": "File & configuration backups"
+            },
+            {
+              "name": "Backrest Media Servers",
+              "url": "https://backrest-mediaservers.graymatter.ch",
+              "description": "File & configuration backups"
+            },
+            {
+              "name": "Backrest Middleware",
+              "url": "https://backrest-middleware.graymatter.ch",
+              "description": "File & configuration backups"
+            },
+            {
+              "name": "Backrest Pihole",
+              "url": "https://backrest-pihole-master.graymatter.ch",
+              "description": "File & configuration backups"
+            },
+            {
+              "name": "Backrest Servarr",
+              "url": "https://backrest-servarr.graymatter.ch",
+              "description": "File & configuration backups"
+            },
+            {
+              "name": "Backrest Tools",
+              "url": "https://backrest-tools.graymatter.ch",
+              "description": "File & configuration backups"
+            },
+            {
+              "name": "Proxmox Backup Server",
+              "url": "https://pbs.graymatter.ch/",
+              "description": "VM & LXC backups"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "media",
+      "title": "Media & entertainment",
+      "description": "Playback, libraries, downloads and administration.",
+      "groups": [
+        {
+          "id": "players",
+          "title": "Watch, listen & play",
+          "links": [
+            {
+              "name": "Emby",
+              "url": "https://emby.novoselec.ch",
+              "description": "Media library & playback"
+            },
+            {
+              "name": "Jellyfin",
+              "url": "https://jellyfin.novoselec.ch",
+              "description": "Media library & playback"
+            },
+            {
+              "name": "Minecraft",
+              "url": "https://minecraft-controller.novoselec.ch",
+              "description": "Game server control"
+            },
+            {
+              "name": "Plex",
+              "url": "https://plex.novoselec.ch",
+              "description": "Movies, series & music"
+            },
+            {
+              "name": "Podcast",
+              "url": "https://podcast.novoselec.ch",
+              "description": "Podcast website"
+            },
+            {
+              "name": "YouTube",
+              "url": "https://www.youtube.com",
+              "description": "Video"
+            }
+          ]
+        },
+        {
+          "id": "libraries",
+          "title": "Libraries & requests",
+          "links": [
+            {
+              "name": "Bazarr",
+              "url": "https://bazarr.graymatter.ch",
+              "description": "Subtitles"
+            },
+            {
+              "name": "Maintainerr",
+              "url": "https://maintainerr.graymatter.ch",
+              "description": "Library cleanup rules"
+            },
+            {
+              "name": "Ombi",
+              "url": "https://ombi.graymatter.ch",
+              "description": "Media requests"
+            },
+            {
+              "name": "Profilarr",
+              "url": "https://profilarr.graymatter.ch",
+              "description": "Quality-profile management"
+            },
+            {
+              "name": "Radarr",
+              "url": "https://radarr.graymatter.ch",
+              "description": "Movie library"
+            },
+            {
+              "name": "Seerr",
+              "url": "https://seerr.novoselec.ch",
+              "description": "Media requests"
+            },
+            {
+              "name": "Sonarr",
+              "url": "https://sonarr.graymatter.ch",
+              "description": "Series library"
+            }
+          ]
+        },
+        {
+          "id": "downloads",
+          "title": "Downloads & indexers",
+          "links": [
+            {
+              "name": "Autobrr",
+              "url": "https://autobrr.graymatter.ch",
+              "description": "Release automation"
+            },
+            {
+              "name": "Prowlarr",
+              "url": "https://prowlarr.graymatter.ch",
+              "description": "Indexer management"
+            },
+            {
+              "name": "qBittorrent",
+              "url": "https://qbittorrent.graymatter.ch/#/",
+              "description": "Torrent client"
+            },
+            {
+              "name": "Torrentleech",
+              "url": "https://www.torrentleech.org/torrents/top/index/added/-1%20day/orderby/completed/order/desc",
+              "description": "Torrent tracker"
+            },
+            {
+              "name": "Transmission",
+              "url": "https://transmission.graymatter.ch",
+              "description": "Legacy torrent client"
+            }
+          ]
+        },
+        {
+          "id": "media-management",
+          "title": "Playback management",
+          "links": [
+            {
+              "name": "Crosswatch",
+              "url": "https://crosswatch.novoselec.ch",
+              "description": "Watch-state synchronisation"
+            },
+            {
+              "name": "Tautulli",
+              "url": "https://tautulli.graymatter.ch",
+              "description": "Plex activity & statistics"
+            },
+            {
+              "name": "Tracearr",
+              "url": "https://tracearr.novoselec.ch",
+              "description": "Playback tracking"
+            },
+            {
+              "name": "Wizarr",
+              "url": "https://wizarr.graymatter.ch",
+              "description": "Media-server invitations"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "work",
+      "title": "Work & tools",
+      "description": "Create, develop, organise and publish.",
+      "groups": [
+        {
+          "id": "ai-development",
+          "title": "AI & development",
+          "links": [
+            {
+              "name": "Codeflare",
+              "url": "https://codeflare.ch",
+              "description": "AI development"
+            },
+            {
+              "name": "Codeflare Integration",
+              "url": "https://codeflare.novoselec.ch",
+              "description": "Integration environment"
+            },
+            {
+              "name": "GitHub",
+              "url": "https://github.com/nikolanovoselec",
+              "description": "Repositories"
+            },
+            {
+              "name": "Hermes",
+              "url": "https://hermes.novoselec.ch",
+              "description": "Agent workspace"
+            },
+            {
+              "name": "Hermes Android",
+              "url": "https://hermes.novoselec.ch/android-app/",
+              "description": "Android workspace"
+            },
+            {
+              "name": "Hermes Browser",
+              "url": "https://hermes.novoselec.ch/browser-app/",
+              "description": "Browser workspace"
+            },
+            {
+              "name": "IT Tools",
+              "url": "https://tools.graymatter.ch",
+              "description": "Developer utilities"
+            },
+            {
+              "name": "NotebookLM",
+              "url": "https://notebooklm.google.com/?icid=home_maincta",
+              "description": "Research & notes"
+            },
+            {
+              "name": "Open Notebook",
+              "url": "https://opennotebook.novoselec.ch",
+              "description": "AI research workspace"
+            },
+            {
+              "name": "Renovate",
+              "url": "https://developer.mend.io/github/nikolanovoselec",
+              "description": "Dependency updates"
+            }
+          ]
+        },
+        {
+          "id": "documents",
+          "title": "Documents & productivity",
+          "links": [
+            {
+              "name": "BentoPDF",
+              "url": "https://pdf.novoselec.ch",
+              "description": "PDF tools"
+            },
+            {
+              "name": "Draw.io",
+              "url": "https://app.diagrams.net",
+              "description": "Diagrams"
+            },
+            {
+              "name": "Microsoft 365",
+              "url": "https://office.com",
+              "description": "Office applications"
+            },
+            {
+              "name": "Outlook",
+              "url": "https://outlook.office.com/mail/",
+              "description": "Mail & calendar"
+            },
+            {
+              "name": "Paperless",
+              "url": "https://paperless.graymatter.ch",
+              "description": "Document archive"
+            },
+            {
+              "name": "Whiteboard",
+              "url": "https://whiteboard.cloud.microsoft",
+              "description": "Visual collaboration"
+            },
+            {
+              "name": "Zipline",
+              "url": "https://novoselec.ch",
+              "description": "File sharing & short links"
+            }
+          ]
+        },
+        {
+          "id": "publishing",
+          "title": "Publishing & business",
+          "links": [
+            {
+              "name": "Castopod",
+              "url": "https://podcast.novoselec.ch/cp-admin",
+              "description": "Podcast administration"
+            },
+            {
+              "name": "Gray Matter",
+              "url": "https://graymatter.ch",
+              "description": "Company website"
+            },
+            {
+              "name": "LinkedIn",
+              "url": "https://www.linkedin.com",
+              "description": "Professional network"
+            },
+            {
+              "name": "Resend",
+              "url": "https://resend.com/emails",
+              "description": "Email delivery"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "personal",
+      "title": "Reading & shopping",
+      "description": "Personal bookmarks, separate from operations.",
+      "groups": [
+        {
+          "id": "news",
+          "title": "News & reading",
+          "links": [
+            {
+              "name": "20 Minuten",
+              "url": "https://20min.ch",
+              "description": "Swiss news"
+            },
+            {
+              "name": "Index.hr",
+              "url": "https://www.index.hr",
+              "description": "Croatian news"
+            },
+            {
+              "name": "Net.hr",
+              "url": "https://net.hr",
+              "description": "Croatian news"
+            },
+            {
+              "name": "News Digest",
+              "url": "https://news.graymatter.ch",
+              "description": "Personal news application"
+            },
+            {
+              "name": "Reddit",
+              "url": "https://reddit.com",
+              "description": "Communities"
+            },
+            {
+              "name": "SRF",
+              "url": "https://www.srf.ch",
+              "description": "Swiss news & broadcasting"
+            },
+            {
+              "name": "Watson",
+              "url": "https://www.watson.ch",
+              "description": "Swiss news"
+            }
+          ]
+        },
+        {
+          "id": "shopping",
+          "title": "Shopping",
+          "links": [
+            {
+              "name": "Amazon",
+              "url": "https://amazon.de",
+              "description": "Marketplace"
+            },
+            {
+              "name": "Digitec",
+              "url": "https://www.digitec.ch",
+              "description": "Electronics"
+            },
+            {
+              "name": "Galaxus",
+              "url": "https://www.galaxus.ch",
+              "description": "Shopping"
+            },
+            {
+              "name": "Temu",
+              "url": "https://www.temu.com/ch/",
+              "description": "Marketplace"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
