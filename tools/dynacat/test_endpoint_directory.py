@@ -40,7 +40,7 @@ class DirectoryAcceptance(unittest.TestCase):
         expected = {'Gray Matter':'publishing','Codeflare':'ai-development','Codeflare Integration':'ai-development',
             'IT Tools':'ai-development','Hermes':'ai-development','Hermes Browser':'ai-development','Hermes Android':'ai-development',
             'Proxmox Backup Server':'backups','Backrest Media Servers':'backups','Torrentleech':'downloads',
-            'YouTube':'players','Castopod':'publishing','Plex':'players','Tautulli':'media-management'}
+            'YouTube':'players','Castopod':'publishing','Plex':'players','Tautulli':'media-management','Minecraft':'compute'}
         for name,group in expected.items():self.assertEqual(groups[name],group,name)
 
     def test_four_clear_areas_and_no_catchall_groups(self):

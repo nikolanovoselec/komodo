@@ -18,7 +18,7 @@ with sync_playwright() as p:
     pairs=page.locator('.es-endpoint').evaluate_all("rows => rows.map(a=>[a.querySelector('strong').textContent,a.getAttribute('href')])")
     assert sorted(pairs)==sorted([[i['name'],i['url']] for i in original])
     page.locator('[data-es-category="media"]').click()
-    assert page.locator('.es-endpoint:visible').count()==22, 'Media filter must show all four media-purpose groups'
+    assert page.locator('.es-endpoint:visible').count()==21, 'Media filter must show all four media-purpose groups'
     assert page.locator('.es-domain:visible').count()==1
     page.locator('[data-es-category="all"]').click()
     page.locator('#endpoint-search').fill('backup tools')

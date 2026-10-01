@@ -17,6 +17,11 @@
               "description": "Servers & deployments"
             },
             {
+              "name": "Minecraft",
+              "url": "https://minecraft-controller.novoselec.ch",
+              "description": "Game server control"
+            },
+            {
               "name": "Portainer",
               "url": "https://portainer.graymatter.ch",
               "description": "Docker management"
@@ -155,7 +160,7 @@
       "groups": [
         {
           "id": "players",
-          "title": "Watch, listen & play",
+          "title": "Watch & listen",
           "links": [
             {
               "name": "Emby",
@@ -166,11 +171,6 @@
               "name": "Jellyfin",
               "url": "https://jellyfin.novoselec.ch",
               "description": "Media library & playback"
-            },
-            {
-              "name": "Minecraft",
-              "url": "https://minecraft-controller.novoselec.ch",
-              "description": "Game server control"
             },
             {
               "name": "Plex",
@@ -263,7 +263,7 @@
         },
         {
           "id": "media-management",
-          "title": "Playback management",
+          "title": "Playback & access",
           "links": [
             {
               "name": "Crosswatch",
@@ -301,12 +301,12 @@
             {
               "name": "Codeflare",
               "url": "https://codeflare.ch",
-              "description": "AI development"
+              "description": "Product website"
             },
             {
               "name": "Codeflare Integration",
               "url": "https://codeflare.novoselec.ch",
-              "description": "Integration environment"
+              "description": "Alternate product endpoint"
             },
             {
               "name": "GitHub",
