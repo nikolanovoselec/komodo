@@ -1,6 +1,6 @@
 services:
   nebula-sync:
-    image: ghcr.io/lovelaze/nebula-sync:v0.11.2
+    image: ghcr.io/lovelaze/nebula-sync:v0.11.3
     container_name: dns_ntp_nebula_sync
     environment:
     - PRIMARY=http://pihole-master.lan|${PIHOLE_API_KEY}
