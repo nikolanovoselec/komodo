@@ -13,7 +13,7 @@
   color:var(--es-text);
   font-family:Roboto,"Helvetica Neue",Arial,sans-serif;
 }
-html[data-scheme="light"] .es-directory-v2{--es-accent:var(--color-primary,#b53b24)}
+html[data-scheme="light"] .es-directory-v2{--es-accent:#b53b24;--es-muted:var(--color-text-highlight,#4c4f69);--es-subtle:var(--color-text-base,#5c5f77)}
 .es-directory-v2,.es-directory-v2 *,.es-directory-v2 *::before,.es-directory-v2 *::after{box-sizing:border-box}
 .es-directory-v2 [hidden]{display:none!important}
 .es-heading{display:block;text-align:center;margin:2px auto 22px}
