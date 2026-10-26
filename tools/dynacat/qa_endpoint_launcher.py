@@ -172,14 +172,16 @@ def verify():
             assert geometry["bookmarkColumnGap"] == "0px", geometry
             assert geometry["descriptionSize"] == expected_description_size, geometry
             assert geometry["appMarginBottom"] == 14, geometry
-            assert geometry["appRowPitch"] >= 59, geometry
+            # Chromium can report 58.99997px for Flame's nominal 59px pitch.
+            assert geometry["appRowPitch"] >= 58.9, geometry
             assert geometry["appMinHit"] >= 44, geometry
             assert geometry["bookmarkFontSize"] == "14px", geometry
             assert geometry["bookmarkLineHeight"] == "28px", geometry
             assert geometry["bookmarkGap"] == "2px", geometry
             expected_bookmark_height = 45 if width <= 760 else 28
-            assert geometry["bookmarkRowPitch"] == expected_bookmark_height, geometry
-            assert geometry["bookmarkMinHit"] >= expected_bookmark_height, geometry
+            assert abs(geometry["bookmarkRowPitch"] - expected_bookmark_height) < 0.1, geometry
+            # Browser fractional layout can shave a tiny amount off a 45px hit box.
+            assert geometry["bookmarkMinHit"] >= expected_bookmark_height - 0.1, geometry
             layouts.append({"width": width, **geometry})
 
         dark_theme = layouts[0]
