@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "order": "Purpose groups; alphabetical within each group",
+  "order": "Applications alphabetically; bookmarks below",
   "domains": [
     {
       "id": "infrastructure",

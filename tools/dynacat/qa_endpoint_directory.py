@@ -16,9 +16,16 @@ with sync_playwright() as p:
     context.route('**/radio/**', lambda route: route.abort())
     page=context.new_page(); errors=[]
     page.on('pageerror',lambda e: errors.append(str(e)))
+    page.goto(BASE+'/');page.wait_for_selector('.es-directory-v2[data-ready="true"]')
+    assert page.locator('.es-applications .es-endpoint').count()==66
+    assert page.locator('.es-bookmarks .es-endpoint').count()==11
     page.goto(BASE+'/endpoints-services');page.wait_for_selector('.es-directory-v2[data-ready="true"]')
     pairs=page.locator('.es-endpoint').evaluate_all("rows => rows.map(a=>[a.querySelector('strong').textContent,a.getAttribute('href')])")
     assert sorted(pairs)==sorted([[i['name'],i['url']] for i in original])
+    assert page.locator('.es-applications .es-endpoint').count()==66
+    assert page.locator('.es-bookmarks .es-endpoint').count()==11
+    assert page.locator('.es-applications .es-endpoint strong').evaluate_all("nodes=>{const names=nodes.map(n=>n.textContent.trim());const c=new Intl.Collator(undefined,{sensitivity:'base',numeric:true});return names.every((n,i)=>i===0||c.compare(names[i-1],n)<=0)}")
+    assert page.locator('.es-applications').evaluate("apps=>Boolean(apps.compareDocumentPosition(document.querySelector('.es-bookmarks'))&Node.DOCUMENT_POSITION_FOLLOWING)")
     page.locator('[data-es-category="media"]').click()
     assert page.locator('.es-endpoint:visible').count()==21, 'Media filter must show all four media-purpose groups'
     assert page.locator('.es-domain:visible').count()==1
@@ -40,13 +47,30 @@ with sync_playwright() as p:
             page.set_viewport_size({'width':width,'height':1100 if width>500 else 844})
             page.goto(BASE+'/endpoints-services');page.wait_for_selector('.es-directory-v2');page.wait_for_timeout(400)
             assert page.locator('.es-endpoint:visible').count()==77
-            geometry=page.evaluate("""() => ({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
-                cards:[...document.querySelectorAll('.es-group')].map(x=>({w:x.getBoundingClientRect().width,h:x.getBoundingClientRect().height})),
-                minHit:Math.min(...[...document.querySelectorAll('.es-endpoint')].map(x=>x.getBoundingClientRect().height)),
-                background:getComputedStyle(document.body).backgroundColor,
-                font:getComputedStyle(document.querySelector('.es-endpoint strong')).fontSize})""")
+            geometry=page.evaluate("""() => {
+                const luminance = color => {
+                    const linear=color.match(/\\d+(?:\\.\\d+)?/g).slice(0,3).map(Number).map(x=>x/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);
+                    return .2126*linear[0]+.7152*linear[1]+.0722*linear[2];
+                };
+                const contrast=(a,b)=>{const values=[luminance(a),luminance(b)].sort((x,y)=>y-x);return (values[0]+.05)/(values[1]+.05);};
+                const background=getComputedStyle(document.body).backgroundColor;
+                const appTitle=getComputedStyle(document.querySelector('.es-applications .es-endpoint strong')).color;
+                const appDescription=getComputedStyle(document.querySelector('.es-applications .es-endpoint small')).color;
+                return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
+                    cards:[...document.querySelectorAll('.es-group')].map(x=>({w:x.getBoundingClientRect().width,h:x.getBoundingClientRect().height})),
+                    minHit:Math.min(...[...document.querySelectorAll('.es-endpoint')].map(x=>x.getBoundingClientRect().height)),
+                    minCategoryHit:Math.min(...[...document.querySelectorAll('.es-categories button')].map(x=>x.getBoundingClientRect().height)),
+                    appColumns:getComputedStyle(document.querySelector('.es-app-grid')).gridTemplateColumns.split(' ').length,
+                    background,accentContrast:contrast(appTitle,background),descriptionContrast:contrast(appDescription,background),
+                    font:getComputedStyle(document.querySelector('.es-endpoint strong')).fontSize};
+            }""")
             assert geometry['scrollWidth']<=width, geometry
             assert geometry['minHit']>=44, geometry
+            assert geometry['minCategoryHit']>=44, geometry
+            assert geometry['accentContrast']>=4.5, geometry
+            assert geometry['descriptionContrast']>=4.5, geometry
+            expected_columns=4 if width>=1200 else 3 if width>760 else 2 if width>480 else 1
+            assert geometry['appColumns']==expected_columns, geometry
             if width>=1024:
                 assert all(c['w']>=240 for c in geometry['cards']), geometry
             page.screenshot(path=str(OUT/f'candidate-{width}-{theme}.png'),full_page=True)
@@ -69,6 +93,6 @@ with sync_playwright() as p:
     assert m.evaluate('document.documentElement.scrollWidth <= innerWidth')
     mobile.close()
     assert not errors,errors
-    result={'links':len(pairs),'domains':4,'groups':13,'urls_preserved':True,'search':True,'filters':True,'touch_mobile':True,'scroll_stable':True,'errors':errors,'layouts':samples}
+    result={'links':len(pairs),'applications':66,'bookmarks':11,'categories':4,'bookmark_groups':2,'urls_preserved':True,'search':True,'filters':True,'touch_mobile':True,'scroll_stable':True,'errors':errors,'layouts':samples}
     (OUT/'candidate-verification.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({k:v for k,v in result.items() if k!='layouts'},indent=2));b.close()
