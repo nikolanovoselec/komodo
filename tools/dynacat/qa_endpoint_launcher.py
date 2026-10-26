@@ -73,11 +73,13 @@ def verify():
         dark_theme = page.evaluate("""() => ({
             background:getComputedStyle(document.body).backgroundColor,
             accent:getComputedStyle(document.querySelector('.es-applications .es-endpoint strong')).color,
-            description:getComputedStyle(document.querySelector('.es-applications .es-endpoint small')).color
+            description:getComputedStyle(document.querySelector('.es-applications .es-endpoint small')).color,
+            subtle:getComputedStyle(document.querySelector('.es-categories button span')).color
         })""")
         dark_contrast = {
             "accent": contrast_ratio(dark_theme["accent"], dark_theme["background"]),
             "description": contrast_ratio(dark_theme["description"], dark_theme["background"]),
+            "subtle": contrast_ratio(dark_theme["subtle"], dark_theme["background"]),
         }
         assert min(dark_contrast.values()) >= 4.5, (dark_theme, dark_contrast)
 
@@ -129,21 +131,23 @@ def verify():
         light_theme = page.evaluate("""() => {
             const root=document.documentElement;
             root.dataset.scheme='light';
-            for (const [key,value] of Object.entries({'--color-background':'#ffffff','--color-primary':'#223344','--color-text-highlight':'#171717','--color-text-base':'#333333','--color-text-subdue':'#555555','--cc-border':'#cccccc'})) root.style.setProperty(key,value);
+            for (const [key,value] of Object.entries({'--color-background':'#eff1f5','--color-primary':'#1e66f5','--color-text-highlight':'#4c4f69','--color-text-base':'#5c5f77','--color-text-subdue':'#6c6f85','--cc-border':'#ccd0da'})) root.style.setProperty(key,value);
             return {
                 background:getComputedStyle(document.body).backgroundColor,
                 title:getComputedStyle(document.querySelector('.es-applications .es-endpoint strong')).color,
                 description:getComputedStyle(document.querySelector('.es-applications .es-endpoint small')).color,
-                bookmark:getComputedStyle(document.querySelector('.es-bookmarks .es-endpoint strong')).color
+                bookmark:getComputedStyle(document.querySelector('.es-bookmarks .es-endpoint strong')).color,
+                categoryCount:getComputedStyle(document.querySelector('.es-categories button span')).color
             };
         }""")
-        assert light_theme["background"] == "rgb(255, 255, 255)", light_theme
-        assert light_theme["title"] == "rgb(34, 51, 68)", light_theme
-        assert light_theme["bookmark"] == "rgb(23, 23, 23)", light_theme
+        assert light_theme["background"] == "rgb(239, 241, 245)", light_theme
+        assert light_theme["title"] == "rgb(181, 59, 36)", light_theme
+        assert light_theme["bookmark"] == "rgb(76, 79, 105)", light_theme
         light_contrast = {
             "accent": contrast_ratio(light_theme["title"], light_theme["background"]),
             "description": contrast_ratio(light_theme["description"], light_theme["background"]),
             "bookmark": contrast_ratio(light_theme["bookmark"], light_theme["background"]),
+            "subtle": contrast_ratio(light_theme["categoryCount"], light_theme["background"]),
         }
         assert min(light_contrast.values()) >= 4.5, (light_theme, light_contrast)
 
