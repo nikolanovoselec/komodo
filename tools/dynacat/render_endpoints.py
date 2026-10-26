@@ -1,4 +1,4 @@
-"""Render the centralized application launcher into Dynacat's native HTML widget."""
+"""Render the Flame-style application launcher into Dynacat's native HTML widget."""
 import hashlib
 import html
 import json
@@ -9,10 +9,12 @@ from urllib.parse import urlsplit
 import yaml
 
 ROOT = Path(__file__).parent
+ICON_PATHS = json.loads((ROOT / "flame-mdi-icons.json").read_text())["icons"]
 
 
-def render(directory):
+def render(directory, icon_paths=None):
     escape = lambda value: html.escape(str(value), quote=True)
+    icon_paths = ICON_PATHS if icon_paths is None else icon_paths
     domains = directory["domains"]
     personal = next((domain for domain in domains if domain["id"] == "personal"), None)
     applications = [
@@ -28,62 +30,65 @@ def render(directory):
         for group in (personal or {}).get("groups", [])
         for item in group["links"]
     ]
-    app_count = len(applications)
-    bookmark_count = len(bookmarks)
-    total = app_count + bookmark_count
+    used_icons = {item["icon"] for _, _, item in applications}
+    used_icons.update(item["icon"] for _, item in bookmarks)
+    missing_icons = used_icons - set(icon_paths)
+    if missing_icons:
+        raise ValueError(f"Missing MDI icon paths: {', '.join(sorted(missing_icons))}")
+
+    def icon_sprite():
+        symbols = []
+        for name in sorted(used_icons):
+            if not re.fullmatch(r"[a-z0-9-]+", name):
+                raise ValueError(f"Invalid MDI icon name: {name}")
+            paths = icon_paths[name]
+            if isinstance(paths, str):
+                paths = [paths]
+            if not paths or not all(isinstance(path, str) and path for path in paths):
+                raise ValueError(f"Invalid MDI icon path: {name}")
+            path_markup = "".join(f'<path d="{escape(path)}"></path>' for path in paths)
+            symbols.append(f'<symbol id="es-mdi-{escape(name)}" viewBox="0 0 24 24">{path_markup}</symbol>')
+        return (
+            '<svg class="es-icon-sprite" aria-hidden="true" focusable="false" '
+            'xmlns="http://www.w3.org/2000/svg">'
+            + "".join(symbols)
+            + "</svg>"
+        )
 
     def endpoint(item, domain, group, area):
-        name, url, description = item["name"], item["url"], item["description"]
+        name, url, description, icon_name = item["name"], item["url"], item["description"], item["icon"]
         parsed = urlsplit(url)
         if parsed.scheme not in ("https", "http") or not parsed.hostname or parsed.username or parsed.password:
             raise ValueError("Unsafe directory URL")
-        search = " ".join([name, url, description, group["title"], domain["title"]])
+        icon_markup = (
+            f'<svg class="es-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
+            f'<use href="#es-mdi-{escape(icon_name)}"></use></svg>'
+        )
+        description_markup = f"<small>{escape(description)}</small>" if area != "personal" else ""
         return (
-            f'<li><a class="es-endpoint" data-es-area="{escape(area)}" data-es-group="{escape(group["id"])}" href="{escape(url)}" '
-            f'rel="noopener noreferrer" data-es-search="{escape(search)}" title="{escape(url)}">'
-            f'<span class="es-link-copy"><strong>{escape(name)}</strong><small>{escape(description)}</small></span>'
-            '<span class="es-open" aria-hidden="true">↗</span></a></li>'
+            f'<li><a class="es-endpoint" data-es-area="{escape(area)}" '
+            f'data-es-group="{escape(group["id"])}" data-es-icon="{escape(icon_name)}" '
+            f'href="{escape(url)}" rel="noopener noreferrer" title="{escape(url)}">'
+            f'{icon_markup}<span class="es-link-copy"><strong>{escape(name)}</strong>{description_markup}</span>'
+            "</a></li>"
         )
 
     bits = [
-        '<section class="es-launcher es-directory-v2" aria-label="Service directory">',
-        '<header class="es-heading"><div><h2>Endpoints &amp; Services</h2><p>Find a service by what it does.</p></div>',
-        f'<span class="es-inventory-label">{app_count} applications · {bookmark_count} bookmarks</span></header>',
-        '<div class="es-toolbar"><div class="es-search-row"><label for="endpoint-search">Find a service</label>',
-        '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>',
-        '<input id="endpoint-search" type="search" placeholder="Search by name, purpose or address" autocomplete="off" spellcheck="false">',
-        '<button type="button" class="es-clear" aria-label="Clear search" hidden>Clear</button></div>',
-        '<nav class="es-categories" aria-label="Service areas">',
-        '<button type="button" data-es-category="all" aria-pressed="true">All</button>',
+        '<section class="es-directory-v2" aria-label="Service directory">',
+        icon_sprite(),
+        '<section class="es-domain es-applications" data-es-domain="applications" aria-labelledby="es-applications-title">',
+        '<h2 class="es-section-title" id="es-applications-title">Applications</h2>',
+        '<ul class="es-app-grid" aria-labelledby="es-applications-title">',
     ]
-    for domain in domains:
-        count = sum(len(group["links"]) for group in domain["groups"])
-        label = "Bookmarks" if domain["id"] == "personal" else domain["title"]
-        bits.append(
-            f'<button type="button" data-es-category="{escape(domain["id"])}" aria-pressed="false">'
-            f'{escape(label)}<span>{count}</span></button>'
-        )
-    bits.extend(
-        [
-            "</nav></div>",
-            f'<div class="es-results-line"><span class="es-result-count" aria-live="polite">{total} links</span>'
-            "<span>Applications A–Z · bookmarks below</span></div>",
-            '<section class="es-domain es-applications" data-es-domain="applications" aria-labelledby="es-applications-title">',
-            '<header class="es-domain-header es-application-header"><h3 id="es-applications-title">Applications</h3>'
-            f'<p>Core services · A–Z</p><span class="es-domain-count">{app_count}</span></header>',
-            '<ul class="es-app-grid" aria-labelledby="es-applications-title">',
-        ]
-    )
     for domain, group, item in applications:
         bits.append(endpoint(item, domain, group, domain["id"]))
-    bits.append("</ul></section>")
+    bits.extend(["</ul></section>"])
 
     if personal:
         bits.extend(
             [
-                '<section class="es-domain es-bookmarks" data-es-domain="personal" aria-labelledby="es-domain-personal">',
-                '<header class="es-domain-header"><h3 id="es-domain-personal">Bookmarks</h3>'
-                f'<p>{escape(personal["description"])}</p><span class="es-domain-count">{bookmark_count}</span></header>',
+                '<section class="es-domain es-bookmarks" data-es-domain="personal" aria-labelledby="es-bookmarks-title">',
+                '<h2 class="es-section-title" id="es-bookmarks-title">Bookmarks</h2>',
                 '<div class="es-group-grid">',
             ]
         )
@@ -94,22 +99,14 @@ def render(directory):
                     f'<section class="es-group" data-es-group="{escape(group["id"])}" '
                     'data-es-domain-key="personal" aria-labelledby="es-group-'
                     f'{escape(group["id"])}">',
-                    f'<h4 id="es-group-{escape(group["id"])}">{escape(group["title"])}'
-                    f'<span class="es-group-count">{len(links)}</span></h4><ul class="es-grid">',
+                    f'<h3 id="es-group-{escape(group["id"])}">{escape(group["title"])}</h3><ul class="es-grid">',
                 ]
             )
             for item in links:
                 bits.append(endpoint(item, personal, group, "personal"))
             bits.append("</ul></section>")
         bits.append("</div></section>")
-
-    bits.extend(
-        [
-            '<div class="es-empty" hidden><strong>No matching service</strong>'
-            "<p>Try a name, purpose or hostname, or select All.</p></div>",
-            "</section>",
-        ]
-    )
+    bits.append("</section>")
     return "".join(bits)
 
 
@@ -154,7 +151,7 @@ def main():
     new_page = next(page for page in verified["pages"] if page.get("slug") == "endpoints-services")
     assert new_page["columns"][0]["widgets"][0]["source"] == result
     path.write_text(changed)
-    print("Application launcher rendered; all source endpoint records retained.")
+    print("Flame-style launcher rendered; all source endpoint records retained.")
 
 
 if __name__ == "__main__":

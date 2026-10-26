@@ -1,4 +1,4 @@
-"""Offline browser acceptance for the centered, alphabetized endpoint launcher."""
+"""Offline browser acceptance for the Flame-style MDI launcher."""
 import json
 import os
 import re
@@ -26,20 +26,22 @@ def contrast_ratio(foreground, background):
 
 def verify():
     directory = json.loads((ROOT / "endpoints-directory.json").read_text())
+    icon_doc = json.loads((ROOT / "flame-mdi-icons.json").read_text())
     source = render(directory)
     config = yaml.safe_load((ROOT / "config/dynacat.yml").read_text())
-    assert config["pages"][0].get("slug") == "endpoints-services", "The application launcher should be Dynacat's landing page"
+    assert config["pages"][0].get("slug") == "endpoints-services", "Launcher must remain Dynacat's landing page"
     page_config = next(page for page in config["pages"] if page.get("slug") == "endpoints-services")
-    assert page_config["columns"][0]["widgets"][0]["source"] == source, "Tracked page config must match the renderer"
-    assert 'es-applications' in source and 'es-bookmarks' in source, "Renderer must emit the launchpad structure without JavaScript"
-    assert source.index('es-applications') < source.index('es-bookmarks'), "Bookmarks must follow applications in source order"
+    assert page_config["columns"][0]["widgets"][0]["source"] == source, "Tracked widget must match the renderer"
+    assert "es-applications" in source and "es-bookmarks" in source
+    assert source.index("es-applications") < source.index("es-bookmarks"), "Bookmarks must follow applications"
+
     script = (ROOT / "assets/endpoints.js").read_text()
     styles = (ROOT / "assets/endpoint-directory.css").read_text()
     html = (
         "<!doctype html><html data-scheme='dark'><head><meta charset='utf-8'><style>"
         ":root{--color-background:#101318;--color-primary:#3b82c4;--color-text-highlight:#f1f1f1;"
         "--color-text-base:#bcbcbc;--color-text-subdue:#8c8c8c;--cc-border:rgba(255,255,255,.12)}"
-        "body{margin:0;background:var(--color-background);color:var(--color-text-base);}"
+        "body{margin:0;min-height:100vh;background:var(--color-background);color:var(--color-text-base);}"
         + styles
         + "</style></head><body>"
         + source
@@ -53,103 +55,123 @@ def verify():
         for group in domain["groups"]
         for item in group["links"]
     ]
-    live_baseline = json.loads((ROOT / "fixtures/endpoints-before-rebuild.json").read_text())
-    assert set(expected) == {(item["name"], item["url"]) for item in live_baseline}, "No existing endpoint URL or label may be changed"
-    domain_counts = {
-        domain["id"]: sum(len(group["links"]) for group in domain["groups"])
-        for domain in directory["domains"]
+    baseline = json.loads((ROOT / "fixtures/endpoints-before-rebuild.json").read_text())
+    assert set(expected) == {(item["name"], item["url"]) for item in baseline}, "Every original label and URL must be preserved"
+    app_count = sum(len(group["links"]) for domain in directory["domains"] if domain["id"] != "personal" for group in domain["groups"])
+    bookmark_count = sum(len(group["links"]) for domain in directory["domains"] if domain["id"] == "personal" for group in domain["groups"])
+    assert len(expected) == 77 and app_count == 52 and bookmark_count == 25
+    hosted_names = {
+        "Cloudflare", "Fast", "Unifi", "YouTube", "Torrentleech", "GitHub",
+        "NotebookLM", "Renovate", "Draw.io", "Microsoft 365", "Outlook",
+        "Whiteboard", "LinkedIn", "Resend",
     }
+    hosted = {
+        item["name"]
+        for domain in directory["domains"] if domain["id"] == "personal"
+        for group in domain["groups"] if group["id"] == "hosted-services"
+        for item in group["links"]
+    }
+    assert hosted == hosted_names, hosted
 
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(
             executable_path=os.environ.get("DYNACAT_QA_CHROMIUM", "/usr/bin/chromium"),
             args=["--no-sandbox"],
         )
-        page = browser.new_page(viewport={"width": 1600, "height": 1100})
+        page = browser.new_page(viewport={"width": 1600, "height": 1200}, device_scale_factor=1)
         errors = []
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.set_content(html)
-        page.wait_for_function("document.querySelector('.es-directory-v2[data-ready=\"true\"]')")
-        dark_theme = page.evaluate("""() => ({
-            background:getComputedStyle(document.body).backgroundColor,
-            accent:getComputedStyle(document.querySelector('.es-applications .es-endpoint strong')).color,
-            description:getComputedStyle(document.querySelector('.es-applications .es-endpoint small')).color,
-            subtle:getComputedStyle(document.querySelector('.es-categories button span')).color
-        })""")
-        dark_contrast = {
-            "accent": contrast_ratio(dark_theme["accent"], dark_theme["background"]),
-            "description": contrast_ratio(dark_theme["description"], dark_theme["background"]),
-            "subtle": contrast_ratio(dark_theme["subtle"], dark_theme["background"]),
-        }
-        assert min(dark_contrast.values()) >= 4.5, (dark_theme, dark_contrast)
+        page.wait_for_selector('.es-directory-v2[data-ready="true"]')
 
         pairs = page.locator(".es-endpoint").evaluate_all(
             "links => links.map(a => [a.querySelector('strong').textContent.trim(), a.getAttribute('href')])"
         )
-        assert sorted(map(tuple, pairs)) == sorted(expected), "All existing endpoint labels and URLs must be preserved"
-        assert page.locator(".es-applications .es-endpoint").count() == sum(
-            count for key, count in domain_counts.items() if key != "personal"
-        )
-        assert page.locator(".es-bookmarks .es-endpoint").count() == domain_counts["personal"]
-        assert page.locator(".es-applications").evaluate(
-            "apps => Boolean(apps.compareDocumentPosition(document.querySelector('.es-bookmarks')) & Node.DOCUMENT_POSITION_FOLLOWING)"
-        ), "Bookmarks must follow the applications grid"
+        assert sorted(map(tuple, pairs)) == sorted(expected), "All original labels and URLs must remain"
+        assert page.locator(".es-applications .es-endpoint").count() == app_count
+        assert page.locator(".es-bookmarks .es-endpoint").count() == bookmark_count
         assert page.locator(".es-applications .es-endpoint strong").evaluate_all(
             "nodes => { const names = nodes.map(n => n.textContent.trim()); const c = new Intl.Collator(undefined, {sensitivity:'base', numeric:true}); return names.every((n,i) => i === 0 || c.compare(names[i-1], n) <= 0); }"
         ), "Applications must be alphabetized across service areas"
+        assert page.locator(".es-applications").evaluate(
+            "apps => Boolean(apps.compareDocumentPosition(document.querySelector('.es-bookmarks')) & Node.DOCUMENT_POSITION_FOLLOWING)"
+        ), "Bookmarks must follow the application grid"
+        assert page.locator(".es-toolbar, .es-search-row, .es-categories").count() == 0, "The Flame-style page should stay uncluttered"
 
-        page.locator('[data-es-category="media"]').click()
-        assert page.locator(".es-endpoint:visible").count() == domain_counts["media"]
-        assert page.locator(".es-applications").is_visible()
-        assert not page.locator(".es-bookmarks").is_visible()
-        page.locator('[data-es-category="personal"]').click()
-        assert page.locator(".es-endpoint:visible").count() == domain_counts["personal"]
-        assert not page.locator(".es-applications").is_visible()
-        assert page.locator(".es-bookmarks").is_visible()
-        page.locator('[data-es-category="all"]').click()
-        page.locator("#endpoint-search").fill("backup tools")
-        assert page.locator(".es-endpoint:visible strong").all_text_contents() == ["Backrest Tools"]
-        page.locator("#endpoint-search").press("Escape")
-        assert page.locator(".es-endpoint:visible").count() == len(expected)
-        assert not errors, errors
+        icon_report = page.evaluate("""() => ({
+            symbols:[...document.querySelectorAll('.es-icon-sprite symbol')].map(s=>s.id).sort(),
+            references:[...document.querySelectorAll('.es-endpoint')].map(a=>({
+                name:a.querySelector('strong').textContent.trim(),
+                id:a.dataset.esIcon,
+                href:a.querySelector('.es-icon use')?.getAttribute('href'),
+                iconWidth:a.querySelector('.es-icon')?.getBoundingClientRect().width
+            }))
+        })""")
+        expected_symbols = sorted(f"es-mdi-{name}" for name in icon_doc["icons"])
+        assert icon_report["symbols"] == expected_symbols
+        for ref in icon_report["references"]:
+            assert ref["href"] == f"#es-mdi-{ref['id']}", ref
+        assert len(icon_report["references"]) == len(expected)
 
         layouts = []
-        for width, expected_columns in ((1600, 4), (900, 3), (700, 2), (390, 1)):
+        for width, expected_columns in ((1600, 4), (1100, 3), (700, 2), (390, 1)):
             page.set_viewport_size({"width": width, "height": 900})
-            geometry = page.locator(".es-app-grid").evaluate(
-                "grid => ({columns:getComputedStyle(grid).gridTemplateColumns.split(' ').length, minHit:Math.min(...[...document.querySelectorAll('.es-endpoint')].map(a=>a.getBoundingClientRect().height)), minCategoryHit:Math.min(...[...document.querySelectorAll('.es-categories button')].map(button=>button.getBoundingClientRect().height)), scrollWidth:document.documentElement.scrollWidth})"
-            )
-            assert geometry["columns"] == expected_columns, (width, geometry)
-            assert geometry["minHit"] >= 44, (width, geometry)
-            assert geometry["minCategoryHit"] >= 44, (width, geometry)
-            assert geometry["scrollWidth"] <= width, (width, geometry)
+            geometry = page.evaluate("""() => {
+                const root=document.querySelector('.es-directory-v2');
+                const links=[...root.querySelectorAll('.es-endpoint')];
+                const appGrid=root.querySelector('.es-app-grid');
+                const bg=getComputedStyle(document.body).backgroundColor;
+                const title=getComputedStyle(root.querySelector('.es-applications .es-endpoint strong')).color;
+                const desc=getComputedStyle(root.querySelector('.es-applications .es-endpoint small')).color;
+                const bookmark=getComputedStyle(root.querySelector('.es-bookmarks .es-endpoint strong')).color;
+                return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
+                    appColumns:getComputedStyle(appGrid).gridTemplateColumns.split(' ').length,
+                    bookmarkColumns:getComputedStyle(root.querySelector('.es-group-grid')).gridTemplateColumns.split(' ').length,
+                    minHit:Math.min(...links.map(a=>a.getBoundingClientRect().height)),
+                    background:bg,title,description:desc,bookmark};
+            }""")
+            assert geometry["scrollWidth"] <= width, geometry
+            assert geometry["appColumns"] == expected_columns, geometry
+            assert geometry["minHit"] >= 44, geometry
             layouts.append({"width": width, **geometry})
 
-        assert page.locator(".es-applications .es-endpoint strong").first.evaluate(
-            "el => getComputedStyle(el).color"
-        ) == "rgb(255, 96, 64)", "The dark launchpad should retain the Flame coral accent"
+        dark_theme = layouts[0]
+        dark_contrast = {
+            "appAccent": contrast_ratio(dark_theme["title"], dark_theme["background"]),
+            "description": contrast_ratio(dark_theme["description"], dark_theme["background"]),
+            "bookmark": contrast_ratio(dark_theme["bookmark"], dark_theme["background"]),
+        }
+        assert min(dark_contrast.values()) >= 4.5, (dark_theme, dark_contrast)
+
         light_theme = page.evaluate("""() => {
             const root=document.documentElement;
             root.dataset.scheme='light';
             for (const [key,value] of Object.entries({'--color-background':'#eff1f5','--color-primary':'#1e66f5','--color-text-highlight':'#4c4f69','--color-text-base':'#5c5f77','--color-text-subdue':'#6c6f85','--cc-border':'#ccd0da'})) root.style.setProperty(key,value);
-            return {
-                background:getComputedStyle(document.body).backgroundColor,
-                title:getComputedStyle(document.querySelector('.es-applications .es-endpoint strong')).color,
-                description:getComputedStyle(document.querySelector('.es-applications .es-endpoint small')).color,
-                bookmark:getComputedStyle(document.querySelector('.es-bookmarks .es-endpoint strong')).color,
-                categoryCount:getComputedStyle(document.querySelector('.es-categories button span')).color
-            };
+            document.body.style.background='var(--color-background)';
+            const launcher=document.querySelector('.es-directory-v2');
+            return {background:getComputedStyle(document.body).backgroundColor,
+                title:getComputedStyle(launcher.querySelector('.es-applications .es-endpoint strong')).color,
+                description:getComputedStyle(launcher.querySelector('.es-applications .es-endpoint small')).color,
+                bookmark:getComputedStyle(launcher.querySelector('.es-bookmarks .es-endpoint strong')).color};
         }""")
-        assert light_theme["background"] == "rgb(239, 241, 245)", light_theme
-        assert light_theme["title"] == "rgb(181, 59, 36)", light_theme
-        assert light_theme["bookmark"] == "rgb(76, 79, 105)", light_theme
         light_contrast = {
-            "accent": contrast_ratio(light_theme["title"], light_theme["background"]),
+            "appAccent": contrast_ratio(light_theme["title"], light_theme["background"]),
             "description": contrast_ratio(light_theme["description"], light_theme["background"]),
             "bookmark": contrast_ratio(light_theme["bookmark"], light_theme["background"]),
-            "subtle": contrast_ratio(light_theme["categoryCount"], light_theme["background"]),
         }
         assert min(light_contrast.values()) >= 4.5, (light_theme, light_contrast)
+
+        screenshot_path = os.environ.get("DYNACAT_QA_SCREENSHOT")
+        if screenshot_path:
+            Path(screenshot_path).parent.mkdir(parents=True, exist_ok=True)
+            page.evaluate("""() => {
+                const root=document.documentElement;
+                root.dataset.scheme='dark';
+                for (const key of ['--color-background','--color-primary','--color-text-highlight','--color-text-base','--color-text-subdue','--cc-border']) root.style.removeProperty(key);
+                document.body.style.removeProperty('background');
+            }""")
+            page.set_viewport_size({"width": 1714, "height": 1100})
+            page.screenshot(path=screenshot_path, full_page=True)
 
         late_page = browser.new_page()
         late_page.on("pageerror", lambda error: errors.append(str(error)))
@@ -167,21 +189,19 @@ def verify():
         late_page.close()
         assert not errors, errors
         browser.close()
-    print(
-        json.dumps(
-            {
-                "links_preserved": len(expected),
-                "applications": sum(count for key, count in domain_counts.items() if key != "personal"),
-                "bookmarks": domain_counts["personal"],
-                "alphabetical": True,
-                "search_and_filters": True,
-                "responsive_layouts": layouts,
-                "theme_contrast": {"dark": dark_contrast, "light": light_contrast},
-                "page_errors": errors,
-            },
-            indent=2,
-        )
-    )
+
+    print(json.dumps({
+        "links_preserved": len(expected),
+        "applications": app_count,
+        "bookmarks": bookmark_count,
+        "flame_mdi_icons": len(icon_doc["icons"]),
+        "alphabetical": True,
+        "search_and_filter_chrome": False,
+        "responsive_layouts": layouts,
+        "theme_contrast": {"dark": dark_contrast, "light": light_contrast},
+        "page_errors": errors,
+        "screenshot": screenshot_path or None,
+    }, indent=2))
 
 
 if __name__ == "__main__":

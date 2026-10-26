@@ -17,7 +17,7 @@ def page_soup():
 class DirectoryAcceptance(unittest.TestCase):
     def test_network_services_are_in_network_access_not_workspace(self):
         soup = page_soup()
-        for name in ['NGINX Proxy Manager', 'Pihole Master', 'Pihole Slave', 'Pihole Storage', 'Unifi']:
+        for name in ['NGINX Proxy Manager', 'Pihole Master', 'Pihole Slave', 'Pihole Storage']:
             a = next(a for a in soup.select('.es-endpoint') if a.select_one('strong').get_text(strip=True) == name)
             self.assertEqual(a['data-es-area'], 'infrastructure', name)
             self.assertEqual(a['data-es-group'], 'network-access', name)
@@ -43,17 +43,64 @@ class DirectoryAcceptance(unittest.TestCase):
         groups = {a.select_one('strong').get_text(strip=True):a.get('data-es-group') for a in soup.select('.es-endpoint')}
         expected = {'Gray Matter':'publishing','Codeflare':'ai-development','Codeflare Integration':'ai-development',
             'IT Tools':'ai-development','Hermes':'ai-development','Hermes Browser':'ai-development','Hermes Android':'ai-development',
-            'Proxmox Backup Server':'backups','Backrest Media Servers':'backups','Torrentleech':'downloads',
-            'YouTube':'players','Castopod':'publishing','Plex':'players','Tautulli':'media-management','Minecraft':'compute'}
+            'Proxmox Backup Server':'backups','Backrest Media Servers':'backups','Torrentleech':'hosted-services',
+            'YouTube':'hosted-services','Castopod':'publishing','Plex':'players','Tautulli':'media-management','Minecraft':'compute'}
         for name,group in expected.items():self.assertEqual(groups[name],group,name)
 
-    def test_four_clear_areas_and_no_catchall_groups(self):
+    def test_applications_and_bookmarks_remain_distinct_without_filter_chrome(self):
         soup = page_soup()
         self.assertEqual([d['data-es-domain'] for d in soup.select('.es-domain')], ['applications','personal'])
-        self.assertEqual([b['data-es-category'] for b in soup.select('.es-categories [data-es-category]')], ['all','infrastructure','media','work','personal'])
-        self.assertEqual(len(soup.select('.es-group')),2)
-        titles=[g.select_one('h4').get_text(' ',strip=True) for g in soup.select('.es-group')]
+        self.assertIsNone(soup.select_one('.es-categories'))
+        self.assertIsNone(soup.select_one('.es-toolbar'))
+        groups = soup.select('.es-group')
+        self.assertEqual(len(groups),3)
+        titles=[g.select_one('h3').get_text(' ',strip=True) for g in groups]
+        self.assertEqual(titles, ['Hosted services', 'News & reading', 'Shopping'])
         self.assertFalse(any(t.startswith(('Workspace ', 'Utilities ', 'Control plane ')) for t in titles))
+
+    def test_third_party_hosted_services_are_bookmarks(self):
+        expected = {
+            'Cloudflare', 'Fast', 'Unifi', 'YouTube', 'Torrentleech', 'GitHub',
+            'NotebookLM', 'Renovate', 'Draw.io', 'Microsoft 365', 'Outlook',
+            'Whiteboard', 'LinkedIn', 'Resend'
+        }
+        directory = json.loads((ROOT / 'endpoints-directory.json').read_text())
+        entries = {
+            item['name']: (domain['id'], group['id'])
+            for domain in directory['domains']
+            for group in domain['groups']
+            for item in group['links']
+        }
+        self.assertTrue(expected.issubset(entries))
+        for name in expected:
+            self.assertEqual(entries[name], ('personal', 'hosted-services'), name)
+        app_count = sum(len(group['links']) for domain in directory['domains'] if domain['id'] != 'personal' for group in domain['groups'])
+        bookmark_count = sum(len(group['links']) for domain in directory['domains'] if domain['id'] == 'personal' for group in domain['groups'])
+        self.assertEqual((app_count, bookmark_count), (52, 25))
+
+    def test_flame_mdi_sprite_covers_every_endpoint(self):
+        directory = json.loads((ROOT / 'endpoints-directory.json').read_text())
+        icon_doc = json.loads((ROOT / 'flame-mdi-icons.json').read_text())
+        items = [item for domain in directory['domains'] for group in domain['groups'] for item in group['links']]
+        self.assertEqual(len(items), 77)
+        self.assertTrue(all(item.get('icon') in icon_doc['icons'] for item in items))
+        soup = page_soup()
+        symbols = {symbol.get('id') for symbol in soup.select('.es-icon-sprite symbol')}
+        self.assertEqual(symbols, {f'es-mdi-{name}' for name in icon_doc['icons']})
+        for link in soup.select('.es-endpoint'):
+            name = link.select_one('strong').get_text(strip=True)
+            item = next(item for item in items if item['name'] == name)
+            use = link.select_one('svg.es-icon use')
+            self.assertIsNotNone(use, name)
+            self.assertEqual(use.get('href'), f"#es-mdi-{item['icon']}", name)
+
+    def test_launcher_uses_flat_flame_layout_without_search_chrome(self):
+        soup = page_soup()
+        self.assertIsNone(soup.select_one('.es-toolbar'))
+        self.assertIsNone(soup.select_one('.es-search-row'))
+        self.assertIsNone(soup.select_one('.es-categories'))
+        self.assertEqual(soup.select_one('.es-applications h2').get_text(strip=True), 'Applications')
+        self.assertEqual(soup.select_one('.es-bookmarks h2').get_text(strip=True), 'Bookmarks')
 
     def test_launcher_is_default_page(self):
         config = yaml.safe_load((ROOT / 'config/dynacat.yml').read_text())
