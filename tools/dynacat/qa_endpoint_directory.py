@@ -48,7 +48,7 @@ with sync_playwright() as p:
     samples = []
     for theme in ['midnight-navy', 'catppuccin-latte']:
         context.add_cookies([{'name':'theme','value':theme,'url':BASE}])
-        for width in [1600, 1100, 700, 390]:
+        for width in [1600, 1100, 900, 899, 700, 670, 669, 430, 429, 390]:
             page.set_viewport_size({'width':width,'height':1100 if width>500 else 844})
             page.goto(BASE + '/endpoints-services')
             page.wait_for_selector('.es-directory-v2[data-ready="true"]')
@@ -65,17 +65,37 @@ with sync_playwright() as p:
                 return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
                   appColumns:getComputedStyle(root.querySelector('.es-app-grid')).gridTemplateColumns.split(' ').length,
                   bookmarkColumns:getComputedStyle(root.querySelector('.es-group-grid')).gridTemplateColumns.split(' ').length,
+                  containerWidth:root.getBoundingClientRect().width,
+                  paddingLeft:parseFloat(getComputedStyle(root).paddingLeft),
+                  appIconWidth:root.querySelector('.es-applications .es-icon').getBoundingClientRect().width,
+                  bookmarkIconWidth:root.querySelector('.es-bookmarks .es-icon').getBoundingClientRect().width,
+                  appColumnGap:getComputedStyle(root.querySelector('.es-app-grid')).columnGap,
+                  bookmarkColumnGap:getComputedStyle(root.querySelector('.es-group-grid')).columnGap,
+                  descriptionSize:getComputedStyle(root.querySelector('.es-applications small')).fontSize,
                   minHit:Math.min(...links.map(a=>a.getBoundingClientRect().height)),
                   background:bg,accentContrast:contrast(title,bg),descriptionContrast:contrast(description,bg),bookmarkContrast:contrast(bookmark,bg),
                   iconCount:root.querySelectorAll('.es-endpoint svg.es-icon use').length};
             }""")
             assert page.locator('.es-endpoint').count() == 77
-            expected_columns = 4 if width >= 1200 else 3 if width > 760 else 2 if width > 480 else 1
-            expected_bookmark_columns = 4 if width > 760 else 2 if width > 480 else 1
+            expected_columns = 4 if width >= 900 else 3 if width >= 670 else 2 if width >= 430 else 1
+            if width < 769:
+                expected_container_width, expected_padding = width, 20
+            elif width < 1201:
+                expected_container_width, expected_padding = width * 0.9, 20
+            else:
+                expected_container_width, expected_padding = min(width * 0.9, 1714), 250
+            expected_description_size = '10px' if 430 <= width <= 480 else '11px'
             assert geometry['scrollWidth'] <= width, geometry
             assert geometry['minHit'] >= 44, geometry
             assert geometry['appColumns'] == expected_columns, geometry
-            assert geometry['bookmarkColumns'] == expected_bookmark_columns, geometry
+            assert geometry['bookmarkColumns'] == expected_columns, geometry
+            assert abs(geometry['containerWidth'] - expected_container_width) < 1, geometry
+            assert abs(geometry['paddingLeft'] - expected_padding) < 1, geometry
+            assert geometry['appIconWidth'] == 35, geometry
+            assert geometry['bookmarkIconWidth'] == 20, geometry
+            assert geometry['appColumnGap'] == '0px', geometry
+            assert geometry['bookmarkColumnGap'] == '0px', geometry
+            assert geometry['descriptionSize'] == expected_description_size, geometry
             assert geometry['accentContrast'] >= 4.5, geometry
             assert geometry['descriptionContrast'] >= 4.5, geometry
             assert geometry['bookmarkContrast'] >= 4.5, geometry

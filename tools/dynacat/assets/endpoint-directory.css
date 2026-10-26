@@ -5,9 +5,9 @@
   --es-accent:#ff6040;
   --es-text:var(--color-text-highlight,#fff);
   --es-muted:var(--color-text-base,#bcbcbc);
-  width:min(100%,1714px);
+  width:100%;
   margin:0 auto;
-  padding:48px clamp(26px,14.55vw,250px) 56px;
+  padding:20px;
   color:var(--es-text);
   font-family:Roboto,"Helvetica Neue",Arial,sans-serif;
 }
@@ -16,40 +16,29 @@ html[data-scheme="light"] .es-directory-v2{--es-accent:#b53b24;--es-text:var(--c
 .es-directory-v2 [hidden]{display:none!important}
 .es-icon-sprite{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
 .es-section-title{margin:0 0 16px;color:var(--es-accent);font-size:20px;line-height:24px;font-weight:900;letter-spacing:.02em;text-transform:uppercase}
-.es-app-grid,.es-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:18px;list-style:none;margin:0;padding:0}
+.es-app-grid,.es-grid{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));column-gap:0;list-style:none;margin:0;padding:0}
 .es-app-grid li,.es-grid li{min-width:0;list-style:none;margin:0;padding:0}
-.es-endpoint{display:flex;align-items:flex-start;gap:10px;min-width:0;min-height:45px;padding:2px;color:var(--es-text);text-decoration:none;border-radius:2px}
-.es-icon{display:block;flex:0 0 32px;width:32px;height:32px;color:var(--es-accent);fill:currentColor}
+.es-endpoint{display:flex;align-items:flex-start;gap:8px;min-width:0;min-height:45px;padding:2px;color:var(--es-text);text-decoration:none;border-radius:2px}
+.es-icon{display:block;flex:0 0 35px;width:35px;height:35px;color:var(--es-accent);fill:currentColor}
 .es-link-copy{display:block;min-width:0}
 .es-endpoint strong{display:block;color:var(--es-accent);font-size:14px;line-height:1.25;font-weight:500;letter-spacing:0;text-transform:uppercase;overflow-wrap:anywhere}
 .es-endpoint small{display:block;margin-top:1px;color:var(--es-muted);font-size:11px;line-height:1.35;font-weight:400;text-transform:uppercase;overflow-wrap:anywhere}
-.es-applications .es-endpoint{margin:0 0 16px}
+.es-applications .es-endpoint{margin:0 0 10px}
 .es-applications .es-endpoint strong{margin-bottom:-3px}
 .es-endpoint:hover strong{text-decoration:underline;text-underline-offset:3px}
 .es-endpoint:focus-visible{outline:2px solid var(--es-accent);outline-offset:2px}
 .es-bookmarks{margin-top:30px}
-.es-group-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:18px;row-gap:24px;align-items:start}
+.es-group-grid{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));column-gap:0;row-gap:30px;align-items:start}
 .es-group{min-width:0;margin:0;padding:0}
 .es-group h3{margin:0 0 10px;color:var(--es-text);font-size:16px;line-height:20px;font-weight:400;text-transform:uppercase}
 .es-bookmarks .es-grid{grid-template-columns:1fr;row-gap:0}
 .es-bookmarks .es-endpoint{align-items:center;gap:7px;min-height:45px;padding:4px 2px}
-.es-bookmarks .es-icon{flex-basis:18px;width:18px;height:18px}
+.es-bookmarks .es-icon{flex-basis:20px;width:20px;height:20px}
 .es-bookmarks .es-endpoint strong{color:var(--es-text);font-size:12px;line-height:1.35;font-weight:400;text-transform:none}
-@media(max-width:1199px){
-  .es-directory-v2{padding-top:38px;padding-bottom:44px}
-  .es-app-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-}
-@media(max-width:760px){
-  .es-directory-v2{padding:28px clamp(20px,5vw,36px) 36px}
-  .es-app-grid,.es-group-grid{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14px}
-  .es-endpoint{gap:8px}
-  .es-applications .es-endpoint{margin-bottom:12px}
-  .es-endpoint strong{font-size:12px}
-  .es-endpoint small{font-size:10px}
-  .es-group-grid{row-gap:20px}
-}
-@media(max-width:480px){
-  .es-app-grid,.es-group-grid{grid-template-columns:1fr}
-  .es-applications .es-endpoint{margin-bottom:8px}
-}
+@media(min-width:430px){.es-app-grid,.es-group-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:670px){.es-app-grid,.es-group-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:769px){.es-directory-v2{width:90%}}
+@media(min-width:900px){.es-app-grid,.es-group-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(min-width:1201px){.es-directory-v2{width:min(90%,1714px);padding:50px 250px 56px}}
+@media(min-width:430px) and (max-width:480px){.es-applications .es-endpoint small{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.es-endpoint{scroll-behavior:auto}}

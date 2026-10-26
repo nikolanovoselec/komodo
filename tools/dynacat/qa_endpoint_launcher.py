@@ -114,7 +114,7 @@ def verify():
         assert len(icon_report["references"]) == len(expected)
 
         layouts = []
-        for width, expected_columns, expected_bookmark_columns in ((1600, 4, 4), (1100, 3, 4), (700, 2, 2), (390, 1, 1)):
+        for width in (1600, 1100, 900, 899, 700, 670, 669, 430, 429, 390):
             page.set_viewport_size({"width": width, "height": 900})
             geometry = page.evaluate("""() => {
                 const root=document.querySelector('.es-directory-v2');
@@ -127,12 +127,34 @@ def verify():
                 return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
                     appColumns:getComputedStyle(appGrid).gridTemplateColumns.split(' ').length,
                     bookmarkColumns:getComputedStyle(root.querySelector('.es-group-grid')).gridTemplateColumns.split(' ').length,
+                    containerWidth:root.getBoundingClientRect().width,
+                    paddingLeft:parseFloat(getComputedStyle(root).paddingLeft),
+                    appIconWidth:root.querySelector('.es-applications .es-icon').getBoundingClientRect().width,
+                    bookmarkIconWidth:root.querySelector('.es-bookmarks .es-icon').getBoundingClientRect().width,
+                    appColumnGap:getComputedStyle(appGrid).columnGap,
+                    bookmarkColumnGap:getComputedStyle(root.querySelector('.es-group-grid')).columnGap,
+                    descriptionSize:getComputedStyle(root.querySelector('.es-applications small')).fontSize,
                     minHit:Math.min(...links.map(a=>a.getBoundingClientRect().height)),
                     background:bg,title,description:desc,bookmark};
             }""")
+            expected_columns = 4 if width >= 900 else 3 if width >= 670 else 2 if width >= 430 else 1
+            if width < 769:
+                expected_container_width, expected_padding = width, 20
+            elif width < 1201:
+                expected_container_width, expected_padding = width * 0.9, 20
+            else:
+                expected_container_width, expected_padding = min(width * 0.9, 1714), 250
+            expected_description_size = "10px" if 430 <= width <= 480 else "11px"
             assert geometry["scrollWidth"] <= width, geometry
             assert geometry["appColumns"] == expected_columns, geometry
-            assert geometry["bookmarkColumns"] == expected_bookmark_columns, geometry
+            assert geometry["bookmarkColumns"] == expected_columns, geometry
+            assert abs(geometry["containerWidth"] - expected_container_width) < 1, geometry
+            assert abs(geometry["paddingLeft"] - expected_padding) < 1, geometry
+            assert geometry["appIconWidth"] == 35, geometry
+            assert geometry["bookmarkIconWidth"] == 20, geometry
+            assert geometry["appColumnGap"] == "0px", geometry
+            assert geometry["bookmarkColumnGap"] == "0px", geometry
+            assert geometry["descriptionSize"] == expected_description_size, geometry
             assert geometry["minHit"] >= 44, geometry
             layouts.append({"width": width, **geometry})
 
