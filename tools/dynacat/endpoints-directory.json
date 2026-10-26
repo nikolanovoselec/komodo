@@ -579,6 +579,72 @@
               "icon": "unicode"
             }
           ]
+        },
+        {
+          "id": "ssh-targets",
+          "title": "SSH TARGETS",
+          "links": [
+            {
+              "name": "Komodo",
+              "url": "https://komodo-ssh.novoselec.ch/",
+              "description": "SSH via Cloudflare Access",
+              "icon": "ssh"
+            },
+            {
+              "name": "Media Servers",
+              "url": "https://mediaservers-ssh.novoselec.ch/",
+              "description": "SSH via Cloudflare Access",
+              "icon": "ssh"
+            },
+            {
+              "name": "Middleware",
+              "url": "https://middleware-ssh.novoselec.ch/",
+              "description": "SSH via Cloudflare Access",
+              "icon": "ssh"
+            },
+            {
+              "name": "Minecraft Controller",
+              "url": "https://minecraft-ssh.novoselec.ch/",
+              "description": "SSH via Cloudflare Access",
+              "icon": "ssh"
+            },
+            {
+              "name": "Proxmox Backup Server",
+              "url": "https://pbs-ssh.novoselec.ch/",
+              "description": "SSH via Cloudflare Access",
+              "icon": "ssh"
+            },
+            {
+              "name": "Proxmox I",
+              "url": "https://proxmox-i-ssh.novoselec.ch/",
+              "description": "SSH via Cloudflare Access",
+              "icon": "ssh"
+            },
+            {
+              "name": "Proxmox II",
+              "url": "https://proxmox-ii-ssh.novoselec.ch/",
+              "description": "SSH via Cloudflare Access",
+              "icon": "ssh"
+            },
+            {
+              "name": "Proxmox III",
+              "url": "https://proxmox-iii-ssh.novoselec.ch/",
+              "description": "SSH via Cloudflare Access",
+              "icon": "ssh"
+            },
+            {
+              "name": "Servarr",
+              "url": "https://servarr-ssh.novoselec.ch/",
+              "description": "SSH via Cloudflare Access",
+              "icon": "ssh"
+            },
+            {
+              "name": "Tools",
+              "url": "https://tools-ssh.novoselec.ch/",
+              "description": "SSH via Cloudflare Access",
+              "icon": "ssh"
+            }
+          ]
         }
       ]
     }

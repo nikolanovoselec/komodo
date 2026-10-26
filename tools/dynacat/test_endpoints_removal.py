@@ -44,7 +44,7 @@ class EndpointParser(HTMLParser):
     def handle_endtag(self, tag):
         if tag == "a" and self.current is not None:
             text = [part.strip() for part in self.current["text"] if part.strip() and part.strip() != "↗"]
-            self.links.append((text[-2], self.current["url"], text[-1]))
+            self.links.append((text[0], self.current["url"], text[-1] if len(text) > 1 else ""))
             self.current = None
 
 
@@ -66,7 +66,7 @@ class EndpointsRemoval(unittest.TestCase):
         retained = {(name, url) for name, url, _ in RETAINED}
         self.assertTrue(removed.isdisjoint(links), f"requested cards still visible: {sorted(removed & links)}")
         self.assertTrue(retained.issubset(links), f"retained cards missing: {sorted(retained - links)}")
-        self.assertEqual(len(links), 77)
+        self.assertEqual(len(links), 87)
 
 
 if __name__ == "__main__":

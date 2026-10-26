@@ -56,15 +56,16 @@ def verify():
         for item in group["links"]
     ]
     baseline = json.loads((ROOT / "fixtures/endpoints-before-rebuild.json").read_text())
-    assert set(expected) == {(item["name"], item["url"]) for item in baseline}, "Every original label and URL must be preserved"
+    assert {(item["name"], item["url"]) for item in baseline}.issubset(set(expected)), "Every original label and URL must be preserved"
     app_count = sum(len(group["links"]) for domain in directory["domains"] if domain["id"] != "personal" for group in domain["groups"])
     bookmark_count = sum(len(group["links"]) for domain in directory["domains"] if domain["id"] == "personal" for group in domain["groups"])
-    assert len(expected) == 77 and app_count == 52 and bookmark_count == 25
+    assert len(expected) == 87 and len(set(expected)) == 87 and app_count == 52 and bookmark_count == 35
     expected_bookmark_groups = [
         ("news", "News", 7),
         ("productivity-multimedia", "Productivity & Multimedia", 8),
         ("shopping", "Shopping", 4),
         ("utilities", "Utilities", 6),
+        ("ssh-targets", "SSH TARGETS", 10),
     ]
     bookmark_domain = next(domain for domain in directory["domains"] if domain["id"] == "personal")
     actual_bookmark_groups = [
