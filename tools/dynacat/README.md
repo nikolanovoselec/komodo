@@ -333,8 +333,9 @@ alphabetically, followed by 25 bookmarks in Flame's four topic groups: News,
 Productivity & Multimedia, Shopping, and Utilities. Fourteen clearly third-party-hosted
 services stay in those bookmark groups rather than Applications. Applications use Flame's 59px card-row
 rhythm; desktop bookmarks use Flame's 28px line rhythm. Narrow and coarse-pointer layouts keep 45px
-bookmark hit areas for touch. Applications and bookmark groups follow Flame's responsive 1/2/3/4-column
-breakpoint ladder at 430/670/900px with centered desktop gutters. Its 68 bundled
+bookmark hit areas for touch. At phone widths below 430px, bookmark links use two columns per group to
+shorten the page without shrinking touch targets. Applications and bookmark groups follow Flame's
+responsive 1/2/3/4-column breakpoint ladder at 430/670/900px with centered desktop gutters. Its 68 bundled
 Material Design Icons use Flame's configured glyphs; no external icon font is loaded. Search and
 category filters are omitted to keep the Flame-style launcher flat and scannable.
 The old News desk feeds are removed; News Digest article integration

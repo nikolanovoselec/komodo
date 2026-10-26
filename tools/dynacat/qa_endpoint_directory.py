@@ -59,7 +59,9 @@ with sync_playwright() as p:
                 const appGrid=root.querySelector('.es-app-grid');
                 const appLinks=[...root.querySelectorAll('.es-applications .es-endpoint')];
                 const bookmarkLinks=[...root.querySelectorAll('.es-bookmarks .es-endpoint')];
+                const bookmarkList=root.querySelector('.es-bookmarks .es-grid');
                 const appColumns=getComputedStyle(appGrid).gridTemplateColumns.split(' ').length;
+                const bookmarkItemColumns=getComputedStyle(bookmarkList).gridTemplateColumns.split(' ').length;
                 const luminance=color=>{const c=color.match(/\\d+(?:\\.\\d+)?/g).slice(0,3).map(Number).map(x=>x/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
                 const contrast=(a,b)=>{const c=[luminance(a),luminance(b)].sort((x,y)=>y-x);return (c[0]+.05)/(c[1]+.05);};
                 const bg=getComputedStyle(document.body).backgroundColor;
@@ -85,7 +87,9 @@ with sync_playwright() as p:
                   bookmarkFontSize:getComputedStyle(bookmarkLinks[0].querySelector('strong')).fontSize,
                   bookmarkLineHeight:getComputedStyle(bookmarkLinks[0].querySelector('strong')).lineHeight,
                   bookmarkGap:getComputedStyle(bookmarkLinks[0]).gap,
-                  bookmarkRowPitch:bookmarkLinks[1].getBoundingClientRect().top-bookmarkLinks[0].getBoundingClientRect().top,
+                  bookmarkSectionGap:root.querySelector('.es-bookmarks').getBoundingClientRect().top-appGrid.getBoundingClientRect().bottom,
+                  bookmarkItemColumns,
+                  bookmarkRowPitch:bookmarkLinks[bookmarkItemColumns].getBoundingClientRect().top-bookmarkLinks[0].getBoundingClientRect().top,
                   bookmarkMinHit:Math.min(...bookmarkLinks.map(a=>a.getBoundingClientRect().height)),
                   minHit:Math.min(...links.map(a=>a.getBoundingClientRect().height)),
                   background:bg,accentContrast:contrast(title,bg),descriptionContrast:contrast(description,bg),bookmarkContrast:contrast(bookmark,bg),
@@ -109,6 +113,9 @@ with sync_playwright() as p:
             assert geometry['bookmarkFontSize'] == '14px', geometry
             assert geometry['bookmarkLineHeight'] == '28px', geometry
             assert geometry['bookmarkGap'] == '2px', geometry
+            assert abs(geometry['bookmarkSectionGap'] - 20) < 0.1, geometry
+            expected_bookmark_columns = 2 if width <= 429 else 1
+            assert geometry['bookmarkItemColumns'] == expected_bookmark_columns, geometry
             expected_bookmark_height = 45 if width <= 760 else 28
             assert abs(geometry['bookmarkRowPitch'] - expected_bookmark_height) < 0.1, geometry
             # Browser fractional layout can shave a tiny amount off a 45px hit box.
@@ -145,10 +152,12 @@ with sync_playwright() as p:
     m.set_viewport_size({'width':390,'height':844})
     mobile_geometry = m.evaluate("""() => ({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
       minHit:Math.min(...[...document.querySelectorAll('.es-endpoint')].map(a=>a.getBoundingClientRect().height)),
-      bookmarkMinHit:Math.min(...[...document.querySelectorAll('.es-bookmarks .es-endpoint')].map(a=>a.getBoundingClientRect().height))})""")
+      bookmarkMinHit:Math.min(...[...document.querySelectorAll('.es-bookmarks .es-endpoint')].map(a=>a.getBoundingClientRect().height)),
+      bookmarkItemColumns:getComputedStyle(document.querySelector('.es-bookmarks .es-grid')).gridTemplateColumns.split(' ').length})""")
     assert mobile_geometry['scrollWidth'] <= mobile_geometry['width']
     assert mobile_geometry['minHit'] >= 44
     assert mobile_geometry['bookmarkMinHit'] >= 44
+    assert mobile_geometry['bookmarkItemColumns'] == 2
     assert m.locator('.es-endpoint').count() == 77
     assert not errors, errors
     result = {

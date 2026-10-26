@@ -122,7 +122,9 @@ def verify():
                 const appGrid=root.querySelector('.es-app-grid');
                 const appLinks=[...root.querySelectorAll('.es-applications .es-endpoint')];
                 const bookmarkLinks=[...root.querySelectorAll('.es-bookmarks .es-endpoint')];
+                const bookmarkList=root.querySelector('.es-bookmarks .es-grid');
                 const appColumns=getComputedStyle(appGrid).gridTemplateColumns.split(' ').length;
+                const bookmarkItemColumns=getComputedStyle(bookmarkList).gridTemplateColumns.split(' ').length;
                 const bg=getComputedStyle(document.body).backgroundColor;
                 const title=getComputedStyle(root.querySelector('.es-applications .es-endpoint strong')).color;
                 const desc=getComputedStyle(root.querySelector('.es-applications .es-endpoint small')).color;
@@ -146,7 +148,9 @@ def verify():
                     bookmarkFontSize:getComputedStyle(bookmarkLinks[0].querySelector('strong')).fontSize,
                     bookmarkLineHeight:getComputedStyle(bookmarkLinks[0].querySelector('strong')).lineHeight,
                     bookmarkGap:getComputedStyle(bookmarkLinks[0]).gap,
-                    bookmarkRowPitch:bookmarkLinks[1].getBoundingClientRect().top-bookmarkLinks[0].getBoundingClientRect().top,
+                    bookmarkSectionGap:root.querySelector('.es-bookmarks').getBoundingClientRect().top-appGrid.getBoundingClientRect().bottom,
+                    bookmarkItemColumns,
+                    bookmarkRowPitch:bookmarkLinks[bookmarkItemColumns].getBoundingClientRect().top-bookmarkLinks[0].getBoundingClientRect().top,
                     bookmarkMinHit:Math.min(...bookmarkLinks.map(a=>a.getBoundingClientRect().height)),
                     minHit:Math.min(...links.map(a=>a.getBoundingClientRect().height)),
                     background:bg,title,description:desc,bookmark};
@@ -178,6 +182,9 @@ def verify():
             assert geometry["bookmarkFontSize"] == "14px", geometry
             assert geometry["bookmarkLineHeight"] == "28px", geometry
             assert geometry["bookmarkGap"] == "2px", geometry
+            assert abs(geometry["bookmarkSectionGap"] - 20) < 0.1, geometry
+            expected_bookmark_columns = 2 if width <= 429 else 1
+            assert geometry["bookmarkItemColumns"] == expected_bookmark_columns, geometry
             expected_bookmark_height = 45 if width <= 760 else 28
             assert abs(geometry["bookmarkRowPitch"] - expected_bookmark_height) < 0.1, geometry
             # Browser fractional layout can shave a tiny amount off a 45px hit box.
