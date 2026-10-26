@@ -1,3 +1,5 @@
+import hashlib
+import re
 from pathlib import Path
 
 
@@ -22,7 +24,9 @@ def test_same_tab_runtime_guard_is_loaded_with_a_content_hash():
     config = (ROOT / "config" / "dynacat.yml").read_text()
     asset = ROOT / "assets" / "same-tab-links.js"
     assert asset.exists()
-    assert "same-tab-links.js?v=" in config
+    match = re.search(r"/assets/same-tab-links\.js\?v=([a-f0-9]{12})", config)
+    assert match
+    assert match.group(1) == hashlib.sha256(asset.read_bytes()).hexdigest()[:12]
     source = asset.read_text()
     assert "removeAttribute('target')" in source
     assert "location.assign" in source
