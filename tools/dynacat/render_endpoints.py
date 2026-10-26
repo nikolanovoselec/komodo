@@ -140,7 +140,7 @@ def main():
     changed = changed[:pages_start] + launcher + "\n" + remaining
 
     changed = changed.replace("/assets/endpoints.css?v=", "/assets/endpoint-directory.css?v=")
-    for name in ("endpoint-directory.css", "endpoints.js"):
+    for name in ("endpoint-directory.css", "endpoints.js", "same-tab-links.js"):
         digest = hashlib.sha256((ROOT / "assets" / name).read_bytes()).hexdigest()[:12]
         changed = re.sub(
             r"(/assets/" + re.escape(name) + r"\?v=)[a-zA-Z0-9_-]+",
