@@ -120,6 +120,9 @@ def verify():
                 const root=document.querySelector('.es-directory-v2');
                 const links=[...root.querySelectorAll('.es-endpoint')];
                 const appGrid=root.querySelector('.es-app-grid');
+                const appLinks=[...root.querySelectorAll('.es-applications .es-endpoint')];
+                const bookmarkLinks=[...root.querySelectorAll('.es-bookmarks .es-endpoint')];
+                const appColumns=getComputedStyle(appGrid).gridTemplateColumns.split(' ').length;
                 const bg=getComputedStyle(document.body).backgroundColor;
                 const title=getComputedStyle(root.querySelector('.es-applications .es-endpoint strong')).color;
                 const desc=getComputedStyle(root.querySelector('.es-applications .es-endpoint small')).color;
@@ -137,6 +140,14 @@ def verify():
                     appColumnGap:getComputedStyle(appGrid).columnGap,
                     bookmarkColumnGap:getComputedStyle(root.querySelector('.es-group-grid')).columnGap,
                     descriptionSize:getComputedStyle(root.querySelector('.es-applications small')).fontSize,
+                    appMarginBottom:parseFloat(getComputedStyle(appLinks[0]).marginBottom),
+                    appRowPitch:appLinks[appColumns].getBoundingClientRect().top-appLinks[0].getBoundingClientRect().top,
+                    appMinHit:Math.min(...appLinks.map(a=>a.getBoundingClientRect().height)),
+                    bookmarkFontSize:getComputedStyle(bookmarkLinks[0].querySelector('strong')).fontSize,
+                    bookmarkLineHeight:getComputedStyle(bookmarkLinks[0].querySelector('strong')).lineHeight,
+                    bookmarkGap:getComputedStyle(bookmarkLinks[0]).gap,
+                    bookmarkRowPitch:bookmarkLinks[1].getBoundingClientRect().top-bookmarkLinks[0].getBoundingClientRect().top,
+                    bookmarkMinHit:Math.min(...bookmarkLinks.map(a=>a.getBoundingClientRect().height)),
                     minHit:Math.min(...links.map(a=>a.getBoundingClientRect().height)),
                     background:bg,title,description:desc,bookmark};
             }""")
@@ -160,7 +171,15 @@ def verify():
             assert geometry["appColumnGap"] == "0px", geometry
             assert geometry["bookmarkColumnGap"] == "0px", geometry
             assert geometry["descriptionSize"] == expected_description_size, geometry
-            assert geometry["minHit"] >= 44, geometry
+            assert geometry["appMarginBottom"] == 14, geometry
+            assert geometry["appRowPitch"] >= 59, geometry
+            assert geometry["appMinHit"] >= 44, geometry
+            assert geometry["bookmarkFontSize"] == "14px", geometry
+            assert geometry["bookmarkLineHeight"] == "28px", geometry
+            assert geometry["bookmarkGap"] == "2px", geometry
+            expected_bookmark_height = 45 if width <= 760 else 28
+            assert geometry["bookmarkRowPitch"] == expected_bookmark_height, geometry
+            assert geometry["bookmarkMinHit"] >= expected_bookmark_height, geometry
             layouts.append({"width": width, **geometry})
 
         dark_theme = layouts[0]
