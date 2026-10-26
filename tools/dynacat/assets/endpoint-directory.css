@@ -18,7 +18,7 @@ html[data-scheme="light"] .es-directory-v2{--es-accent:#b53b24;--es-text:var(--c
 .es-section-title{margin:0 0 16px;color:var(--es-accent);font-size:20px;line-height:24px;font-weight:900;letter-spacing:.02em;text-transform:uppercase}
 .es-app-grid,.es-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:18px;list-style:none;margin:0;padding:0}
 .es-app-grid li,.es-grid li{min-width:0;list-style:none;margin:0;padding:0}
-.es-endpoint{display:flex;align-items:flex-start;gap:10px;min-width:0;min-height:44px;padding:2px;color:var(--es-text);text-decoration:none;border-radius:2px}
+.es-endpoint{display:flex;align-items:flex-start;gap:10px;min-width:0;min-height:45px;padding:2px;color:var(--es-text);text-decoration:none;border-radius:2px}
 .es-icon{display:block;flex:0 0 32px;width:32px;height:32px;color:var(--es-accent);fill:currentColor}
 .es-link-copy{display:block;min-width:0}
 .es-endpoint strong{display:block;color:var(--es-accent);font-size:14px;line-height:1.25;font-weight:500;letter-spacing:0;text-transform:uppercase;overflow-wrap:anywhere}
@@ -32,7 +32,7 @@ html[data-scheme="light"] .es-directory-v2{--es-accent:#b53b24;--es-text:var(--c
 .es-group{min-width:0;margin:0;padding:0}
 .es-group h3{margin:0 0 10px;color:var(--es-text);font-size:16px;line-height:20px;font-weight:400;text-transform:uppercase}
 .es-bookmarks .es-grid{grid-template-columns:1fr;row-gap:0}
-.es-bookmarks .es-endpoint{align-items:center;gap:7px;min-height:44px;padding:4px 2px}
+.es-bookmarks .es-endpoint{align-items:center;gap:7px;min-height:45px;padding:4px 2px}
 .es-bookmarks .es-icon{flex-basis:18px;width:18px;height:18px}
 .es-bookmarks .es-endpoint strong{color:var(--es-text);font-size:12px;line-height:1.35;font-weight:400;text-transform:none}
 @media(max-width:1199px){
