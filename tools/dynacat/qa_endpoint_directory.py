@@ -56,6 +56,10 @@ with sync_playwright() as p:
             geometry = page.evaluate("""() => {
                 const root=document.querySelector('.es-directory-v2');
                 const links=[...root.querySelectorAll('.es-endpoint')];
+                const appGrid=root.querySelector('.es-app-grid');
+                const appLinks=[...root.querySelectorAll('.es-applications .es-endpoint')];
+                const bookmarkLinks=[...root.querySelectorAll('.es-bookmarks .es-endpoint')];
+                const appColumns=getComputedStyle(appGrid).gridTemplateColumns.split(' ').length;
                 const luminance=color=>{const c=color.match(/\\d+(?:\\.\\d+)?/g).slice(0,3).map(Number).map(x=>x/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
                 const contrast=(a,b)=>{const c=[luminance(a),luminance(b)].sort((x,y)=>y-x);return (c[0]+.05)/(c[1]+.05);};
                 const bg=getComputedStyle(document.body).backgroundColor;
@@ -75,6 +79,14 @@ with sync_playwright() as p:
                   appColumnGap:getComputedStyle(root.querySelector('.es-app-grid')).columnGap,
                   bookmarkColumnGap:getComputedStyle(root.querySelector('.es-group-grid')).columnGap,
                   descriptionSize:getComputedStyle(root.querySelector('.es-applications small')).fontSize,
+                  appMarginBottom:parseFloat(getComputedStyle(appLinks[0]).marginBottom),
+                  appRowPitch:appLinks[appColumns].getBoundingClientRect().top-appLinks[0].getBoundingClientRect().top,
+                  appMinHit:Math.min(...appLinks.map(a=>a.getBoundingClientRect().height)),
+                  bookmarkFontSize:getComputedStyle(bookmarkLinks[0].querySelector('strong')).fontSize,
+                  bookmarkLineHeight:getComputedStyle(bookmarkLinks[0].querySelector('strong')).lineHeight,
+                  bookmarkGap:getComputedStyle(bookmarkLinks[0]).gap,
+                  bookmarkRowPitch:bookmarkLinks[1].getBoundingClientRect().top-bookmarkLinks[0].getBoundingClientRect().top,
+                  bookmarkMinHit:Math.min(...bookmarkLinks.map(a=>a.getBoundingClientRect().height)),
                   minHit:Math.min(...links.map(a=>a.getBoundingClientRect().height)),
                   background:bg,accentContrast:contrast(title,bg),descriptionContrast:contrast(description,bg),bookmarkContrast:contrast(bookmark,bg),
                   iconCount:root.querySelectorAll('.es-endpoint svg.es-icon use').length};
@@ -90,7 +102,15 @@ with sync_playwright() as p:
                 expected_container_width, expected_padding = min(parent_width * 0.9, 1714), 250
             expected_description_size = '10px' if 430 <= width <= 480 else '11px'
             assert geometry['scrollWidth'] <= width, geometry
-            assert geometry['minHit'] >= 44, geometry
+            assert geometry['appMarginBottom'] == 14, geometry
+            assert geometry['appRowPitch'] >= 59, geometry
+            assert geometry['appMinHit'] >= 44, geometry
+            assert geometry['bookmarkFontSize'] == '14px', geometry
+            assert geometry['bookmarkLineHeight'] == '28px', geometry
+            assert geometry['bookmarkGap'] == '2px', geometry
+            expected_bookmark_height = 45 if width <= 760 else 28
+            assert geometry['bookmarkRowPitch'] == expected_bookmark_height, geometry
+            assert geometry['bookmarkMinHit'] >= expected_bookmark_height, geometry
             assert geometry['appColumns'] == expected_columns, geometry
             assert geometry['bookmarkColumns'] == expected_columns, geometry
             assert abs(geometry['containerWidth'] - expected_container_width) < 1, geometry
@@ -113,16 +133,27 @@ with sync_playwright() as p:
     m.on('pageerror', lambda error: errors.append(str(error)))
     m.goto(BASE + '/endpoints-services')
     m.wait_for_selector('.es-directory-v2[data-ready="true"]')
+    m.set_viewport_size({'width':1600,'height':1100})
+    touch_desktop_geometry = m.evaluate("""() => ({width:innerWidth,coarsePointer:matchMedia('(pointer: coarse)').matches,
+      appMinHit:Math.min(...[...document.querySelectorAll('.es-applications .es-endpoint')].map(a=>a.getBoundingClientRect().height)),
+      bookmarkMinHit:Math.min(...[...document.querySelectorAll('.es-bookmarks .es-endpoint')].map(a=>a.getBoundingClientRect().height))})""")
+    assert touch_desktop_geometry['coarsePointer']
+    assert touch_desktop_geometry['appMinHit'] >= 44
+    assert touch_desktop_geometry['bookmarkMinHit'] >= 44
+    m.set_viewport_size({'width':390,'height':844})
     mobile_geometry = m.evaluate("""() => ({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
-      minHit:Math.min(...[...document.querySelectorAll('.es-endpoint')].map(a=>a.getBoundingClientRect().height))})""")
+      minHit:Math.min(...[...document.querySelectorAll('.es-endpoint')].map(a=>a.getBoundingClientRect().height)),
+      bookmarkMinHit:Math.min(...[...document.querySelectorAll('.es-bookmarks .es-endpoint')].map(a=>a.getBoundingClientRect().height))})""")
     assert mobile_geometry['scrollWidth'] <= mobile_geometry['width']
     assert mobile_geometry['minHit'] >= 44
+    assert mobile_geometry['bookmarkMinHit'] >= 44
     assert m.locator('.es-endpoint').count() == 77
     assert not errors, errors
     result = {
         'links':len(pairs),'applications':52,'bookmarks':25,'third_party_hosted_bookmarks':14,
         'mdi_icons':len(icon_doc['icons']),'urls_preserved':True,'alphabetical':True,
         'search_filter_chrome':False,'touch_mobile':True,'mobile_geometry':mobile_geometry,
+        'touch_desktop_geometry':touch_desktop_geometry,
         'errors':errors,'layouts':samples,
     }
     (OUT / 'candidate-verification.json').write_text(json.dumps(result,indent=2)+'\n')
