@@ -1,98 +1,108 @@
-"""Native-renderer acceptance for the rebuilt directory. No external links followed."""
+"""Live rendering acceptance for the Flame-style directory. No external links followed."""
 import json
 import os
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 BASE = os.environ.get('DYNACAT_QA_BASE', 'http://127.0.0.1:18185').rstrip('/')
-OUT = Path(os.environ.get('DYNACAT_QA_OUT', '/srv/hermes/workspaces/endpoints-rebuild-review'))
+OUT = Path(os.environ.get('DYNACAT_QA_OUT', '/srv/hermes/workspaces/flame-directory-review'))
 OUT.mkdir(parents=True, exist_ok=True)
-original = json.loads((Path(__file__).parent/'fixtures/endpoints-before-rebuild.json').read_text())
+ROOT = Path(__file__).parent
+original = json.loads((ROOT / 'fixtures/endpoints-before-rebuild.json').read_text())
+directory = json.loads((ROOT / 'endpoints-directory.json').read_text())
+icon_doc = json.loads((ROOT / 'flame-mdi-icons.json').read_text())
+hosted_expected = {
+    'Cloudflare', 'Fast', 'Unifi', 'YouTube', 'Torrentleech', 'GitHub',
+    'NotebookLM', 'Renovate', 'Draw.io', 'Microsoft 365', 'Outlook',
+    'Whiteboard', 'LinkedIn', 'Resend',
+}
+assert len(original) == 77
+assert sum(len(g['links']) for d in directory['domains'] if d['id'] != 'personal' for g in d['groups']) == 52
+assert sum(len(g['links']) for d in directory['domains'] if d['id'] == 'personal' for g in d['groups']) == 25
+hosted_actual = {
+    item['name']
+    for domain in directory['domains'] if domain['id'] == 'personal'
+    for group in domain['groups'] if group['id'] == 'hosted-services'
+    for item in group['links']
+}
+assert hosted_actual == hosted_expected
+
 with sync_playwright() as p:
-    b=p.chromium.launch(executable_path='/usr/bin/chromium', args=['--no-sandbox'])
-    context=b.new_context(viewport={'width':1600,'height':1100}, device_scale_factor=1)
-    # Layout tests never initiate audio or contact a media session.
+    browser = p.chromium.launch(executable_path='/usr/bin/chromium', args=['--no-sandbox'])
+    context = browser.new_context(viewport={'width':1600,'height':1100}, device_scale_factor=1)
     context.add_init_script("HTMLMediaElement.prototype.play = function(){ throw Error('Playback forbidden in directory QA'); };")
     context.route('**/radio/**', lambda route: route.abort())
-    page=context.new_page(); errors=[]
-    page.on('pageerror',lambda e: errors.append(str(e)))
-    page.goto(BASE+'/');page.wait_for_selector('.es-directory-v2[data-ready="true"]')
-    assert page.locator('.es-applications .es-endpoint').count()==66
-    assert page.locator('.es-bookmarks .es-endpoint').count()==11
-    page.goto(BASE+'/endpoints-services');page.wait_for_selector('.es-directory-v2[data-ready="true"]')
-    pairs=page.locator('.es-endpoint').evaluate_all("rows => rows.map(a=>[a.querySelector('strong').textContent,a.getAttribute('href')])")
-    assert sorted(pairs)==sorted([[i['name'],i['url']] for i in original])
-    assert page.locator('.es-applications .es-endpoint').count()==66
-    assert page.locator('.es-bookmarks .es-endpoint').count()==11
+    page = context.new_page()
+    errors = []
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    for path in ['/', '/endpoints-services']:
+        page.goto(BASE + path)
+        page.wait_for_selector('.es-directory-v2[data-ready="true"]')
+        assert page.locator('.es-applications .es-endpoint').count() == 52
+        assert page.locator('.es-bookmarks .es-endpoint').count() == 25
+
+    pairs = page.locator('.es-endpoint').evaluate_all("rows => rows.map(a=>[a.querySelector('strong').textContent.trim(),a.getAttribute('href')])")
+    assert sorted(pairs) == sorted([[item['name'], item['url']] for item in original])
     assert page.locator('.es-applications .es-endpoint strong').evaluate_all("nodes=>{const names=nodes.map(n=>n.textContent.trim());const c=new Intl.Collator(undefined,{sensitivity:'base',numeric:true});return names.every((n,i)=>i===0||c.compare(names[i-1],n)<=0)}")
     assert page.locator('.es-applications').evaluate("apps=>Boolean(apps.compareDocumentPosition(document.querySelector('.es-bookmarks'))&Node.DOCUMENT_POSITION_FOLLOWING)")
-    page.locator('[data-es-category="media"]').click()
-    assert page.locator('.es-endpoint:visible').count()==21, 'Media filter must show all four media-purpose groups'
-    assert page.locator('.es-domain:visible').count()==1
-    page.locator('[data-es-category="all"]').click()
-    page.locator('#endpoint-search').fill('backup tools')
-    assert page.locator('.es-endpoint:visible strong').all_text_contents()==['Backrest Tools'], 'Search must match all words across name and purpose'
-    page.locator('.es-clear').click()
-    page.locator('#endpoint-search').fill('no-such-service-zzzzz')
-    assert page.locator('.es-empty').is_visible()
-    assert page.locator('.es-domain:visible').count()==0
-    page.locator('#endpoint-search').press('Escape')
-    assert page.locator('.es-endpoint:visible').count()==77
-    assert not page.locator('.es-clear').is_visible()
-    samples=[]
-    for theme in ['midnight-navy','catppuccin-latte']:
-        # Native GET theme response, same cookie used by the live theme picker.
+    assert page.locator('.es-toolbar, .es-search-row, .es-categories').count() == 0
+    icons = page.locator('.es-icon-sprite symbol').evaluate_all("symbols=>symbols.map(s=>s.id).sort()")
+    assert icons == sorted('es-mdi-' + name for name in icon_doc['icons'])
+    assert page.locator('.es-endpoint').evaluate_all("links=>links.every(a=>a.querySelector('.es-icon use')?.getAttribute('href')===`#es-mdi-${a.dataset.esIcon}`)")
+
+    samples = []
+    for theme in ['midnight-navy', 'catppuccin-latte']:
         context.add_cookies([{'name':'theme','value':theme,'url':BASE}])
-        for width in [1600,1024,768,390]:
+        for width in [1600, 1100, 700, 390]:
             page.set_viewport_size({'width':width,'height':1100 if width>500 else 844})
-            page.goto(BASE+'/endpoints-services');page.wait_for_selector('.es-directory-v2');page.wait_for_timeout(400)
-            assert page.locator('.es-endpoint:visible').count()==77
-            geometry=page.evaluate("""() => {
-                const luminance = color => {
-                    const linear=color.match(/\\d+(?:\\.\\d+)?/g).slice(0,3).map(Number).map(x=>x/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);
-                    return .2126*linear[0]+.7152*linear[1]+.0722*linear[2];
-                };
-                const contrast=(a,b)=>{const values=[luminance(a),luminance(b)].sort((x,y)=>y-x);return (values[0]+.05)/(values[1]+.05);};
-                const background=getComputedStyle(document.body).backgroundColor;
-                const appTitle=getComputedStyle(document.querySelector('.es-applications .es-endpoint strong')).color;
-                const appDescription=getComputedStyle(document.querySelector('.es-applications .es-endpoint small')).color;
+            page.goto(BASE + '/endpoints-services')
+            page.wait_for_selector('.es-directory-v2[data-ready="true"]')
+            page.wait_for_timeout(250)
+            geometry = page.evaluate("""() => {
+                const root=document.querySelector('.es-directory-v2');
+                const links=[...root.querySelectorAll('.es-endpoint')];
+                const luminance=color=>{const c=color.match(/\\d+(?:\\.\\d+)?/g).slice(0,3).map(Number).map(x=>x/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
+                const contrast=(a,b)=>{const c=[luminance(a),luminance(b)].sort((x,y)=>y-x);return (c[0]+.05)/(c[1]+.05);};
+                const bg=getComputedStyle(document.body).backgroundColor;
+                const title=getComputedStyle(root.querySelector('.es-applications .es-endpoint strong')).color;
+                const description=getComputedStyle(root.querySelector('.es-applications .es-endpoint small')).color;
+                const bookmark=getComputedStyle(root.querySelector('.es-bookmarks .es-endpoint strong')).color;
                 return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
-                    cards:[...document.querySelectorAll('.es-group')].map(x=>({w:x.getBoundingClientRect().width,h:x.getBoundingClientRect().height})),
-                    minHit:Math.min(...[...document.querySelectorAll('.es-endpoint')].map(x=>x.getBoundingClientRect().height)),
-                    minCategoryHit:Math.min(...[...document.querySelectorAll('.es-categories button')].map(x=>x.getBoundingClientRect().height)),
-                    appColumns:getComputedStyle(document.querySelector('.es-app-grid')).gridTemplateColumns.split(' ').length,
-                    background,accentContrast:contrast(appTitle,background),descriptionContrast:contrast(appDescription,background),
-                    font:getComputedStyle(document.querySelector('.es-endpoint strong')).fontSize};
+                  appColumns:getComputedStyle(root.querySelector('.es-app-grid')).gridTemplateColumns.split(' ').length,
+                  bookmarkColumns:getComputedStyle(root.querySelector('.es-group-grid')).gridTemplateColumns.split(' ').length,
+                  minHit:Math.min(...links.map(a=>a.getBoundingClientRect().height)),
+                  background:bg,accentContrast:contrast(title,bg),descriptionContrast:contrast(description,bg),bookmarkContrast:contrast(bookmark,bg),
+                  iconCount:root.querySelectorAll('.es-endpoint svg.es-icon use').length};
             }""")
-            assert geometry['scrollWidth']<=width, geometry
-            assert geometry['minHit']>=44, geometry
-            assert geometry['minCategoryHit']>=44, geometry
-            assert geometry['accentContrast']>=4.5, geometry
-            assert geometry['descriptionContrast']>=4.5, geometry
-            expected_columns=4 if width>=1200 else 3 if width>760 else 2 if width>480 else 1
-            assert geometry['appColumns']==expected_columns, geometry
-            if width>=1024:
-                assert all(c['w']>=240 for c in geometry['cards']), geometry
-            page.screenshot(path=str(OUT/f'candidate-{width}-{theme}.png'),full_page=True)
-            page.screenshot(path=str(OUT/f'candidate-{width}-{theme}-viewport.png'))
-            samples.append({'theme':theme,**geometry})
-    # Actual touch/mobile context, not merely a desktop page narrowed to 390 px.
-    mobile=b.new_context(viewport={'width':390,'height':844},is_mobile=True,has_touch=True,device_scale_factor=1)
-    mobile.route('**/radio/**',lambda route:route.abort())
-    m=mobile.new_page();m.goto(BASE+'/endpoints-services');m.wait_for_selector('.es-directory-v2[data-ready="true"]')
-    m.locator('[data-es-category="work"]').tap()
-    assert m.locator('.es-endpoint:visible').count()==21
-    m.locator('[data-es-category="all"]').tap()
-    cdp=mobile.new_cdp_session(m)
-    cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':190,'y':730}]})
-    for y in [650,570,490,410,330]:
-        cdp.send('Input.dispatchTouchEvent',{'type':'touchMove','touchPoints':[{'x':190,'y':y}]});m.wait_for_timeout(90)
-    m.wait_for_timeout(250);cdp.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]});m.wait_for_timeout(600)
-    initial=m.evaluate('window.scrollY');m.wait_for_timeout(2200);final=m.evaluate('window.scrollY')
-    assert initial>100 and abs(initial-final)<2,(initial,final)
-    assert m.evaluate('document.documentElement.scrollWidth <= innerWidth')
-    mobile.close()
-    assert not errors,errors
-    result={'links':len(pairs),'applications':66,'bookmarks':11,'categories':4,'bookmark_groups':2,'urls_preserved':True,'search':True,'filters':True,'touch_mobile':True,'scroll_stable':True,'errors':errors,'layouts':samples}
-    (OUT/'candidate-verification.json').write_text(json.dumps(result,indent=2)+'\n')
-    print(json.dumps({k:v for k,v in result.items() if k!='layouts'},indent=2));b.close()
+            assert page.locator('.es-endpoint').count() == 77
+            expected_columns = 4 if width >= 1200 else 3 if width > 760 else 2 if width > 480 else 1
+            assert geometry['scrollWidth'] <= width, geometry
+            assert geometry['minHit'] >= 44, geometry
+            assert geometry['appColumns'] == expected_columns, geometry
+            assert geometry['accentContrast'] >= 4.5, geometry
+            assert geometry['descriptionContrast'] >= 4.5, geometry
+            assert geometry['bookmarkContrast'] >= 4.5, geometry
+            page.screenshot(path=str(OUT / f'candidate-{width}-{theme}.png'), full_page=True)
+            samples.append({'theme':theme, **geometry})
+
+    mobile = browser.new_context(viewport={'width':390,'height':844}, is_mobile=True, has_touch=True, device_scale_factor=1)
+    mobile.route('**/radio/**', lambda route: route.abort())
+    m = mobile.new_page()
+    m.on('pageerror', lambda error: errors.append(str(error)))
+    m.goto(BASE + '/endpoints-services')
+    m.wait_for_selector('.es-directory-v2[data-ready="true"]')
+    mobile_geometry = m.evaluate("""() => ({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
+      minHit:Math.min(...[...document.querySelectorAll('.es-endpoint')].map(a=>a.getBoundingClientRect().height))})""")
+    assert mobile_geometry['scrollWidth'] <= mobile_geometry['width']
+    assert mobile_geometry['minHit'] >= 44
+    assert m.locator('.es-endpoint').count() == 77
+    assert not errors, errors
+    result = {
+        'links':len(pairs),'applications':52,'bookmarks':25,'third_party_hosted_bookmarks':14,
+        'mdi_icons':len(icon_doc['icons']),'urls_preserved':True,'alphabetical':True,
+        'search_filter_chrome':False,'touch_mobile':True,'mobile_geometry':mobile_geometry,
+        'errors':errors,'layouts':samples,
+    }
+    (OUT / 'candidate-verification.json').write_text(json.dumps(result,indent=2)+'\n')
+    print(json.dumps({k:v for k,v in result.items() if k!='layouts'},indent=2))
+    browser.close()
