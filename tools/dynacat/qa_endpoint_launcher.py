@@ -128,6 +128,9 @@ def verify():
                     appColumns:getComputedStyle(appGrid).gridTemplateColumns.split(' ').length,
                     bookmarkColumns:getComputedStyle(root.querySelector('.es-group-grid')).gridTemplateColumns.split(' ').length,
                     containerWidth:root.getBoundingClientRect().width,
+                    containerLeft:root.getBoundingClientRect().left,
+                    parentWidth:root.parentElement.getBoundingClientRect().width,
+                    parentLeft:root.parentElement.getBoundingClientRect().left,
                     paddingLeft:parseFloat(getComputedStyle(root).paddingLeft),
                     appIconWidth:root.querySelector('.es-applications .es-icon').getBoundingClientRect().width,
                     bookmarkIconWidth:root.querySelector('.es-bookmarks .es-icon').getBoundingClientRect().width,
@@ -138,17 +141,19 @@ def verify():
                     background:bg,title,description:desc,bookmark};
             }""")
             expected_columns = 4 if width >= 900 else 3 if width >= 670 else 2 if width >= 430 else 1
+            parent_width = geometry["parentWidth"]
             if width < 769:
-                expected_container_width, expected_padding = width, 20
+                expected_container_width, expected_padding = parent_width, 20
             elif width < 1201:
-                expected_container_width, expected_padding = width * 0.9, 20
+                expected_container_width, expected_padding = parent_width * 0.9, 20
             else:
-                expected_container_width, expected_padding = min(width * 0.9, 1714), 250
+                expected_container_width, expected_padding = min(parent_width * 0.9, 1714), 250
             expected_description_size = "10px" if 430 <= width <= 480 else "11px"
             assert geometry["scrollWidth"] <= width, geometry
             assert geometry["appColumns"] == expected_columns, geometry
             assert geometry["bookmarkColumns"] == expected_columns, geometry
             assert abs(geometry["containerWidth"] - expected_container_width) < 1, geometry
+            assert abs((geometry["containerLeft"] - geometry["parentLeft"]) - (parent_width - geometry["containerWidth"]) / 2) < 1, geometry
             assert abs(geometry["paddingLeft"] - expected_padding) < 1, geometry
             assert geometry["appIconWidth"] == 35, geometry
             assert geometry["bookmarkIconWidth"] == 20, geometry
