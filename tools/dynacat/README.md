@@ -328,10 +328,11 @@ native themes, and four viewport widths; it never serves synthetic telemetry.
 The visible navigation is **Hardware & Workloads**, **Media**, and
 **Endpoints & Services**. Fixed hidden aliases preserve `/command-center`,
 `/media-ops`, `/directory`, and `/news` bookmarks. The launcher keeps all 77
-original endpoint name/URL pairs: 52 custom-domain applications sorted
-alphabetically, followed by 25 bookmarks. Fourteen third-party-hosted services
-sit in a separate Hosted services bookmark group. Its 68 bundled Material Design
-Icons use Flame's configured glyphs; no external icon font is loaded. Search and
+original endpoint name/URL pairs: 52 applications sorted
+alphabetically, followed by 25 bookmarks in Flame's four topic groups: News,
+Productivity & Multimedia, Shopping, and Utilities. Fourteen clearly third-party-hosted
+services stay in those bookmark groups rather than Applications. Its 68 bundled Material
+Design Icons use Flame's configured glyphs; no external icon font is loaded. Search and
 category filters are omitted to keep the Flame-style launcher flat and scannable.
 The old News desk feeds are removed; News Digest article integration
 is pending authenticated feed/API access (see NEWS.md). Start was

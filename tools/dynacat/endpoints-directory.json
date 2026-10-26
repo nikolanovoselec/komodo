@@ -404,101 +404,11 @@
     {
       "id": "personal",
       "title": "Bookmarks",
-      "description": "Hosted services and personal links.",
+      "description": "Personal bookmarks grouped by topic.",
       "groups": [
         {
-          "id": "hosted-services",
-          "title": "Hosted services",
-          "links": [
-            {
-              "name": "Cloudflare",
-              "url": "https://dash.cloudflare.com/ab75f75941a21a81db27bf12e99c620b/home/overview",
-              "description": "DNS & edge services",
-              "icon": "cloud-outline"
-            },
-            {
-              "name": "Draw.io",
-              "url": "https://app.diagrams.net",
-              "description": "Diagrams",
-              "icon": "draw"
-            },
-            {
-              "name": "Fast",
-              "url": "https://fast.com",
-              "description": "Internet speed test",
-              "icon": "speedometer-slow"
-            },
-            {
-              "name": "GitHub",
-              "url": "https://github.com/nikolanovoselec",
-              "description": "Repositories",
-              "icon": "github"
-            },
-            {
-              "name": "LinkedIn",
-              "url": "https://www.linkedin.com",
-              "description": "Professional network",
-              "icon": "linkedin"
-            },
-            {
-              "name": "Microsoft 365",
-              "url": "https://office.com",
-              "description": "Office applications",
-              "icon": "microsoft-office"
-            },
-            {
-              "name": "NotebookLM",
-              "url": "https://notebooklm.google.com/?icid=home_maincta",
-              "description": "Research & notes",
-              "icon": "notebook"
-            },
-            {
-              "name": "Outlook",
-              "url": "https://outlook.office.com/mail/",
-              "description": "Mail & calendar",
-              "icon": "microsoft-outlook"
-            },
-            {
-              "name": "Renovate",
-              "url": "https://developer.mend.io/github/nikolanovoselec",
-              "description": "Dependency updates",
-              "icon": "update"
-            },
-            {
-              "name": "Resend",
-              "url": "https://resend.com/emails",
-              "description": "Email delivery",
-              "icon": "email-fast-outline"
-            },
-            {
-              "name": "Torrentleech",
-              "url": "https://www.torrentleech.org/torrents/top/index/added/-1%20day/orderby/completed/order/desc",
-              "description": "Torrent tracker",
-              "icon": "camera-document"
-            },
-            {
-              "name": "Unifi",
-              "url": "https://unifi.ui.com",
-              "description": "Network management",
-              "icon": "unicode"
-            },
-            {
-              "name": "Whiteboard",
-              "url": "https://whiteboard.cloud.microsoft",
-              "description": "Visual collaboration",
-              "icon": "human-male-board"
-            },
-            {
-              "name": "YouTube",
-              "url": "https://www.youtube.com",
-              "description": "Video",
-              "icon": "youtube-tv"
-            }
-          ]
-        },
-        {
           "id": "news",
-          "title": "News & reading",
+          "title": "News",
           "links": [
             {
               "name": "20 Minuten",
@@ -545,6 +455,60 @@
           ]
         },
         {
+          "id": "productivity-multimedia",
+          "title": "Productivity & Multimedia",
+          "links": [
+            {
+              "name": "Draw.io",
+              "url": "https://app.diagrams.net",
+              "description": "Diagrams",
+              "icon": "draw"
+            },
+            {
+              "name": "LinkedIn",
+              "url": "https://www.linkedin.com",
+              "description": "Professional network",
+              "icon": "linkedin"
+            },
+            {
+              "name": "Microsoft 365",
+              "url": "https://office.com",
+              "description": "Office applications",
+              "icon": "microsoft-office"
+            },
+            {
+              "name": "NotebookLM",
+              "url": "https://notebooklm.google.com/?icid=home_maincta",
+              "description": "Research & notes",
+              "icon": "notebook"
+            },
+            {
+              "name": "Outlook",
+              "url": "https://outlook.office.com/mail/",
+              "description": "Mail & calendar",
+              "icon": "microsoft-outlook"
+            },
+            {
+              "name": "Torrentleech",
+              "url": "https://www.torrentleech.org/torrents/top/index/added/-1%20day/orderby/completed/order/desc",
+              "description": "Torrent tracker",
+              "icon": "camera-document"
+            },
+            {
+              "name": "Whiteboard",
+              "url": "https://whiteboard.cloud.microsoft",
+              "description": "Visual collaboration",
+              "icon": "human-male-board"
+            },
+            {
+              "name": "YouTube",
+              "url": "https://www.youtube.com",
+              "description": "Video",
+              "icon": "youtube-tv"
+            }
+          ]
+        },
+        {
           "id": "shopping",
           "title": "Shopping",
           "links": [
@@ -571,6 +535,48 @@
               "url": "https://www.temu.com/ch/",
               "description": "Marketplace",
               "icon": "basket-outline"
+            }
+          ]
+        },
+        {
+          "id": "utilities",
+          "title": "Utilities",
+          "links": [
+            {
+              "name": "Cloudflare",
+              "url": "https://dash.cloudflare.com/ab75f75941a21a81db27bf12e99c620b/home/overview",
+              "description": "DNS & edge services",
+              "icon": "cloud-outline"
+            },
+            {
+              "name": "Fast",
+              "url": "https://fast.com",
+              "description": "Internet speed test",
+              "icon": "speedometer-slow"
+            },
+            {
+              "name": "GitHub",
+              "url": "https://github.com/nikolanovoselec",
+              "description": "Repositories",
+              "icon": "github"
+            },
+            {
+              "name": "Renovate",
+              "url": "https://developer.mend.io/github/nikolanovoselec",
+              "description": "Dependency updates",
+              "icon": "update"
+            },
+            {
+              "name": "Resend",
+              "url": "https://resend.com/emails",
+              "description": "Email delivery",
+              "icon": "email-fast-outline"
+            },
+            {
+              "name": "Unifi",
+              "url": "https://unifi.ui.com",
+              "description": "Network management",
+              "icon": "unicode"
             }
           ]
         }
