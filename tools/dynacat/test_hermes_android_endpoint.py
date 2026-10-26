@@ -28,7 +28,7 @@ class EndpointParser(HTMLParser):
     def handle_endtag(self, tag):
         if tag == "a" and self.current is not None:
             text = [part.strip() for part in self.current["text"] if part.strip() and part.strip() != "↗"]
-            self.links.append((text[-2], self.current["url"], self.current["target"]))
+            self.links.append((text[0], self.current["url"], self.current["target"]))
             self.current = None
 
 

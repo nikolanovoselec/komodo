@@ -24,8 +24,9 @@ class DirectoryAcceptance(unittest.TestCase):
 
     def test_all_original_urls_preserved_once(self):
         original = json.loads(BASELINE.read_text())
-        actual = [(a.select_one('strong').get_text(strip=True), a['href']) for a in page_soup().select('.es-endpoint')]
-        self.assertEqual(Counter(actual), Counter((r['name'],r['url']) for r in original))
+        actual = Counter((a.select_one('strong').get_text(strip=True), a['href']) for a in page_soup().select('.es-endpoint'))
+        expected = Counter((r['name'],r['url']) for r in original)
+        self.assertEqual({pair: actual[pair] for pair in expected}, expected)
 
     def test_global_applications_and_bookmark_groups_are_alphabetical(self):
         soup = page_soup()
@@ -40,7 +41,7 @@ class DirectoryAcceptance(unittest.TestCase):
 
     def test_other_misclassifications_are_corrected(self):
         soup = page_soup()
-        groups = {a.select_one('strong').get_text(strip=True):a.get('data-es-group') for a in soup.select('.es-endpoint')}
+        groups = {a.select_one('strong').get_text(strip=True):a.get('data-es-group') for a in soup.select('.es-endpoint') if a.get('data-es-group') != 'ssh-targets'}
         expected = {'Gray Matter':'publishing','Codeflare':'ai-development','Codeflare Integration':'ai-development',
             'IT Tools':'ai-development','Hermes':'ai-development','Hermes Browser':'ai-development','Hermes Android':'ai-development',
             'Proxmox Backup Server':'backups','Backrest Media Servers':'backups','Torrentleech':'productivity-multimedia',
@@ -53,14 +54,33 @@ class DirectoryAcceptance(unittest.TestCase):
         self.assertIsNone(soup.select_one('.es-categories'))
         self.assertIsNone(soup.select_one('.es-toolbar'))
         groups = soup.select('.es-group')
-        self.assertEqual(len(groups),4)
+        self.assertEqual(len(groups),5)
         titles=[g.select_one('h3').get_text(' ',strip=True) for g in groups]
-        self.assertEqual(titles, ['News', 'Productivity & Multimedia', 'Shopping', 'Utilities'])
+        self.assertEqual(titles, ['News', 'Productivity & Multimedia', 'Shopping', 'Utilities', 'SSH TARGETS'])
         self.assertEqual(
             {group['data-es-group']: len(group.select('.es-endpoint')) for group in groups},
-            {'news': 7, 'productivity-multimedia': 8, 'shopping': 4, 'utilities': 6},
+            {'news': 7, 'productivity-multimedia': 8, 'shopping': 4, 'utilities': 6, 'ssh-targets': 10},
         )
         self.assertFalse(any(t.startswith(('Workspace ', 'Utilities ', 'Control plane ')) for t in titles))
+
+    def test_public_ssh_targets_are_grouped_as_bookmarks(self):
+        directory = json.loads((ROOT / 'endpoints-directory.json').read_text())
+        personal = next(domain for domain in directory['domains'] if domain['id'] == 'personal')
+        group = next(group for group in personal['groups'] if group['id'] == 'ssh-targets')
+        self.assertEqual(group['title'], 'SSH TARGETS')
+        actual = {item['name']: item['url'] for item in group['links']}
+        self.assertEqual(actual, {
+            'Komodo': 'https://komodo-ssh.novoselec.ch/',
+            'Media Servers': 'https://mediaservers-ssh.novoselec.ch/',
+            'Middleware': 'https://middleware-ssh.novoselec.ch/',
+            'Minecraft Controller': 'https://minecraft-ssh.novoselec.ch/',
+            'Proxmox Backup Server': 'https://pbs-ssh.novoselec.ch/',
+            'Proxmox I': 'https://proxmox-i-ssh.novoselec.ch/',
+            'Proxmox II': 'https://proxmox-ii-ssh.novoselec.ch/',
+            'Proxmox III': 'https://proxmox-iii-ssh.novoselec.ch/',
+            'Servarr': 'https://servarr-ssh.novoselec.ch/',
+            'Tools': 'https://tools-ssh.novoselec.ch/',
+        })
 
     def test_third_party_hosted_services_are_bookmarks(self):
         expected = {
@@ -84,20 +104,20 @@ class DirectoryAcceptance(unittest.TestCase):
             self.assertEqual(entries[name], ('personal', group), name)
         app_count = sum(len(group['links']) for domain in directory['domains'] if domain['id'] != 'personal' for group in domain['groups'])
         bookmark_count = sum(len(group['links']) for domain in directory['domains'] if domain['id'] == 'personal' for group in domain['groups'])
-        self.assertEqual((app_count, bookmark_count), (52, 25))
+        self.assertEqual((app_count, bookmark_count), (52, 35))
 
     def test_flame_mdi_sprite_covers_every_endpoint(self):
         directory = json.loads((ROOT / 'endpoints-directory.json').read_text())
         icon_doc = json.loads((ROOT / 'flame-mdi-icons.json').read_text())
         items = [item for domain in directory['domains'] for group in domain['groups'] for item in group['links']]
-        self.assertEqual(len(items), 77)
+        self.assertEqual(len(items), 87)
         self.assertTrue(all(item.get('icon') in icon_doc['icons'] for item in items))
         soup = page_soup()
         symbols = {symbol.get('id') for symbol in soup.select('.es-icon-sprite symbol')}
         self.assertEqual(symbols, {f'es-mdi-{name}' for name in icon_doc['icons']})
         for link in soup.select('.es-endpoint'):
             name = link.select_one('strong').get_text(strip=True)
-            item = next(item for item in items if item['name'] == name)
+            item = next(item for item in items if item['name'] == name and item['url'] == link['href'])
             use = link.select_one('svg.es-icon use')
             self.assertIsNotNone(use, name)
             self.assertEqual(use.get('href'), f"#es-mdi-{item['icon']}", name)
