@@ -11,21 +11,13 @@ ROOT = Path(__file__).parent
 original = json.loads((ROOT / 'fixtures/endpoints-before-rebuild.json').read_text())
 directory = json.loads((ROOT / 'endpoints-directory.json').read_text())
 icon_doc = json.loads((ROOT / 'flame-mdi-icons.json').read_text())
-hosted_expected = {
-    'Cloudflare', 'Fast', 'Unifi', 'YouTube', 'Torrentleech', 'GitHub',
-    'NotebookLM', 'Renovate', 'Draw.io', 'Microsoft 365', 'Outlook',
-    'Whiteboard', 'LinkedIn', 'Resend',
-}
 assert len(original) == 77
 assert sum(len(g['links']) for d in directory['domains'] if d['id'] != 'personal' for g in d['groups']) == 52
 assert sum(len(g['links']) for d in directory['domains'] if d['id'] == 'personal' for g in d['groups']) == 25
-hosted_actual = {
-    item['name']
-    for domain in directory['domains'] if domain['id'] == 'personal'
-    for group in domain['groups'] if group['id'] == 'hosted-services'
-    for item in group['links']
-}
-assert hosted_actual == hosted_expected
+personal = next(domain for domain in directory['domains'] if domain['id'] == 'personal')
+expected_groups = [('news', 'News', 7), ('productivity-multimedia', 'Productivity & Multimedia', 8),
+                   ('shopping', 'Shopping', 4), ('utilities', 'Utilities', 6)]
+assert [(g['id'], g['title'], len(g['links'])) for g in personal['groups']] == expected_groups
 
 with sync_playwright() as p:
     browser = p.chromium.launch(executable_path='/usr/bin/chromium', args=['--no-sandbox'])
@@ -40,6 +32,9 @@ with sync_playwright() as p:
         page.wait_for_selector('.es-directory-v2[data-ready="true"]')
         assert page.locator('.es-applications .es-endpoint').count() == 52
         assert page.locator('.es-bookmarks .es-endpoint').count() == 25
+        assert page.locator('.es-bookmarks .es-group').evaluate_all("groups=>groups.map(g=>[g.dataset.esGroup,g.querySelectorAll('.es-endpoint').length])") == [
+            ['news', 7], ['productivity-multimedia', 8], ['shopping', 4], ['utilities', 6]
+        ]
 
     pairs = page.locator('.es-endpoint').evaluate_all("rows => rows.map(a=>[a.querySelector('strong').textContent.trim(),a.getAttribute('href')])")
     assert sorted(pairs) == sorted([[item['name'], item['url']] for item in original])
@@ -76,9 +71,11 @@ with sync_playwright() as p:
             }""")
             assert page.locator('.es-endpoint').count() == 77
             expected_columns = 4 if width >= 1200 else 3 if width > 760 else 2 if width > 480 else 1
+            expected_bookmark_columns = 4 if width > 760 else 2 if width > 480 else 1
             assert geometry['scrollWidth'] <= width, geometry
             assert geometry['minHit'] >= 44, geometry
             assert geometry['appColumns'] == expected_columns, geometry
+            assert geometry['bookmarkColumns'] == expected_bookmark_columns, geometry
             assert geometry['accentContrast'] >= 4.5, geometry
             assert geometry['descriptionContrast'] >= 4.5, geometry
             assert geometry['bookmarkContrast'] >= 4.5, geometry

@@ -37,7 +37,7 @@ html[data-scheme="light"] .es-directory-v2{--es-accent:#b53b24;--es-text:var(--c
 .es-bookmarks .es-endpoint strong{color:var(--es-text);font-size:12px;line-height:1.35;font-weight:400;text-transform:none}
 @media(max-width:1199px){
   .es-directory-v2{padding-top:38px;padding-bottom:44px}
-  .es-app-grid,.es-group-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .es-app-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media(max-width:760px){
   .es-directory-v2{padding:28px clamp(20px,5vw,36px) 36px}

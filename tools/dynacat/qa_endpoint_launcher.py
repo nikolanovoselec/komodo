@@ -60,18 +60,18 @@ def verify():
     app_count = sum(len(group["links"]) for domain in directory["domains"] if domain["id"] != "personal" for group in domain["groups"])
     bookmark_count = sum(len(group["links"]) for domain in directory["domains"] if domain["id"] == "personal" for group in domain["groups"])
     assert len(expected) == 77 and app_count == 52 and bookmark_count == 25
-    hosted_names = {
-        "Cloudflare", "Fast", "Unifi", "YouTube", "Torrentleech", "GitHub",
-        "NotebookLM", "Renovate", "Draw.io", "Microsoft 365", "Outlook",
-        "Whiteboard", "LinkedIn", "Resend",
-    }
-    hosted = {
-        item["name"]
-        for domain in directory["domains"] if domain["id"] == "personal"
-        for group in domain["groups"] if group["id"] == "hosted-services"
-        for item in group["links"]
-    }
-    assert hosted == hosted_names, hosted
+    expected_bookmark_groups = [
+        ("news", "News", 7),
+        ("productivity-multimedia", "Productivity & Multimedia", 8),
+        ("shopping", "Shopping", 4),
+        ("utilities", "Utilities", 6),
+    ]
+    bookmark_domain = next(domain for domain in directory["domains"] if domain["id"] == "personal")
+    actual_bookmark_groups = [
+        (group["id"], group["title"], len(group["links"]))
+        for group in bookmark_domain["groups"]
+    ]
+    assert actual_bookmark_groups == expected_bookmark_groups, actual_bookmark_groups
 
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(
@@ -114,7 +114,7 @@ def verify():
         assert len(icon_report["references"]) == len(expected)
 
         layouts = []
-        for width, expected_columns in ((1600, 4), (1100, 3), (700, 2), (390, 1)):
+        for width, expected_columns, expected_bookmark_columns in ((1600, 4, 4), (1100, 3, 4), (700, 2, 2), (390, 1, 1)):
             page.set_viewport_size({"width": width, "height": 900})
             geometry = page.evaluate("""() => {
                 const root=document.querySelector('.es-directory-v2');
@@ -132,6 +132,7 @@ def verify():
             }""")
             assert geometry["scrollWidth"] <= width, geometry
             assert geometry["appColumns"] == expected_columns, geometry
+            assert geometry["bookmarkColumns"] == expected_bookmark_columns, geometry
             assert geometry["minHit"] >= 44, geometry
             layouts.append({"width": width, **geometry})
 

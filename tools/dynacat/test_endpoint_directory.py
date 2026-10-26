@@ -43,8 +43,8 @@ class DirectoryAcceptance(unittest.TestCase):
         groups = {a.select_one('strong').get_text(strip=True):a.get('data-es-group') for a in soup.select('.es-endpoint')}
         expected = {'Gray Matter':'publishing','Codeflare':'ai-development','Codeflare Integration':'ai-development',
             'IT Tools':'ai-development','Hermes':'ai-development','Hermes Browser':'ai-development','Hermes Android':'ai-development',
-            'Proxmox Backup Server':'backups','Backrest Media Servers':'backups','Torrentleech':'hosted-services',
-            'YouTube':'hosted-services','Castopod':'publishing','Plex':'players','Tautulli':'media-management','Minecraft':'compute'}
+            'Proxmox Backup Server':'backups','Backrest Media Servers':'backups','Torrentleech':'productivity-multimedia',
+            'YouTube':'productivity-multimedia','Castopod':'publishing','Plex':'players','Tautulli':'media-management','Minecraft':'compute'}
         for name,group in expected.items():self.assertEqual(groups[name],group,name)
 
     def test_applications_and_bookmarks_remain_distinct_without_filter_chrome(self):
@@ -53,16 +53,24 @@ class DirectoryAcceptance(unittest.TestCase):
         self.assertIsNone(soup.select_one('.es-categories'))
         self.assertIsNone(soup.select_one('.es-toolbar'))
         groups = soup.select('.es-group')
-        self.assertEqual(len(groups),3)
+        self.assertEqual(len(groups),4)
         titles=[g.select_one('h3').get_text(' ',strip=True) for g in groups]
-        self.assertEqual(titles, ['Hosted services', 'News & reading', 'Shopping'])
+        self.assertEqual(titles, ['News', 'Productivity & Multimedia', 'Shopping', 'Utilities'])
+        self.assertEqual(
+            {group['data-es-group']: len(group.select('.es-endpoint')) for group in groups},
+            {'news': 7, 'productivity-multimedia': 8, 'shopping': 4, 'utilities': 6},
+        )
         self.assertFalse(any(t.startswith(('Workspace ', 'Utilities ', 'Control plane ')) for t in titles))
 
     def test_third_party_hosted_services_are_bookmarks(self):
         expected = {
-            'Cloudflare', 'Fast', 'Unifi', 'YouTube', 'Torrentleech', 'GitHub',
-            'NotebookLM', 'Renovate', 'Draw.io', 'Microsoft 365', 'Outlook',
-            'Whiteboard', 'LinkedIn', 'Resend'
+            'Cloudflare': 'utilities', 'Fast': 'utilities', 'Unifi': 'utilities',
+            'YouTube': 'productivity-multimedia', 'Torrentleech': 'productivity-multimedia',
+            'GitHub': 'utilities', 'NotebookLM': 'productivity-multimedia',
+            'Renovate': 'utilities', 'Draw.io': 'productivity-multimedia',
+            'Microsoft 365': 'productivity-multimedia', 'Outlook': 'productivity-multimedia',
+            'Whiteboard': 'productivity-multimedia', 'LinkedIn': 'productivity-multimedia',
+            'Resend': 'utilities',
         }
         directory = json.loads((ROOT / 'endpoints-directory.json').read_text())
         entries = {
@@ -71,9 +79,9 @@ class DirectoryAcceptance(unittest.TestCase):
             for group in domain['groups']
             for item in group['links']
         }
-        self.assertTrue(expected.issubset(entries))
-        for name in expected:
-            self.assertEqual(entries[name], ('personal', 'hosted-services'), name)
+        self.assertTrue(set(expected).issubset(entries))
+        for name, group in expected.items():
+            self.assertEqual(entries[name], ('personal', group), name)
         app_count = sum(len(group['links']) for domain in directory['domains'] if domain['id'] != 'personal' for group in domain['groups'])
         bookmark_count = sum(len(group['links']) for domain in directory['domains'] if domain['id'] == 'personal' for group in domain['groups'])
         self.assertEqual((app_count, bookmark_count), (52, 25))
