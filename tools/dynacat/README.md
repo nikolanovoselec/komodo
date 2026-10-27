@@ -340,8 +340,11 @@ shorten the page without shrinking touch targets. Applications and bookmark grou
 responsive 1/2/3/4-column breakpoint ladder at 430/670/900px with centered desktop gutters. Its 68 bundled
 Material Design Icons use Flame's configured glyphs; no external icon font is loaded. Search and
 category filters are omitted to keep the Flame-style launcher flat and scannable. Same-tab
-external links restore the saved scroll position on browser Back; desktop/mobile coverage lives in
-`qa_scroll_restoration.py`.
+external links save the current scroll position in sessionStorage before navigation; when a
+saved position exists, the launcher restores it on pageshow without relying on navigation timing,
+which can misreport Back navigation in mobile browsers. Native restoration remains enabled when
+there is no saved position or storage is unavailable. Desktop/mobile and unreliable-navigation
+coverage lives in `qa_scroll_restoration.py`.
 The old News desk feeds are removed; News Digest article integration
 is pending authenticated feed/API access (see NEWS.md). Start was
 inspected read-only as the visual reference; no endpoint credentials are copied.
