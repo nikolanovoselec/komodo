@@ -47,7 +47,7 @@ services:
         condition: service_healthy
     labels:
       # Bump when tracked config/assets change: Komodo DeployStackIfChanged compares Compose.
-      ch.graymatter.config-revision: "flame-scroll-restoration-20261027"
+      ch.graymatter.config-revision: "flame-scroll-restoration-samsung-internet-20261027"
     expose: ["8080"]
     volumes:
       - ./config:/app/config

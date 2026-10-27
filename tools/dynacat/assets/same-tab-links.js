@@ -41,21 +41,13 @@
       }
     } catch {}
   };
-  const restoreScrollPosition = (event) => {
+  const restoreScrollPosition = () => {
     if (!canPersistScroll) return;
     let stored;
     try {
       stored = sessionStorage.getItem(scrollStorageKey);
     } catch {
       useNativeScrollRestoration();
-      return;
-    }
-    const navigationType = performance.getEntriesByType?.('navigation')?.[0]?.type;
-    const isReturn = event.persisted || navigationType === 'back_forward' || navigationType === 'reload';
-    if (!isReturn) {
-      if (stored !== null) {
-        try { sessionStorage.removeItem(scrollStorageKey); } catch { useNativeScrollRestoration(); }
-      }
       return;
     }
     if (stored === null) {

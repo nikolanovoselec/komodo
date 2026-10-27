@@ -302,6 +302,77 @@ async def verify_storage_unavailable_at_startup(playwright, staged=False):
     return {"storage_unavailable_at_startup": restoration}
 
 
+async def verify_unreliable_navigation_timing(playwright, staged=False):
+    browser = await playwright.chromium.launch()
+    page = await browser.new_page(viewport={"width": 1365, "height": 768})
+    if staged:
+        source = load_same_tab_links_asset(staged)
+
+        async def serve_staged_asset(route):
+            await route.fulfill(status=200, content_type="application/javascript", body=source)
+
+        await page.route("**/assets/same-tab-links.js*", serve_staged_asset)
+
+    async def serve_external_destination(route):
+        await route.fulfill(status=200, content_type="text/html", body="<!doctype html><title>Scroll QA destination</title>")
+
+    await page.route("https://dynacat-scroll-test.invalid/**", serve_external_destination)
+    await page.add_init_script("""
+        const nativeGetEntries = Performance.prototype.getEntriesByType;
+        Object.defineProperty(Performance.prototype, 'getEntriesByType', {
+            configurable: true,
+            value(type) {
+                if (type === 'navigation') return [{type: 'navigate'}];
+                return nativeGetEntries.call(this, type);
+            },
+        });
+        window.addEventListener('pageshow', event => {
+            if (location.pathname === '/endpoints-services') {
+                sessionStorage.setItem('__dynacat_navigation_timing_persisted', String(event.persisted));
+            }
+        });
+        window.addEventListener('unload', () => {});
+    """)
+    await page.goto(f"{BASE}/endpoints-services", wait_until="load")
+    await page.wait_for_function("Array.from(document.querySelectorAll('a')).some(a => a.textContent.trim() === 'YouTube')")
+    await page.evaluate("""
+        () => {
+            const link = Array.from(document.querySelectorAll('a'))
+                .find(a => a.textContent.trim() === 'YouTube');
+            link.href = 'https://dynacat-scroll-test.invalid/landing';
+            window.scrollTo({top: link.offsetTop, behavior: 'instant'});
+            history.scrollRestoration = 'manual';
+            window.addEventListener('click', event => {
+                if (event.target.closest?.('a')?.textContent.trim() === 'YouTube') {
+                    sessionStorage.setItem('__dynacat_navigation_timing_clicked_y', String(window.scrollY));
+                }
+            });
+        }
+    """)
+    await page.wait_for_function("window.scrollY > 0")
+    clicked_y = await page.evaluate("window.scrollY")
+    await page.get_by_role("link", name="YouTube", exact=True).click(timeout=10000)
+    await page.wait_for_url("**dynacat-scroll-test.invalid/**")
+    await page.go_back(wait_until="domcontentloaded")
+    await page.wait_for_url(f"{BASE}/endpoints-services")
+    await page.wait_for_selector(".es-endpoint")
+    await page.wait_for_timeout(250)
+    result = await page.evaluate("""
+        () => ({
+            restored: window.scrollY,
+            saved: sessionStorage.getItem('__dynacatScrollY:/endpoints-services'),
+            persisted: sessionStorage.getItem('__dynacat_navigation_timing_persisted'),
+            observed_navigation_type: performance.getEntriesByType('navigation')[0]?.type,
+        })
+    """)
+    await browser.close()
+    assert result["persisted"] == "false", {"clicked_y": clicked_y, "result": result}
+    assert result["observed_navigation_type"] == "navigate", {"clicked_y": clicked_y, "result": result}
+    assert clicked_y > 0, {"clicked_y": clicked_y, "result": result}
+    assert abs(result["restored"] - clicked_y) <= 1, {"clicked_y": clicked_y, "result": result}
+    return {"unreliable_navigation_timing": result["observed_navigation_type"], "clicked_scroll": clicked_y, "restored_scroll": result["restored"]}
+
+
 async def main(staged=False):
     async with async_playwright() as playwright:
         results = [
@@ -312,7 +383,8 @@ async def main(staged=False):
         internal_back = await verify_internal_back_restoration(playwright, staged=staged)
         storage_failure = await verify_storage_failure_fallback(playwright, staged=staged)
         storage_unavailable = await verify_storage_unavailable_at_startup(playwright, staged=staged)
-    print(json.dumps({"scroll_restoration": "passed", "staged_asset": staged, "results": results, "other_page": other_page, "internal_back": internal_back, "storage_failure": storage_failure, "storage_unavailable": storage_unavailable}, indent=2))
+        unreliable_navigation_timing = await verify_unreliable_navigation_timing(playwright, staged=staged)
+    print(json.dumps({"scroll_restoration": "passed", "staged_asset": staged, "results": results, "other_page": other_page, "internal_back": internal_back, "storage_failure": storage_failure, "storage_unavailable": storage_unavailable, "unreliable_navigation_timing": unreliable_navigation_timing}, indent=2))
 
 
 if __name__ == "__main__":
