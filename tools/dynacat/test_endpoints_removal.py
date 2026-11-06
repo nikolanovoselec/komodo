@@ -66,7 +66,7 @@ class EndpointsRemoval(unittest.TestCase):
         retained = {(name, url) for name, url, _ in RETAINED}
         self.assertTrue(removed.isdisjoint(links), f"requested cards still visible: {sorted(removed & links)}")
         self.assertTrue(retained.issubset(links), f"retained cards missing: {sorted(retained - links)}")
-        self.assertEqual(len(links), 87)
+        self.assertEqual(len(links), 88)
 
 
 if __name__ == "__main__":

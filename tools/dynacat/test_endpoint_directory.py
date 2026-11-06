@@ -59,7 +59,7 @@ class DirectoryAcceptance(unittest.TestCase):
         self.assertEqual(titles, ['News', 'Productivity & Multimedia', 'Shopping', 'Utilities', 'SSH TARGETS'])
         self.assertEqual(
             {group['data-es-group']: len(group.select('.es-endpoint')) for group in groups},
-            {'news': 7, 'productivity-multimedia': 8, 'shopping': 4, 'utilities': 6, 'ssh-targets': 10},
+            {'news': 7, 'productivity-multimedia': 8, 'shopping': 4, 'utilities': 6, 'ssh-targets': 11},
         )
         self.assertFalse(any(t.startswith(('Workspace ', 'Utilities ', 'Control plane ')) for t in titles))
 
@@ -70,6 +70,7 @@ class DirectoryAcceptance(unittest.TestCase):
         self.assertEqual(group['title'], 'SSH TARGETS')
         actual = {item['name']: item['url'] for item in group['links']}
         self.assertEqual(actual, {
+            'Hermes': 'https://hermes-ssh.novoselec.ch/',
             'Komodo': 'https://komodo-ssh.novoselec.ch/',
             'Media Servers': 'https://mediaservers-ssh.novoselec.ch/',
             'Middleware': 'https://middleware-ssh.novoselec.ch/',
@@ -104,13 +105,13 @@ class DirectoryAcceptance(unittest.TestCase):
             self.assertEqual(entries[name], ('personal', group), name)
         app_count = sum(len(group['links']) for domain in directory['domains'] if domain['id'] != 'personal' for group in domain['groups'])
         bookmark_count = sum(len(group['links']) for domain in directory['domains'] if domain['id'] == 'personal' for group in domain['groups'])
-        self.assertEqual((app_count, bookmark_count), (52, 35))
+        self.assertEqual((app_count, bookmark_count), (52, 36))
 
     def test_flame_mdi_sprite_covers_every_endpoint(self):
         directory = json.loads((ROOT / 'endpoints-directory.json').read_text())
         icon_doc = json.loads((ROOT / 'flame-mdi-icons.json').read_text())
         items = [item for domain in directory['domains'] for group in domain['groups'] for item in group['links']]
-        self.assertEqual(len(items), 87)
+        self.assertEqual(len(items), 88)
         self.assertTrue(all(item.get('icon') in icon_doc['icons'] for item in items))
         soup = page_soup()
         symbols = {symbol.get('id') for symbol in soup.select('.es-icon-sprite symbol')}
