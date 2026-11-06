@@ -68,6 +68,7 @@ class DirectoryAcceptance(unittest.TestCase):
         personal = next(domain for domain in directory['domains'] if domain['id'] == 'personal')
         group = next(group for group in personal['groups'] if group['id'] == 'ssh-targets')
         self.assertEqual(group['title'], 'SSH TARGETS')
+        self.assertTrue(all(item['icon'] == 'firewire' for item in group['links']))
         actual = {item['name']: item['url'] for item in group['links']}
         self.assertEqual(actual, {
             'Hermes': 'https://hermes-ssh.novoselec.ch/',
