@@ -14,10 +14,10 @@ directory = json.loads((ROOT / 'endpoints-directory.json').read_text())
 icon_doc = json.loads((ROOT / 'flame-mdi-icons.json').read_text())
 assert len(original) == 77
 assert sum(len(g['links']) for d in directory['domains'] if d['id'] != 'personal' for g in d['groups']) == 52
-assert sum(len(g['links']) for d in directory['domains'] if d['id'] == 'personal' for g in d['groups']) == 35
+assert sum(len(g['links']) for d in directory['domains'] if d['id'] == 'personal' for g in d['groups']) == 36
 personal = next(domain for domain in directory['domains'] if domain['id'] == 'personal')
 expected_groups = [('news', 'News', 7), ('productivity-multimedia', 'Productivity & Multimedia', 8),
-                   ('shopping', 'Shopping', 4), ('utilities', 'Utilities', 6), ('ssh-targets', 'SSH TARGETS', 10)]
+                   ('shopping', 'Shopping', 4), ('utilities', 'Utilities', 6), ('ssh-targets', 'SSH TARGETS', 11)]
 assert [(g['id'], g['title'], len(g['links'])) for g in personal['groups']] == expected_groups
 
 with sync_playwright() as p:
@@ -32,9 +32,9 @@ with sync_playwright() as p:
         page.goto(BASE + path)
         page.wait_for_selector('.es-directory-v2[data-ready="true"]')
         assert page.locator('.es-applications .es-endpoint').count() == 52
-        assert page.locator('.es-bookmarks .es-endpoint').count() == 35
+        assert page.locator('.es-bookmarks .es-endpoint').count() == 36
         assert page.locator('.es-bookmarks .es-group').evaluate_all("groups=>groups.map(g=>[g.dataset.esGroup,g.querySelectorAll('.es-endpoint').length])") == [
-            ['news', 7], ['productivity-multimedia', 8], ['shopping', 4], ['utilities', 6], ['ssh-targets', 10]
+            ['news', 7], ['productivity-multimedia', 8], ['shopping', 4], ['utilities', 6], ['ssh-targets', 11]
         ]
 
     pairs = page.locator('.es-endpoint').evaluate_all("rows => rows.map(a=>[a.querySelector('strong').textContent.trim(),a.getAttribute('href')])")
@@ -98,7 +98,7 @@ with sync_playwright() as p:
                   background:bg,accentContrast:contrast(title,bg),descriptionContrast:contrast(description,bg),bookmarkContrast:contrast(bookmark,bg),
                   iconCount:root.querySelectorAll('.es-endpoint svg.es-icon use').length};
             }""")
-            assert page.locator('.es-endpoint').count() == 87
+            assert page.locator('.es-endpoint').count() == 88
             expected_columns = 4 if width >= 900 else 3 if width >= 670 else 2 if width >= 430 else 1
             parent_width = geometry['parentWidth']
             if width < 769:
@@ -161,10 +161,10 @@ with sync_playwright() as p:
     assert mobile_geometry['minHit'] >= 44
     assert mobile_geometry['bookmarkMinHit'] >= 44
     assert mobile_geometry['bookmarkItemColumns'] == 2
-    assert m.locator('.es-endpoint').count() == 87
+    assert m.locator('.es-endpoint').count() == 88
     assert not errors, errors
     result = {
-        'links':len(pairs),'applications':52,'bookmarks':35,'third_party_hosted_bookmarks':14,
+        'links':len(pairs),'applications':52,'bookmarks':36,'third_party_hosted_bookmarks':14,
         'mdi_icons':len(icon_doc['icons']),'urls_preserved':True,'alphabetical':True,
         'search_filter_chrome':False,'touch_mobile':True,'mobile_geometry':mobile_geometry,
         'touch_desktop_geometry':touch_desktop_geometry,

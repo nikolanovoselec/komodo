@@ -328,8 +328,8 @@ native themes, and four viewport widths; it never serves synthetic telemetry.
 The visible navigation is **Hardware & Workloads**, **Media**, and
 **Endpoints & Services**. Fixed hidden aliases preserve `/command-center`,
 `/media-ops`, `/directory`, and `/news` bookmarks. The launcher retains all 77
-original endpoint name/URL pairs and adds ten verified SSH bookmarks (87 links total):
-52 applications sorted alphabetically, followed by 35 bookmarks in Flame's five topic
+original endpoint name/URL pairs and adds eleven SSH bookmarks (88 links total):
+52 applications sorted alphabetically, followed by 36 bookmarks in Flame's five topic
 groups: News, Productivity & Multimedia, Shopping, Utilities, and SSH TARGETS. SSH
 TARGETS use public Cloudflare Access hostnames for nodes with CA-backed SSH public-key
 authentication. Fourteen clearly third-party-hosted services stay in those bookmark

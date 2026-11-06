@@ -585,6 +585,12 @@
           "title": "SSH TARGETS",
           "links": [
             {
+              "name": "Hermes",
+              "url": "https://hermes-ssh.novoselec.ch/",
+              "description": "SSH via Cloudflare Access",
+              "icon": "ssh"
+            },
+            {
               "name": "Komodo",
               "url": "https://komodo-ssh.novoselec.ch/",
               "description": "SSH via Cloudflare Access",
